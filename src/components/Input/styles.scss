@@ -1,0 +1,43 @@
+@use "../../global.scss" as *;
+
+.input_container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    label {
+      color: #606060;
+      font-weight: 500;
+  }
+  
+    input {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.025);
+      font-size: 14px;
+      outline: none;
+    
+      &:focus {
+        border-color: $roxo;
+        border-width: 2px;
+      }
+  }
+}
+
+.width_25 {
+  width: 25%;
+}
+  
+.width_33 {
+    width: 33%;
+}
+  
+.width_50 {
+  width: 50%;
+}
+  
+.width_66 {
+  width: 66%;
+}
+  

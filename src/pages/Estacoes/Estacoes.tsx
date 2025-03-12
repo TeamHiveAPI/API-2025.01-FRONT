@@ -1,10 +1,6 @@
-import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
-import Sidebar from "../../components/Sidebar/Sidebar";
-
-import {IconUser} from  "@tabler/icons-react";
-
 import "./styles.scss";
 
+import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardEstacao from "../../components/CardEstacao/CardEstacao";

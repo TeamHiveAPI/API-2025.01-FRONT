@@ -1,0 +1,48 @@
+@use "../../global.scss" as *;
+
+.pagina_titulo {
+    font-size: 40px;
+    font-family: "Poppins";
+    color: $roxo;
+    margin-bottom: 64px;
+}
+
+.secao_input {
+    display: flex;
+    gap: 2%;
+}
+
+.cima {
+    margin-top: 40px;
+}
+
+.cima80 {
+    margin-top: 80px;
+}
+
+.subtitulo {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins";
+    color: $roxo;
+    margin-top: 40px;
+}
+
+.cees_card_endereco {
+    padding: 32px;
+    margin-top: 60px;
+    width: 50%;
+    background-color: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+
+    h4 {
+        color: #404040;
+        font-weight: 500;
+        margin-bottom: 32px;
+    }
+
+    p {
+        color: #606060;
+    }
+}
