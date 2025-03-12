@@ -1,0 +1,14 @@
+@use "../../global.scss" as *;
+
+.esta_lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4%;
+}
+
+.num_cadastros {
+    margin-top: 128px;
+    color: #808080;
+    font-weight: 500;
+    margin-bottom: 64px;
+}

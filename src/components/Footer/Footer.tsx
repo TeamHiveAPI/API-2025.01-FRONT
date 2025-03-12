@@ -11,7 +11,7 @@ export default function Footer() {
                     <p>Fatec São José dos Campos - Prof. Jessen Vidal</p>
                 </div>
                 <div className="footer_dir">
-                    <img src="../../public/logo_hive.svg" />
+                    <img src="../../logo_hive.svg" />
                     <a className="footer_botao" href="https://github.com/TeamHiveAPI/API-2025.01" target="_blank">
                     <IconBrandGithubFilled color="white"/> 
                     GitHub </a>

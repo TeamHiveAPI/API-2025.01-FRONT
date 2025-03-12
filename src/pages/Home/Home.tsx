@@ -15,7 +15,7 @@ export default function Home() {
         <div>
           <div className="pagina_container home">
 
-           <BarraCima nome="Dashboard" />
+           <BarraCima nome="Dashboard" tipo="home"/>
 
             <p>Lorem Ipsum Dolor Sit Amet Consecteur</p>
 
