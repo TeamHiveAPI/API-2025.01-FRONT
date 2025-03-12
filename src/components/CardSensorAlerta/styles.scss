@@ -1,0 +1,42 @@
+@use "../../global.scss" as *;
+
+.casa_wrapper {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    border: 1px solid #F5F5F5;
+    background: #FCFCFC;
+    box-shadow: 0px 4px 0px 0px #E8E8E8;
+    width: 30.66%;
+    padding: 20px;
+    margin-bottom: 4%;
+    justify-content: space-between;
+}
+
+.casa_meio, .casa_baixo {
+    margin-top: 20px;
+}
+
+.casa_meio {
+    margin-bottom: 40px;
+}
+
+.casa_meio h4, .casa_baixo h4 {
+    color: $roxo;
+}
+
+.casa_meio p, .casa_baixo p {
+    color: #808080;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.casa_baixo div {
+    display: flex;
+    gap: 12px;
+}
+
+.casa_margem {
+    margin-bottom: 12px;
+}

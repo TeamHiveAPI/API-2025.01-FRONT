@@ -1,0 +1,117 @@
+@use "../../global.scss" as *;
+
+.side_wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color:#F8F8F8;
+    min-width: 15vw;
+    height: 100vh;
+    padding: 20px;
+    justify-content: space-between;
+    border-right: 1px solid #E8E8E8;
+    position: fixed;
+}
+
+.side_cima {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.side_cima img {
+    margin-bottom: 40px;
+    margin-top: 20px;
+}
+
+.side_botao {
+    display: flex;
+    gap: 16px;
+    padding: 8px 12px 8px 12px;
+    justify-content: start;
+    align-items: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #404040;
+    border-radius: 8px;
+
+}
+
+.ativo {
+    background-color: $cinza-hover;
+}
+
+.side_botao:hover {
+    background-color: $cinza-hover;
+}
+
+.side_usuario {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: start;
+}
+
+.side_usuario img {
+    width: 48px;
+}
+
+.side_usuario div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.side_usuario h4 {
+    color: $escrito;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.side_botao_logout {
+    display: flex;
+    gap: 16px;
+    padding: 8px 12px 8px 12px;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 16px;
+    color:white;
+    border-radius: 8px;
+    background-color: $verde-marca;
+    width: 100%;
+    font-family: "Poppins";
+}
+
+.side_botao_logout:hover {
+    background-color: $verde-marca-hover;
+}
+
+@media only screen and (max-width: 1200px) {
+
+    .side_wrapper {
+        min-width: 0px;
+        width: 96px;
+        padding: 32px 16px 16px 16px;
+    }
+
+    .side_cima img {
+        content: url("../../public/tecsus_logo_menor.svg");
+    }
+
+    .side_botao {
+        border-radius: 4px;
+        justify-content: center;
+    }
+
+    .side_usuario {
+        align-items: center;
+    }
+    
+    .side_botao span {
+      display: none;
+    }
+
+    .side_usuario span, .side_usuario h4  {
+        display: none;
+    }
+  }

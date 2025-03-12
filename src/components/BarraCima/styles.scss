@@ -1,0 +1,30 @@
+@use "../../global.scss" as *;
+
+.baci_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 64px;
+}
+
+.baci_container h1 {
+    font-size: 40px;
+    font-family: "Poppins";
+    color: $roxo;
+}
+
+.baci_pesquisa {
+    display: flex;
+    border-radius: 8px;
+    border: 1px solid #C4C4C4;
+    padding: 12px;
+    gap: 12px;
+}
+
+.baci_pesquisa input {
+    font-weight: 500;
+    width: 256px;
+    &:focus {
+        outline: none;
+    }
+}

@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
+
+// Variáveis
+
+$cinza: #F5F5F5;
+$cinza-hover: #E8E8E8;
+
+$escrito: #404040;
+
+$roxo: #5751D5;
+$roxo-hover: #4641AA;
+
+$verde-marca: #74DB23;
+$verde-marca-hover: #5DAF1C;
+
+$verde: #17801e;
+$verde-hover: #126618;
+
+$vermelho: #ED3C5C;
+$vermelho-hover: #BE304A;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style-position: inside;
+  border: none;
+  font-family: "Montserrat";
+}
+
+.pagina_wrapper {
+  display: flex;
+  flex-direction: row;
+  max-width: 1220px;
+}
+
+.pagina_container {
+  margin-left: 15vw;
+  padding: 48px;
+  min-height: 100vh;
+}

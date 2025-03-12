@@ -1,0 +1,94 @@
+@use "../../global.scss" as *;
+@use "sass:color";
+
+/* Estilo base */
+
+.botao_cta_base {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 32px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: "Poppins";
+    font-weight: 600;
+
+    &:hover img {
+        filter: brightness(0.8);
+    }
+}
+
+.sem_escrito {
+    padding: 12px;
+}
+
+.pequeno {
+    padding: 8px 12px;
+}
+
+/* Botão Primário */
+
+.botao_cta_primario {
+    @extend .botao_cta_base;
+    background-color: $roxo;
+    color: white;
+
+    &:hover {
+        background-color: $roxo-hover;
+    }
+}
+
+/* Botão Secundário */
+
+.botao_cta_secundario {
+    @extend .botao_cta_base;
+    background-color: color.adjust($roxo, $lightness: 35%);
+    color: $roxo;
+
+    &:hover {
+        color: $roxo-hover;
+        background-color: color.adjust($roxo, $lightness: 30%);
+    }
+}
+
+/* Estilos de Cor */
+
+.botao_cta_verde {
+    background-color: $verde;
+
+    &:hover {
+        background-color: $verde-hover;
+    }
+}
+
+.botao_cta_vermelho {
+    background-color: $vermelho;
+
+    &:hover {
+        background-color: $vermelho-hover;
+    }
+}
+
+/* Botões Secundários com cores específicas */
+
+.botao_cta_secundario.botao_cta_verde {
+    color: $verde;
+    background-color: color.adjust($verde, $lightness: 60%);
+
+    &:hover {
+        color: $verde-hover;
+        background-color: color.adjust($verde, $lightness: 55%);
+    }
+}
+
+.botao_cta_secundario.botao_cta_vermelho {
+    color: $vermelho;
+    background-color: color.adjust($vermelho, $lightness: 35%);
+
+    &:hover {
+        color: $vermelho-hover;
+        background-color: color.adjust($vermelho, $lightness: 30%);
+    }
+}

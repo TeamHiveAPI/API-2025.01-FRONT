@@ -1,0 +1,13 @@
+@use "../../global.scss" as *;
+
+.home p {
+    color: $escrito;
+    font-family: "Montserrat";
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+.home_teste button, .home_teste a {
+    margin-bottom: 20px;
+}

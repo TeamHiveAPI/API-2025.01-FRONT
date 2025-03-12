@@ -1,0 +1,68 @@
+@use "../../global.scss" as *;
+
+
+.footer_container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 15vw;
+    padding: 32px;
+    padding-bottom: 20px;
+    width: 83.9vw;
+    background-color: #F2F2F2;
+}
+
+.footer_cima {
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer_esq h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #404040;
+    margin-bottom: 20px;
+}
+
+.footer_esq p, .footer_dir p, .footer_baixo {
+    color: #606060;
+    font-weight: 500;
+}
+
+.footer_dir {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.footer_dir div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: end;
+}
+
+.footer_dir img {
+    width: 64px;
+}
+
+.footer_botao {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    gap: 16px;
+    color: white;
+    background-color: #404040;
+    font-weight: 500;
+    border-radius: 8px;
+    &:hover {
+        background-color: #303030;
+    }
+}
+
+.footer_baixo {
+    margin-top: 32px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 2px solid #C4C4C4;
+}
