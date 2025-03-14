@@ -1,5 +1,7 @@
 import { useState } from "react";
+import Select from "react-select";
 import "./styles.scss";
+import styles_select from "./styles_select";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -7,6 +9,11 @@ import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
+
+interface Sensor {
+  value: string;
+  label: string;
+}
 
 export default function CriarEditarEstacao() {
   
@@ -20,7 +27,16 @@ export default function CriarEditarEstacao() {
     cidade: "",
     cep: "",
     status: true,
+    sensores: [] as Sensor[]
   });
+
+  const sensoresEstaticos = [
+    { value: "01", label: "Temperatura - ID 01" },
+    { value: "02", label: "Vento - ID 02" },
+    { value: "03", label: "Vento - ID 03" },
+    { value: "04", label: "Umidade - ID 04" },
+    { value: "05", label: "Umidade - ID 05" },
+  ];
 
   const [errors, setErrors] = useState({
     nome: false,
@@ -65,6 +81,13 @@ export default function CriarEditarEstacao() {
     }));
   };
 
+  const handleSensoresChange = (selectedOptions: any) => {
+    setDadosEstacao((prev) => ({
+      ...prev,
+      sensores: selectedOptions || [], // Garante que a lista nunca seja undefined
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -88,6 +111,7 @@ export default function CriarEditarEstacao() {
       latitude: dadosEstacao.latitude,
       longitude: dadosEstacao.longitude,
       status: dadosEstacao.status,
+      sensores: dadosEstacao.sensores.map((s) => ({ id: s.value, nome: s.label })),
       endereco: {
         rua: dadosEstacao.rua,
         numero: dadosEstacao.numero,
@@ -159,6 +183,18 @@ export default function CriarEditarEstacao() {
                   ? `${dadosEstacao.rua} - ${dadosEstacao.numero}, ${dadosEstacao.bairro}, ${dadosEstacao.cidade} - ${dadosEstacao.cep}`
                   : "Preencha todos os campos de endereço para gerar a formatação."}
               </p>
+            </div>
+
+            <div className="cees_escolher_sensores cima">
+              <p className="subtitulo baixo">Sensores</p>
+              <Select
+                options={sensoresEstaticos}
+                isMulti
+                placeholder="Selecione os sensores"
+                value={dadosEstacao.sensores}
+                onChange={handleSensoresChange}
+                styles={styles_select}
+              />
             </div>
 
             <div className="cima80">
