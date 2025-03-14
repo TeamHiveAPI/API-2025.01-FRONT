@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IconPlus, IconSearch } from "@tabler/icons-react";
+import { IconChevronLeft, IconPlus, IconSearch } from "@tabler/icons-react";
 import "./styles.scss";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 
 interface BarraCimaProps {
   nome: string;
-  tipo: string;
+  tipo: "home" | "voltar" | "estacao" | "sensor" | "alerta" | "usuario";
 }
 
 export default function BarraCima({ nome, tipo }: BarraCimaProps) {
@@ -46,30 +46,41 @@ export default function BarraCima({ nome, tipo }: BarraCimaProps) {
         </div>
       )}
 
-      {tipo !== "home" && (
-      <div className="baci_pesquisa interno">
-      <IconSearch width={32} stroke={1.5} color="#606060" />
-      <input
-        type="text"
-        placeholder="Pesquisar"
-        value={pesquisa}
-        onChange={(e) => setPesquisa(e.target.value)}
-      />
-    </div>
+      {tipo !== "home" && tipo !== "voltar" && (
+        <div className="baci_pesquisa interno">
+          <IconSearch width={32} stroke={1.5} color="#606060" />
+          <input
+            type="text"
+            placeholder="Pesquisar"
+            value={pesquisa}
+            onChange={(e) => setPesquisa(e.target.value)}
+          />
+        </div>
       )}
 
-      {tipo !== "home" && (
-      <div className="baci_dir">
-        <BotaoCTA
-          cor="cor_primario"
-          escrito={`Adicionar ${texto}`}
-          aparencia="primario"
-          img={<IconPlus stroke="2" />}
-          onClick={() => navigate(link)}
-        />
-      </div>
+      {tipo !== "home" && tipo !== "voltar" && (
+        <div className="baci_dir">
+          <BotaoCTA
+            cor="cor_primario"
+            escrito={`Adicionar ${texto}`}
+            aparencia="primario"
+            img={<IconPlus stroke="2" />}
+            onClick={() => navigate(link)}
+          />
+        </div>
       )}
 
+      {tipo === "voltar" && (
+        <div className="baci_dir">
+          <BotaoCTA
+            cor="cor_primario"
+            escrito="Voltar"
+            aparencia="secundario"
+            img={<IconChevronLeft stroke="2" />}
+            onClick={() => navigate(-1)}
+          />
+        </div>
+      )}
     </div>
   );
 }
