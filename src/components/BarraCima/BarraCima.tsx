@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IconChevronLeft, IconPlus, IconSearch } from "@tabler/icons-react";
+import { IconChevronLeft, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
 import "./styles.scss";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
+import Swal from "sweetalert2";
 
 interface BarraCimaProps {
   nome: string;
   tipo: "home" | "voltar" | "estacao" | "sensor" | "alerta" | "usuario";
+  entidade?: "Estação" | "Sensor" | "Alerta" | "Usuário"; // Nova prop opcional
 }
 
-export default function BarraCima({ nome, tipo }: BarraCimaProps) {
+export default function BarraCima({ nome, tipo, entidade }: BarraCimaProps) {
   const [pesquisa, setPesquisa] = useState("");
   const navigate = useNavigate();
 
@@ -28,6 +30,37 @@ export default function BarraCima({ nome, tipo }: BarraCimaProps) {
   };
 
   const { texto, link } = tipoMap[tipo] || { texto: "item", link: "/" };
+
+  const handleExcluir = () => {
+    if (!entidade) return;
+
+    Swal.fire({
+      showClass: {
+        popup: "animate__animated animate__fadeInUp swal_rapido" // Efeito de entrada
+      },
+      hideClass: {
+          popup: "animate__animated animate__fadeOutDown swal_rapido" // Efeito de saída
+      },
+      imageUrl: "/public/swal_alerta_exclusao.png",
+      imageWidth: 100,
+      imageHeight: 100,
+      title: `Excluir ${entidade.toLowerCase()}?`,
+      text: `Tem certeza que deseja excluir ${entidade.toLowerCase() === "estação" ? "esta" : "este"} ${entidade.toLowerCase()}? Esta ação não pode ser desfeita.`,
+      showCancelButton: true,
+      confirmButtonColor: "#ED3C5C",
+      cancelButtonColor: "#E2E1F8",
+      confirmButtonText: `Excluir ${entidade.toLowerCase()}`,
+      cancelButtonText: "Cancelar",
+      customClass: {
+        title: "swal_titulo",
+        cancelButton: "swal_botao_cancelar_texto_cor"
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Excluído!", `${entidade.toLowerCase() === "estação" ? "A" : "O"} ${entidade.toLowerCase()} foi ${entidade.toLowerCase() === "estação" ? "removida" : "removido"} com sucesso.`, "success");
+      }
+    });
+  };
 
   return (
     <div className="baci_container">
@@ -79,6 +112,17 @@ export default function BarraCima({ nome, tipo }: BarraCimaProps) {
             img={<IconChevronLeft stroke="2" />}
             onClick={() => navigate(-1)}
           />
+
+          {/* Botão de excluir aparece apenas se a prop "entidade" estiver definida */}
+          {entidade && (
+            <BotaoCTA
+              cor="vermelho"
+              escrito={`Excluir ${entidade}`}
+              aparencia="secundario"
+              img={<IconTrash stroke="2" />}
+              onClick={handleExcluir}
+            />
+          )}
         </div>
       )}
     </div>

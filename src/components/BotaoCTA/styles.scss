@@ -20,12 +20,18 @@
     }
 }
 
-.sem_escrito {
+.botao_cta_sem_escrito {
     padding: 12px;
 }
 
-.pequeno {
+.botao_cta_pequeno {
     padding: 8px 12px;
+}
+
+.botao_cta_desativado {
+    cursor: auto;
+    filter: grayscale(100) brightness(1.05);
+    pointer-events: none;
 }
 
 /* Botão Primário */

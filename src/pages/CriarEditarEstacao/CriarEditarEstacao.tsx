@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import "./styles.scss";
 import styles_select from "./styles_select";
@@ -16,6 +17,11 @@ interface Sensor {
 }
 
 export default function CriarEditarEstacao() {
+
+  const location = useLocation();
+  const dadosRecebidos = location.state || null; // Dados vindos do Card Estação
+
+  const [modoEdicao, setModoEdicao] = useState(false); // Ativar modo edição se clicar no botão de editar do card
   
   const [dadosEstacao, setDadosEstacao] = useState({
     nome: "",
@@ -37,6 +43,38 @@ export default function CriarEditarEstacao() {
     { value: "04", label: "Umidade - ID 04" },
     { value: "05", label: "Umidade - ID 05" },
   ];
+
+  // Preencher os campos automaticamente se entrar no modo edição
+  useEffect(() => {
+    if (dadosRecebidos) {
+        setModoEdicao(true);
+        
+        const enderecoParts = dadosRecebidos.endereco.split(",");
+        const rua = enderecoParts[0]?.trim() || "";
+        const numeroBairro = enderecoParts[1]?.split(" - ") || ["", ""];
+        const numero = numeroBairro[0]?.trim() || "";
+        const bairroCidadeCep = enderecoParts[2]?.split(" - ") || ["", ""];
+        const bairro = numeroBairro[1]?.trim() || "";
+        const cidade = bairroCidadeCep[0]?.trim() || "";
+        const cep = bairroCidadeCep[1]?.trim() || "";
+
+        setDadosEstacao({
+            nome: dadosRecebidos.titulo,
+            latitude: dadosRecebidos.latitude,
+            longitude: dadosRecebidos.longitude,
+            rua,
+            numero,
+            bairro,
+            cidade,
+            cep,
+            status: dadosRecebidos.ativo,
+            sensores: dadosRecebidos.sensores.map((sensor: any, index: any) => ({
+                value: `0${index + 1}`,
+                label: sensor
+            }))
+        });
+    }
+}, [dadosRecebidos]);
 
   const [errors, setErrors] = useState({
     nome: false,
@@ -129,7 +167,7 @@ export default function CriarEditarEstacao() {
       <Sidebar />
       <div>
         <div className="pagina_container">
-          <BarraCima nome="Criar Estação" tipo={"voltar"} />
+          <BarraCima nome={modoEdicao ? "Editar Estação" : "Criar Estação"} tipo={"voltar"} entidade={modoEdicao ? "Estação" : undefined} />
 
           <form onSubmit={handleSubmit}>
             <div className="cees_cima">
@@ -180,7 +218,7 @@ export default function CriarEditarEstacao() {
               <h4>Endereço Formatado:</h4>
               <p>
                 {dadosEstacao.rua && dadosEstacao.numero && dadosEstacao.bairro && dadosEstacao.cidade && dadosEstacao.cep
-                  ? `${dadosEstacao.rua} - ${dadosEstacao.numero}, ${dadosEstacao.bairro}, ${dadosEstacao.cidade} - ${dadosEstacao.cep}`
+                  ? `${dadosEstacao.rua} , ${dadosEstacao.numero} - ${dadosEstacao.bairro}, ${dadosEstacao.cidade} - ${dadosEstacao.cep}`
                   : "Preencha todos os campos de endereço para gerar a formatação."}
               </p>
             </div>
@@ -201,7 +239,7 @@ export default function CriarEditarEstacao() {
               <BotaoCTA
                 aparencia={"primario"}
                 cor="cor_primario"
-                escrito="Cadastrar Estação"
+                escrito={modoEdicao ? "Atualizar Estação" : "Cadastrar Estação"}
                 img={<IconPlus stroke="2" />}
                 type="submit"
               />

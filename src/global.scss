@@ -19,6 +19,9 @@ $verde-hover: #126618;
 $vermelho: #ED3C5C;
 $vermelho-hover: #BE304A;
 
+
+
+
 * {
   margin: 0;
   padding: 0;
@@ -39,4 +42,24 @@ $vermelho-hover: #BE304A;
   margin-left: 15vw;
   padding: 48px;
   min-height: 100vh;
+}
+
+
+
+
+// Customização Swal
+
+.swal_rapido {
+  --animate-duration: 0.3s !important;
+}
+
+.swal_titulo {
+  font-family: Poppins;
+  color: #404040;
+  margin-bottom: 20px;
+}
+
+.swal_botao_cancelar_texto_cor {
+  color: $roxo;
+  font-weight: 600;
 }

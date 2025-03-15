@@ -10,6 +10,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/estacoes" element={<Estacoes />} />
         <Route path="/estacoes/criar" element={<CriarEditarEstacao />} />
+        <Route path="/estacoes/editar/:id" element={<CriarEditarEstacao />} />
       </Routes>
     </Router>
   );
