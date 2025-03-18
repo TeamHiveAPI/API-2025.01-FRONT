@@ -19,8 +19,8 @@
       outline: none;
     
       &:focus {
-        border-color: $roxo;
-        border-width: 2px;
+        border-color: transparent;
+        box-shadow: 0 0 0px 1.5px #5751D5; // Borda que vai pra fora ao invés de pra dentro
       }
   }
 }

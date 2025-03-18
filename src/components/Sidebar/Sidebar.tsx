@@ -52,7 +52,7 @@ export default function Home() {
 
         <div className="side_usuario">
             <div>
-                <img src="../../foto_admin.png" />
+                <img src="../../foto_admin.svg" />
                 <h4>{formatarNome(usuario)}</h4>
             </div>
             <Link to="/" className="side_botao_logout">

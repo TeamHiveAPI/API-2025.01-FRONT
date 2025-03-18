@@ -19,6 +19,14 @@
     border: 1px solid #C4C4C4;
     padding: 12px;
     gap: 12px;
+    &:focus-within {
+        border-color: transparent;
+        box-shadow: 0 0 0px 1.5px #5751D5; // Borda que vai pra fora ao invés de pra dentro
+    
+        svg {
+          stroke: #5751D5;
+        }
+      }
 }
 
 .interno {

@@ -19,7 +19,7 @@ export default function CardUsuario({admin, nome, email, data_criacao}: CardUsua
     return (
         <div className="caes_wrapper usu">
             <div className="caus_esq">
-            <img src={admin ? "../../foto_admin.png" : "../../foto_publico.png"} alt="Perfil" />
+            <img src={admin ? "../../foto_admin.svg" : "../../foto_publico.svg"} alt="Perfil" />
                 <div className="caus_info">
                     <h4>{nome}</h4>
                     <p>{admin ? "ADMINISTRADOR" : "PÚBLICO"}</p>
