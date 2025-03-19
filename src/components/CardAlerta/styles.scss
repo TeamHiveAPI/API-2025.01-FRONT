@@ -1,0 +1,119 @@
+@use "../../global.scss" as *;
+
+.caal_wrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid #f5f5f5;
+  background: #fcfcfc;
+  box-shadow: 0px 4px 0px 0px #e8e8e8;
+  width: 48%;
+  padding: 20px;
+  margin-bottom: 4%;
+  justify-content: space-between;
+}
+
+.caal_cima {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.caal_cima_esq,
+.caal_cima_dir {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.caal_cima_esq h4 {
+  color: #404040;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 28px;
+  margin-right: 20px;
+}
+
+.caal_badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: $roxo;
+  padding: 6px;
+  padding-right: 12px;
+  border-radius: 4px;
+}
+
+.caal_badge p {
+  font-size: 24px;
+  font-family: "Poppins";
+  font-weight: 600;
+  color: white;
+}
+
+.caal_status {
+  display: flex;
+  gap: 8px;
+}
+
+.caal_status p {
+  color: $verde;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.cinza {
+  color: #808080 !important;
+}
+
+.caal_mensagem {
+  padding-top: 20px;
+}
+
+.caal_mensagem_titulo {
+  color: $roxo;
+  font-weight: 600;
+  font-size: 18px; /* Tamanho fixo de 18px */
+  margin-bottom: 4px;
+}
+
+.caal_mensagem_texto {
+  color: #404040;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.caal_baixo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.caal_info_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.caal_info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.caal_info_titulo {
+  color: $roxo;
+  font-weight: 600;
+  font-size: 18px; 
+}
+
+.caal_info_texto {
+  color: #404040;
+  font-weight: 500;
+  font-size: 14px;
+}
+
