@@ -1,109 +1,40 @@
 @use "../../global.scss" as *;
 
-.pagina_wrapper {
-  display: flex;
+.ceal_escrito {
+  color: #606060;
+  font-weight: 500;
+  background-color: #fafafa;
+  padding: 12px;
+  border-radius: 4px;
 }
 
-.pagina_container {
-  padding: 40px;
-}
-
-.pagina_titulo {
-  font-size: 40px;
-  font-family: "Poppins";
-  color: $roxo;
-  margin-bottom: 64px;
-}
-
-.secao_input {
-  display: flex;
-  gap: 2%;
-}
-
-.cima {
-  margin-top: 40px;
-}
-
-.cima80 {
-  margin-top: 80px;
-}
-
-.subtitulo {
-  font-size: 20px;
-  font-weight: 600;
-  font-family: "Poppins";
-  color: $roxo;
-  margin-top: 40px;
-}
-
-.cees_cima {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.cees_cima_dir {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 12px;
+.ceal_input_num_condicao {
   width: 33%;
 }
 
-.cees_cima_dir h4 {
-  color: #606060;
-  font-weight: 500;
+.secao_input.ceal {
+  align-items: center;
 }
 
-.cees_cima_inputs {
-  display: flex;
-  gap: 4%;
+.secao_input.bottom {
+  align-items: flex-end;
 }
 
-.cees_input_radius {
-  padding: 12px 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.ceal__control {
+  padding: 2px;
+}
+
+.ceal__control {
   box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.025);
-  font-size: 14px;
-  width: 256px;
-  font-weight: 500;
-  color: #808080;
-
-  &:hover {
-    cursor: pointer;
-    background-color: #fafafa;
-  }
+  transition: none !important;
+  min-width: 235px;
 }
 
-.cees_input_radius.escolhido {
-  border-color: $roxo;
-  border-width: 2px;
-  color: $roxo;
-  font-weight: 600;
-
-  &:hover {
-    cursor: auto;
-    background-color: white;
-  }
+.ceal__control--is-focused {
+  box-shadow: 0 0 0px 1px #5751D5 !important;
 }
 
-.baixo {
-  margin-bottom: 12px;
-}
-
-.AC_secao_input {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.AC_linha_superior {
-  display: flex;
-  gap: 4%;
-  width: 100%;
-}
-
-.AC_linha_inferior {
-  width: 100%;
+.ceal__option--is-selected {
+  background-color: #0b265a;
+  color: white;
 }
