@@ -1,41 +1,28 @@
 import { useNavigate } from "react-router-dom";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
-import "./styles.scss";
-import { IconHexagonPlus, IconPencil } from "@tabler/icons-react";
+import { IconBorderCorners, IconPencil } from "@tabler/icons-react";
+import "../CardAlerta/styles.scss"
 
-interface CardAlertaProps {
+interface CardSensorProps {
   id: string;
   titulo: string;
-  mensagem: string;
-  sensor: string;
-  sensor_id: number;
+  unidOuSensor: string;
   estacao: string;
-  estacao_id: number;
-  condicao: string;
-  num_condicao: number;
 }
 
-export default function CardAlerta({
+export default function CardSensor({
   id,
   titulo,
-  mensagem,
-  sensor,
-  sensor_id,
+  unidOuSensor,
   estacao,
-  estacao_id,
-  condicao,
-  num_condicao,
-}: CardAlertaProps) {
+}: CardSensorProps) {
   const navigate = useNavigate();
 
   const handleEditar = () => {
-    navigate(`/alertas/editar/${id}`, {
+    navigate(`/sensores/editar/${id}`, {
       state: {
-        sensor_id,
-        estacao_id,
-        condicao,
-        num_condicao,
-        mensagem
+        id,
+        // Mais campos depois
       },
     });
   };
@@ -46,7 +33,7 @@ export default function CardAlerta({
         <div className="caes_cima">
           <div className="caes_cima_esq">
             <div className="caes_badge">
-              <IconHexagonPlus color="#FFFFFF" stroke="1.5" width={32} height={32} />
+              <IconBorderCorners color="#FFFFFF" stroke="1.5" width={32} height={32} />
               <p>{id}</p>
             </div>
             <h4 className="casa_titulo">{titulo}</h4>
@@ -60,17 +47,12 @@ export default function CardAlerta({
             />
           </div>
         </div>
-
-        <div className="casa_meio">
-          <h4 className="casa_margem">MENSAGEM</h4>
-          <p>{mensagem}</p>
-        </div>
       </div>
 
       <div className="casa_baixo">
         <div>
-          <h4 className="casa_margem">SENSOR</h4>
-          <p>{sensor}</p>
+          <h4 className="casa_margem">UNID</h4>
+          <p>{unidOuSensor}</p>
         </div>
         <div>
           <h4>ESTAÇÃO</h4>

@@ -8,33 +8,36 @@ export default function Alertas() {
   const alertas = [
     {
       id: "1",
-      estacao_id: "estacao_1",
-      sensor_id: "sensor_1",
-      condicao: "Temperatura acima de 40°C",
-      mensagem: "Alerta para temperaturas acima de 40°C.",
-      data: "2023-10-01",
-      hora: "12:00",
-      status: "ativo",
+      estacao: "FATEC",
+      estacao_id: 1,
+      sensor: "Temperatura",
+      sensor_id: 2,
+      unidade: "°C",
+      condicao: "maior_igual",
+      num_condicao: 40,
+      mensagem: "Foi detectado altas temperaturas ná area da FATEC de São José dos Campos. É recomendável ficar na sombra e se hidratar bem.",
     },
     {
       id: "2",
-      estacao_id: "estacao_2",
-      sensor_id: "sensor_2",
-      condicao: "Umidade abaixo de 20%",
-      mensagem: "Alerta para umidade abaixo de 20%.",
-      data: "2023-10-02",
-      hora: "14:30",
-      status: "ativo",
+      estacao: "Eugênio de Melo",
+      estacao_id: 2,
+      sensor: "Umidade",
+      sensor_id: 1,
+      unidade: "%",
+      condicao: "menor",
+      num_condicao: 20,
+      mensagem: "Foi detectado umidade relativa do ar muito baixa na região de Eugênio de Melo. Mantenha-se hidratado e evite atividades físicas intensas."
     },
     {
       id: "3",
-      estacao_id: "estacao_3",
-      sensor_id: "sensor_3",
-      condicao: "Vento acima de 80 km/h",
-      mensagem: "Alerta para ventos acima de 80 km/h.",
-      data: "2023-10-03",
-      hora: "10:15",
-      status: "ativo",
+      estacao: "Parque de Inovação",
+      estacao_id: 3,
+      sensor: "Pressão",
+      sensor_id: 3,
+      unidade: "hPa",
+      condicao: "maior_igual",
+      num_condicao: 250,
+      mensagem: "Pressão atmosférica mais baixa que o normal foi registrada no Parque de Inovação. Verifique o funcionamento de equipamentos sensíveis à pressão."
     },
   ];
 
@@ -47,19 +50,20 @@ export default function Alertas() {
 
           <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
 
-          <div className="alert_lista">
+          <div className="alerta_lista">
             {alertas.map((alerta) => (
               <CardAlerta
                 key={alerta.id}
                 id={alerta.id}
-                estacao_id={alerta.estacao_id}
-                sensor_id={alerta.sensor_id}
-                condicao={alerta.condicao}
+                titulo={`${alerta.sensor} ${alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"} ${alerta.num_condicao}${alerta.unidade}`}
                 mensagem={alerta.mensagem}
-                data={alerta.data}
-                hora={alerta.hora}
-                status={alerta.status}
-              />
+                sensor={alerta.sensor}
+                sensor_id={alerta.sensor_id}
+                estacao={alerta.estacao}
+                estacao_id={alerta.estacao_id}
+                condicao={alerta.condicao}
+                num_condicao={alerta.num_condicao}
+            />
             ))}
           </div>
         </div>
