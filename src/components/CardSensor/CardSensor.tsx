@@ -8,6 +8,7 @@ interface CardSensorProps {
   titulo: string;
   unidOuSensor: string;
   estacao: string;
+  estacao_id: string;
 }
 
 export default function CardSensor({
@@ -15,6 +16,7 @@ export default function CardSensor({
   titulo,
   unidOuSensor,
   estacao,
+  estacao_id
 }: CardSensorProps) {
   const navigate = useNavigate();
 
@@ -22,7 +24,10 @@ export default function CardSensor({
     navigate(`/sensores/editar/${id}`, {
       state: {
         id,
-        // Mais campos depois
+        tipo: titulo.replace("Sensor de ", ""), // Remove o prefixo "Sensor de "
+        unidade: unidOuSensor,
+        estacao,
+        estacao_id
       },
     });
   };

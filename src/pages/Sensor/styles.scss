@@ -1,0 +1,28 @@
+@use "../../global.scss" as *;
+
+.pagina_wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.pagina_container {
+  padding: 40px;
+}
+
+.sensor_lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4%;
+  row-gap: 24px; 
+}
+
+
+.sensor_lista > * {
+  width: 30.66%; 
+}
+
+@media (max-width: 1024px) {
+  .sensor_lista > * {
+    width: 50%; 
+  }
+}
