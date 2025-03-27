@@ -11,8 +11,10 @@ interface InputMelhorProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   maxLength?: number;
   mostrarErro?: boolean;
+  mensagemErro?: string; 
   placeholder?: string;
-  onChecar?: (valor: string) => boolean | Promise<boolean>; // <-- nova prop opcional
+  onChecar?: (valor: string) => boolean | Promise<boolean>;
+  type?: string; 
 }
 
 export default function InputMelhor({
@@ -23,8 +25,10 @@ export default function InputMelhor({
   onChange,
   maxLength,
   mostrarErro,
+  mensagemErro,
   placeholder,
   onChecar,
+  type,
 }: InputMelhorProps) {
   const [loading, setLoading] = useState(false);
   const [resultadoChecagem, setResultadoChecagem] = useState<null | boolean>(null);
@@ -40,7 +44,7 @@ export default function InputMelhor({
     const checar = async () => {
       const [resultado] = await Promise.all([
         Promise.resolve(onChecar(value)),
-        new Promise((res) => setTimeout(res, 250)), // atraso visual
+        new Promise((res) => setTimeout(res, 250)), 
       ]);
       setResultadoChecagem(resultado);
       setLoading(false);
@@ -63,20 +67,25 @@ export default function InputMelhor({
   return (
     <div className={containerClass}>
       {label && <label htmlFor={tag}>{label}</label>}
-        <input
-          id={tag}
-          name={tag}
-          placeholder={placeholder || "Digite aqui..."}
-          value={value}
-          onChange={onChange}
-          maxLength={maxLength}
-        />
-        {onChecar &&
+      <input
+        id={tag}
+        name={tag}
+        placeholder={placeholder || "Digite aqui..."}
+        value={value}
+        onChange={onChange}
+        maxLength={maxLength}
+        type={type} 
+      />
+      {onChecar && (
         <div className="input_checar_icon">
           {renderIcon()}
         </div>
-        }
-      {mostrarErro && <p className="input_erro">Preencha este campo.</p>}
+      )}
+      {mostrarErro && (
+        <p className="input_erro">
+          {mensagemErro || "Preencha este campo."}
+        </p>
+      )}
     </div>
   );
 }
