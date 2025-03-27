@@ -5,7 +5,7 @@ import { IconPencil } from "@tabler/icons-react";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 
 interface CardUsuarioProps {
-  id: string;
+  id: number;
   admin: boolean;
   nome: string;
   email: string;

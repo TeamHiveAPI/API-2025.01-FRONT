@@ -1,4 +1,5 @@
 import "./styles.scss";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -6,29 +7,42 @@ import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardUsuario from "../../components/CardUsuario/CardUsuario";
 
+// Interface para os dados do usuário
+interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  senha: string;
+  nivel_acesso: string;
+  data_criacao: string; // ou Date, dependendo do formato retornado pelo backend
+}
+
 export default function Usuarios() {
   const navigate = useNavigate();
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]); // Tipagem explícita
 
-  const usuarios = [
-    {
-      id: "1",
-      admin: true,
-      nome: "Branquinho Diogo",
-      email: "diogobranquinho@tecsus.com.br",
-      senha: "branquinho123",
-      data_criacao: "18/03/2025",
-    },
-    {
-      id: "2",
-      admin: false,
-      nome: "Maria da Silva",
-      email: "mariazinha@gmail.com",
-      senha: "maria123",
-      data_criacao: "18/03/2025",
-    },
-  ];
+  // Função para buscar os usuários do backend
+  const fetchUsuarios = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/usuarios/");
+      if (!response.ok) {
+        throw new Error("Erro ao buscar usuários");
+      }
+      const data: Usuario[] = await response.json(); // Tipagem explícita
+      setUsuarios(data);
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao buscar usuários. Por favor, tente novamente.");
+    }
+  };
 
-  const handleEdit = (usuario: typeof usuarios[0]) => {
+  // Buscar usuários ao carregar a página
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
+
+  // Função para lidar com a edição de um usuário
+  const handleEdit = (usuario: Usuario) => {
     navigate(`/usuarios/editar/${usuario.id}`, { state: usuario });
   };
 
@@ -39,21 +53,27 @@ export default function Usuarios() {
         <div className="pagina_container">
           <BarraCima nome="Usuários" tipo="usuario" />
 
-          <h4 className="num_cadastros">02 usuários cadastrados</h4>
+          <h4 className="num_cadastros">{`${usuarios.length} usuário${
+            usuarios.length !== 1 ? "s" : ""
+          } cadastrado${usuarios.length !== 1 ? "s" : ""}`}</h4>
 
           <div className="usu_lista">
-            {usuarios.map((usuario) => (
-              <CardUsuario
-                key={usuario.id}
-                id={usuario.id}
-                admin={usuario.admin}
-                nome={usuario.nome}
-                email={usuario.email}
-                senha={usuario.senha}
-                data_criacao={usuario.data_criacao}
-                onEdit={() => handleEdit(usuario)}
-              />
-            ))}
+            {usuarios.length > 0 ? (
+              usuarios.map((usuario) => (
+                <CardUsuario
+                  key={usuario.id}
+                  id={usuario.id}
+                  admin={usuario.nivel_acesso === "ADMINISTRADOR"}
+                  nome={usuario.nome}
+                  email={usuario.email}
+                  senha={usuario.senha}
+                  data_criacao={new Date(usuario.data_criacao).toLocaleDateString()}
+                  onEdit={() => handleEdit(usuario)}
+                />
+              ))
+            ) : (
+              <p>Nenhum usuário cadastrado.</p>
+            )}
           </div>
         </div>
         <Footer />

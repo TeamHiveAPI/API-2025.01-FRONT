@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./styles.scss";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -11,11 +11,13 @@ import BarraCima from "../../components/BarraCima/BarraCima";
 
 export default function CriarEditarUsuario() {
   const location = useLocation();
+  const navigate = useNavigate();
   const dadosRecebidos = location.state || null;
 
   const [modoEdicao, setModoEdicao] = useState(false);
   const [senhasIguais, setSenhasIguais] = useState(true);
 
+  // Estado inicial dos dados do usuário
   const [dadosUsuario, setDadosUsuario] = useState({
     nome: "",
     email: "",
@@ -23,6 +25,7 @@ export default function CriarEditarUsuario() {
     confirmarSenha: "",
   });
 
+  // Estado para erros de validação
   const [errors, setErrors] = useState({
     nome: false,
     email: false,
@@ -30,19 +33,39 @@ export default function CriarEditarUsuario() {
     confirmarSenha: false,
   });
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/usuarios/1", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao excluir usuário");
+      }
+
+      console.log("Usuário excluído com sucesso");
+      navigate("/usuarios"); // Redireciona para a lista de usuários
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao excluir usuário. Por favor, tente novamente.");
+    }
+  };
+
+  // Carregar dados recebidos para edição
   useEffect(() => {
     if (dadosRecebidos) {
       setModoEdicao(true);
       setDadosUsuario({
         nome: dadosRecebidos.nome || "",
         email: dadosRecebidos.email || "",
-        senha: "senha123",
-        confirmarSenha: "senha123",
+        senha: "", // Senha começa vazia na edição
+        confirmarSenha: "",
       });
       setSenhasIguais(true);
     }
   }, [dadosRecebidos]);
 
+  // Função para lidar com mudanças nos inputs
   const handleInputChange = (tag: string, value: string) => {
     setDadosUsuario((prev) => ({
       ...prev,
@@ -61,32 +84,67 @@ export default function CriarEditarUsuario() {
     }
   };
 
+  // Função para lidar com o envio do formulário
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validar campos
     const newErrors = {
       nome: !dadosUsuario.nome,
       email: !dadosUsuario.email,
-      senha: !dadosUsuario.senha,
-      confirmarSenha: !dadosUsuario.confirmarSenha,
+      senha: modoEdicao ? false : !dadosUsuario.senha, // Senha é opcional na edição
+      confirmarSenha: modoEdicao ? false : !dadosUsuario.confirmarSenha,
     };
 
     setErrors(newErrors);
 
     if (
       Object.values(newErrors).some((error) => error) ||
-      !senhasIguais
+      (!modoEdicao && !senhasIguais)
     ) {
       return;
     }
 
+    // Criar o objeto JSON final
     const jsonFinal = {
       nome: dadosUsuario.nome,
       email: dadosUsuario.email,
-      senha: dadosUsuario.senha,
+      senha: dadosUsuario.senha || undefined, // Enviar senha apenas se preenchida
     };
 
     console.log("JSON do Usuário a ser enviado:", jsonFinal);
+
+    // URL da API
+    const url = modoEdicao
+      ? `http://127.0.0.1:8000/usuarios/${dadosRecebidos.id}`
+      : "http://127.0.0.1:8000/usuarios/";
+
+    // Método HTTP
+    const method = modoEdicao ? "PUT" : "POST";
+
+    // Fazer a chamada à API
+    fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jsonFinal),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(modoEdicao ? "Erro ao atualizar usuário" : "Erro ao criar usuário");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(modoEdicao ? "Usuário atualizado com sucesso:" : "Usuário criado com sucesso:", data);
+        alert(modoEdicao ? "Usuário atualizado com sucesso!" : "Usuário criado com sucesso!");
+        navigate("/usuarios"); // Redirecionar para a lista de usuários
+      })
+      .catch((error) => {
+        console.error("Erro:", error);
+        alert(modoEdicao ? "Erro ao atualizar usuário. Por favor, tente novamente." : "Erro ao criar usuário. Por favor, tente novamente.");
+      });
   };
 
   return (
@@ -98,6 +156,7 @@ export default function CriarEditarUsuario() {
             nome={modoEdicao ? "Editar Usuário" : "Criar Usuário"}
             tipo="voltar"
             entidade={modoEdicao ? "Usuário" : undefined}
+            onDelete={handleDelete}
           />
 
           <form onSubmit={handleSubmit}>

@@ -9,9 +9,10 @@ interface BarraCimaProps {
   nome: string;
   tipo: "home" | "voltar" | "estacao" | "sensor" | "alerta" | "usuario";
   entidade?: "Estação" | "Sensor" | "Alerta" | "Usuário"; // Nova prop opcional
+  onDelete?: () => void; // Função de exclusão passada como prop
 }
 
-export default function BarraCima({ nome, tipo, entidade }: BarraCimaProps) {
+export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaProps) {
   const [pesquisa, setPesquisa] = useState("");
   const navigate = useNavigate();
 
@@ -36,10 +37,10 @@ export default function BarraCima({ nome, tipo, entidade }: BarraCimaProps) {
 
     Swal.fire({
       showClass: {
-        popup: "animate__animated animate__fadeInUp swal_rapido" // Efeito de entrada
+        popup: "animate__animated animate__fadeInUp swal_rapido", // Efeito de entrada
       },
       hideClass: {
-          popup: "animate__animated animate__fadeOutDown swal_rapido" // Efeito de saída
+        popup: "animate__animated animate__fadeOutDown swal_rapido", // Efeito de saída
       },
       imageUrl: "/public/swal_alerta_exclusao.png",
       imageWidth: 100,
@@ -53,11 +54,24 @@ export default function BarraCima({ nome, tipo, entidade }: BarraCimaProps) {
       cancelButtonText: "Cancelar",
       customClass: {
         title: "swal_titulo",
-        cancelButton: "swal_botao_cancelar_texto_cor"
-      }
+        cancelButton: "swal_botao_cancelar_texto_cor",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("Excluído!", `${entidade.toLowerCase() === "estação" ? "A" : "O"} ${entidade.toLowerCase()} foi ${entidade.toLowerCase() === "estação" ? "removida" : "removido"} com sucesso.`, "success");
+        // Chama a função onDelete se ela foi passada como prop
+        if (onDelete) {
+          onDelete(); // Executa a exclusão
+        }
+
+        // Exibe mensagem de sucesso
+        Swal.fire({
+          icon: "success",
+          title: "Excluído!",
+          text: `${entidade.toLowerCase() === "estação" ? "A" : "O"} ${entidade.toLowerCase()} foi ${
+            entidade.toLowerCase() === "estação" ? "removida" : "removido"
+          } com sucesso.`,
+          confirmButtonColor: "#ED3C5C",
+        });
       }
     });
   };
