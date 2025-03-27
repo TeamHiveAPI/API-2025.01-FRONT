@@ -1,4 +1,5 @@
 import "./styles.scss";
+import { useNavigate } from "react-router-dom";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -6,24 +7,57 @@ import BarraCima from "../../components/BarraCima/BarraCima";
 import CardUsuario from "../../components/CardUsuario/CardUsuario";
 
 export default function Usuarios() {
+  const navigate = useNavigate();
+
+  const usuarios = [
+    {
+      id: "1",
+      admin: true,
+      nome: "Branquinho Diogo",
+      email: "diogobranquinho@tecsus.com.br",
+      senha: "branquinho123",
+      data_criacao: "18/03/2025",
+    },
+    {
+      id: "2",
+      admin: false,
+      nome: "Maria da Silva",
+      email: "mariazinha@gmail.com",
+      senha: "maria123",
+      data_criacao: "18/03/2025",
+    },
+  ];
+
+  const handleEdit = (usuario: typeof usuarios[0]) => {
+    navigate(`/usuarios/editar/${usuario.id}`, { state: usuario });
+  };
+
   return (
     <div className="pagina_wrapper">
       <Sidebar />
-        <div>
-          <div className="pagina_container">
-
-          <BarraCima nome="Usuários" tipo="usuario"/>
+      <div>
+        <div className="pagina_container">
+          <BarraCima nome="Usuários" tipo="usuario" />
 
           <h4 className="num_cadastros">02 usuários cadastrados</h4>
 
           <div className="usu_lista">
-            <CardUsuario id="1" admin={true} nome="Branquinho Diogo" email="diogobranquinho@tecsus.com.br" senha="branquinho123" data_criacao="18/03/2025" />
-            <CardUsuario id="2" admin={false} nome="Maria da Silva" email="mariazinha@gmail.com" senha="maria123" data_criacao="18/03/2025" />
+            {usuarios.map((usuario) => (
+              <CardUsuario
+                key={usuario.id}
+                id={usuario.id}
+                admin={usuario.admin}
+                nome={usuario.nome}
+                email={usuario.email}
+                senha={usuario.senha}
+                data_criacao={usuario.data_criacao}
+                onEdit={() => handleEdit(usuario)}
+              />
+            ))}
           </div>
-
-          </div>
-          <Footer />
         </div>
+        <Footer />
+      </div>
     </div>
   );
 }
