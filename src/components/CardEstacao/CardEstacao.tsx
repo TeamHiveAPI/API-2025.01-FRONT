@@ -17,7 +17,16 @@ interface CardEstacaoProps {
   onDelete: () => void;
 }
 
-export default function CardEstacao({ id, titulo, ativo, endereco, latitude, longitude, sensores, onDelete }: CardEstacaoProps) {
+export default function CardEstacao({
+  id,
+  titulo,
+  ativo,
+  endereco,
+  latitude,
+  longitude,
+  sensores,
+  onDelete,
+}: CardEstacaoProps) {
   const navigate = useNavigate();
 
   const mostrarSensores = () => {
@@ -49,15 +58,24 @@ export default function CardEstacao({ id, titulo, ativo, endereco, latitude, lon
           <div className="caes_cima_dir">
             <div className="caes_status">
               <IconCircle fill={ativo ? "#13811E" : "#808080"} stroke="0" width={16} height={16} />
-              <p className={ativo ? "" : "cinza"}>{ativo ? "Ativa" : "Inativa"}</p>
+              <p className={ativo ? "" : "cinza"}>{ativo ? "Ativo" : "Desativado"}</p>
             </div>
             <BotaoCTA
               cor="cor_primario"
               aparencia="secundario"
               img={<IconPencil stroke="1.5" width={28} height={28} />}
-              onClick={() => navigate(`/estacoes/editar/${id}`, { state: { id, titulo, ativo, endereco, latitude, longitude, sensores } })}
+              onClick={() =>
+                navigate(`/estacoes/editar/${id}`, {
+                  state: { id, titulo, ativo, endereco, latitude, longitude, sensores },
+                })
+              }
             />
-            <BotaoCTA cor="cor_perigo" aparencia="secundario" img={<IconTrash stroke="1.5" width={28} height={28} />} onClick={onDelete} />
+            <BotaoCTA
+              cor="cor_perigo"
+              aparencia="secundario"
+              img={<IconTrash stroke="1.5" width={28} height={28} />}
+              onClick={onDelete}
+            />
           </div>
         </div>
         <div className="caes_endereco">
