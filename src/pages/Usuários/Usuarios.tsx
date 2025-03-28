@@ -7,19 +7,18 @@ import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardUsuario from "../../components/CardUsuario/CardUsuario";
 
-// Interface para os dados do usuário
 interface Usuario {
   id: number;
   nome: string;
   email: string;
   senha: string;
   nivel_acesso: string;
-  data_criacao: string; // ou Date, dependendo do formato retornado pelo backend
+  data_criacao: string;
 }
 
 export default function Usuarios() {
   const navigate = useNavigate();
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]); // Tipagem explícita
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   // Função para buscar os usuários do backend
   const fetchUsuarios = async () => {
@@ -28,20 +27,17 @@ export default function Usuarios() {
       if (!response.ok) {
         throw new Error("Erro ao buscar usuários");
       }
-      const data: Usuario[] = await response.json(); // Tipagem explícita
+      const data: Usuario[] = await response.json();
       setUsuarios(data);
     } catch (error) {
       console.error("Erro:", error);
-      alert("Erro ao buscar usuários. Por favor, tente novamente.");
     }
   };
 
-  // Buscar usuários ao carregar a página
   useEffect(() => {
     fetchUsuarios();
   }, []);
 
-  // Função para lidar com a edição de um usuário
   const handleEdit = (usuario: Usuario) => {
     navigate(`/usuarios/editar/${usuario.id}`, { state: usuario });
   };
@@ -72,7 +68,7 @@ export default function Usuarios() {
                 />
               ))
             ) : (
-              <p>Nenhum usuário cadastrado.</p>
+              <p className="card_nenhum">Nenhum usuário cadastrado.</p>
             )}
           </div>
         </div>

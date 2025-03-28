@@ -34,13 +34,13 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
 
   const handleExcluir = () => {
     if (!entidade) return;
-
+  
     Swal.fire({
       showClass: {
-        popup: "animate__animated animate__fadeInUp swal_rapido", // Efeito de entrada
+        popup: "animate__animated animate__fadeInUp swal_rapido",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutDown swal_rapido", // Efeito de saída
+        popup: "animate__animated animate__fadeOutDown swal_rapido",
       },
       imageUrl: "/public/swal_alerta_exclusao.png",
       imageWidth: 100,
@@ -58,23 +58,24 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        // Chama a função onDelete se ela foi passada como prop
         if (onDelete) {
-          onDelete(); // Executa a exclusão
+          onDelete();
         }
-
-        // Exibe mensagem de sucesso
+  
         Swal.fire({
           icon: "success",
           title: "Excluído!",
           text: `${entidade.toLowerCase() === "estação" ? "A" : "O"} ${entidade.toLowerCase()} foi ${
             entidade.toLowerCase() === "estação" ? "removida" : "removido"
           } com sucesso.`,
-          confirmButtonColor: "#ED3C5C",
+          confirmButtonColor: "#5751D5",
+        }).then(() => {
+          navigate(-1);
         });
       }
     });
   };
+  
 
   return (
     <div className="baci_container">

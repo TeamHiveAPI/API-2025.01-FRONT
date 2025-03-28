@@ -1,8 +1,7 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import "animate.css";
 import "./styles.scss";
-import { IconBroadcast, IconCircle, IconPencil, IconMapPin, IconBorderCorners, IconTrash } from "@tabler/icons-react";
+import { IconBroadcast, IconCircle, IconPencil, IconMapPin, IconBorderCorners } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 
@@ -14,7 +13,6 @@ interface CardEstacaoProps {
   latitude: string;
   longitude: string;
   sensores: string[];
-  onDelete: () => void;
 }
 
 export default function CardEstacao({
@@ -24,8 +22,7 @@ export default function CardEstacao({
   endereco,
   latitude,
   longitude,
-  sensores,
-  onDelete,
+  sensores
 }: CardEstacaoProps) {
   const navigate = useNavigate();
 
@@ -69,12 +66,6 @@ export default function CardEstacao({
                   state: { id, titulo, ativo, endereco, latitude, longitude, sensores },
                 })
               }
-            />
-            <BotaoCTA
-              cor="cor_perigo"
-              aparencia="secundario"
-              img={<IconTrash stroke="1.5" width={28} height={28} />}
-              onClick={onDelete}
             />
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import "./styles.scss";
 import styles_select from "./styles_select";
@@ -9,6 +9,7 @@ import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
+import Swal from "sweetalert2";
 
 interface Sensor {
   value: string;
@@ -17,10 +18,10 @@ interface Sensor {
 
 export default function CriarEditarEstacao() {
   const location = useLocation();
+  const navigate = useNavigate();
   const dadosRecebidos = location.state || null;
 
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [mensagem, setMensagem] = useState<string>("");
 
   const [dadosEstacao, setDadosEstacao] = useState({
     nome: "",
@@ -42,6 +43,16 @@ export default function CriarEditarEstacao() {
     { value: "04", label: "Umidade - ID 04" },
     { value: "05", label: "Umidade - ID 05" },
   ];
+
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`http://127.0.0.1:8000/estacoes/${id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("Erro ao excluir estação:", err);
+    }
+  };
 
   useEffect(() => {
     if (dadosRecebidos) {
@@ -127,7 +138,6 @@ export default function CriarEditarEstacao() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMensagem("");
 
     let newErrors = {
       nome: !dadosEstacao.nome,
@@ -143,7 +153,12 @@ export default function CriarEditarEstacao() {
     setErrors(newErrors);
 
     if (Object.values(newErrors).some((error) => error)) {
-      setMensagem("Por favor, preencha todos os campos corretamente.");
+      Swal.fire({
+        icon: "warning",
+        title: "Campos obrigatórios",
+        text: "Por favor, preencha todos os campos corretamente.",
+        confirmButtonColor: "#ED3C5C",
+      });
       return;
     }
 
@@ -164,7 +179,12 @@ export default function CriarEditarEstacao() {
       let response;
       if (modoEdicao) {
         if (!dadosRecebidos?.id) {
-          setMensagem("Erro: ID da estação não encontrado no modo de edição.");
+          Swal.fire({
+            icon: "error",
+            title: "Erro ao editar",
+            text: "ID da estação não encontrado.",
+            confirmButtonColor: "#ED3C5C",
+          });
           return;
         }
         response = await fetch(`http://127.0.0.1:8000/estacoes/${dadosRecebidos.id}`, {
@@ -181,8 +201,8 @@ export default function CriarEditarEstacao() {
       }
 
       if (response.ok) {
-        const data = await response.json();
-        setMensagem(modoEdicao ? "Estação atualizada com sucesso!" : "Estação cadastrada com sucesso!");
+        await response.json();
+
         if (!modoEdicao) {
           setDadosEstacao({
             nome: "",
@@ -197,11 +217,30 @@ export default function CriarEditarEstacao() {
             sensores: [],
           });
         }
+
+        Swal.fire({
+          icon: "success",
+          title: modoEdicao ? "Estação atualizada com sucesso!" : "Estação cadastrada com sucesso!",
+          confirmButtonColor: "#5751D5",
+        }).then(() => {
+          navigate(-1); // volta após clicar em "OK"
+        });
+
       } else {
-        setMensagem(`Erro ao salvar estação: ${response.statusText}`);
+        Swal.fire({
+          icon: "error",
+          title: "Erro ao salvar estação",
+          text: response.statusText,
+          confirmButtonColor: "#ED3C5C",
+        });
       }
     } catch (error) {
-      setMensagem("Erro ao conectar com o servidor. Verifique se o backend está rodando.");
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao conectar com o servidor",
+        text: "Verifique se o backend está rodando.",
+        confirmButtonColor: "#ED3C5C",
+      });
     }
   };
 
@@ -210,8 +249,12 @@ export default function CriarEditarEstacao() {
       <Sidebar />
       <div>
         <div className="pagina_container">
-          <BarraCima nome={modoEdicao ? "Editar Estação" : "Criar Estação"} tipo={"voltar"} entidade={modoEdicao ? "Estação" : undefined} />
-          {mensagem && <p style={{ color: mensagem.includes("Erro") ? "red" : "green" }}>{mensagem}</p>}
+          <BarraCima
+            nome={modoEdicao ? "Editar Estação" : "Criar Estação"}
+            tipo={"voltar"}
+            entidade={modoEdicao ? "Estação" : undefined}
+            onDelete={() => handleDelete(dadosRecebidos.id)}
+          />
           <form onSubmit={handleSubmit}>
             <div className="cees_cima">
               <InputMelhor
