@@ -1,33 +1,66 @@
-import "./styles.scss";
+import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardSensor from "../../components/CardSensor/CardSensor";
 
+interface Sensor {
+  id: number;
+  nome: string;
+  unidade: string;
+  // Caso o backend retorne outros campos, adicione-os aqui, por exemplo:
+  // estacao?: string;
+  // tipo_parametro_id?: number;
+}
+
 export default function Sensores() {
-  const sensores = [
-    {
-      id: "1",
-      titulo: "Sensor de Temperatura",
-      unidOuSensor: "°C",
-      estacao: "FATEC",
-      estacao_id: "1"
-    },
-    {
-      id: "2",
-      titulo: "Sensor de Umidade",
-      unidOuSensor: "%",
-      estacao: "Eugênio de Melo",
-      estacao_id: "2"
-    },
-    {
-      id: "3",
-      titulo: "Sensor de Pressão",
-      unidOuSensor: "hPa",
-      estacao: "Parque de Inovação",
-      estacao_id: "3"
-    },
-  ];
+  const [sensores, setSensores] = useState<Sensor[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/parametros")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Erro ao carregar sensores");
+        }
+        return response.json();
+      })
+      .then((data: Sensor[]) => {
+        setSensores(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message || "Erro desconhecido");
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="pagina_wrapper">
+        <Sidebar />
+        <div className="pagina_container">
+          <BarraCima nome="Sensores" tipo="sensor" />
+          <p>Carregando sensores...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pagina_wrapper">
+        <Sidebar />
+        <div className="pagina_container">
+          <BarraCima nome="Sensores" tipo="sensor" />
+          <p>{error}</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="pagina_wrapper">
@@ -35,18 +68,19 @@ export default function Sensores() {
       <div>
         <div className="pagina_container">
           <BarraCima nome="Sensores" tipo="sensor" />
-
           <h4 className="num_cadastros">{sensores.length} sensores cadastrados</h4>
-
           <div className="sensor_lista">
             {sensores.map((sensor) => (
               <CardSensor
                 key={sensor.id}
-                id={sensor.id}
-                titulo={sensor.titulo}
-                unidOuSensor={sensor.unidOuSensor}
-                estacao={sensor.estacao}
-                estacao_id={sensor.estacao_id}
+                id={sensor.id.toString()}
+                titulo={sensor.nome}
+                unidOuSensor={sensor.unidade}
+                // Caso a resposta da API contenha informações sobre estação,
+                // você pode utilizar: estacao={sensor.estacao}
+                estacao={"Sem estação"}
+                // Se existir um campo para identificar o tipo ou estação, ajuste conforme necessário:
+                estacao_id={""}
               />
             ))}
           </div>
