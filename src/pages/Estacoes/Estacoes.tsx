@@ -5,6 +5,12 @@ import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardEstacao from "../../components/CardEstacao/CardEstacao";
 
+interface Sensor {
+  id: number;
+  nome: string;
+  unidade: string;
+}
+
 interface Estacao {
   id: number;
   nome: string;
@@ -16,13 +22,14 @@ interface Estacao {
   latitude: number;
   longitude: number;
   data_instalacao: string;
+  sensores: Sensor[];
   status: "ativa" | "inativa";
 }
 
 export default function Estacoes() {
   const [estacoes, setEstacoes] = useState<Estacao[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEstacoes = async () => {
@@ -44,14 +51,6 @@ export default function Estacoes() {
     fetchEstacoes();
   }, []);
 
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
     <div className="pagina_wrapper">
       <Sidebar />
@@ -70,7 +69,7 @@ export default function Estacoes() {
                   endereco={`${estacao.rua}, ${estacao.numero} - ${estacao.bairro}, ${estacao.cidade} - ${estacao.cep}`}
                   latitude={estacao.latitude.toString()}
                   longitude={estacao.longitude.toString()}
-                  sensores={[]}
+                  sensores={estacao.sensores}
                 />
               ))
             ) : (

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import "./styles.scss";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -5,41 +6,65 @@ import BarraCima from "../../components/BarraCima/BarraCima";
 import CardAlerta from "../../components/CardAlerta/CardAlerta";
 
 export default function Alertas() {
-  const alertas = [
-    {
-      id: "1",
-      estacao: "FATEC",
-      estacao_id: 1,
-      sensor: "Temperatura",
-      sensor_id: 2,
-      unidade: "°C",
-      condicao: "maior_igual",
-      num_condicao: 40,
-      mensagem: "Foi detectado altas temperaturas ná area da FATEC de São José dos Campos. É recomendável ficar na sombra e se hidratar bem.",
-    },
-    {
-      id: "2",
-      estacao: "Eugênio de Melo",
-      estacao_id: 2,
-      sensor: "Umidade",
-      sensor_id: 1,
-      unidade: "%",
-      condicao: "menor",
-      num_condicao: 20,
-      mensagem: "Foi detectado umidade relativa do ar muito baixa na região de Eugênio de Melo. Mantenha-se hidratado e evite atividades físicas intensas."
-    },
-    {
-      id: "3",
-      estacao: "Parque de Inovação",
-      estacao_id: 3,
-      sensor: "Pressão",
-      sensor_id: 3,
-      unidade: "hPa",
-      condicao: "maior_igual",
-      num_condicao: 250,
-      mensagem: "Pressão atmosférica mais baixa que o normal foi registrada no Parque de Inovação. Verifique o funcionamento de equipamentos sensíveis à pressão."
-    },
-  ];
+  const [alertas, setAlertas] = useState<any[]>([]);
+  const [, setEstacoes] = useState<Record<number, string>>({});
+  const [, setSensores] = useState<Record<number, { nome: string; unidade: string }>>({});
+
+  // Buscar dados
+  useEffect(() => {
+    const fetchDados = async () => {
+      try {
+        const [alertasRes, estacoesRes, sensoresRes] = await Promise.all([
+          fetch("http://localhost:8000/alertas-definidos"),
+          fetch("http://localhost:8000/estacoes"),
+          fetch("http://localhost:8000/parametros"),
+        ]);
+
+        const [alertasData, estacoesData, sensoresData] = await Promise.all([
+          alertasRes.json(),
+          estacoesRes.json(),
+          sensoresRes.json(),
+        ]);
+
+        // Mapear para acesso rápido
+        const estacoesMap: Record<number, string> = {};
+        estacoesData.forEach((e: any) => {
+          estacoesMap[e.id] = e.nome;
+        });
+
+        const sensoresMap: Record<number, { nome: string; unidade: string }> = {};
+        sensoresData.forEach((s: any) => {
+          sensoresMap[s.id] = { nome: s.nome, unidade: s.unidade };
+        });
+
+        // Enriquecer dados dos alertas
+        const alertasCompletos = alertasData.map((alerta: any) => {
+          const sensor = sensoresMap[alerta.parametro_id];
+          const estacao = estacoesMap[alerta.estacao_id];
+
+          return {
+            id: alerta.id.toString(),
+            estacao,
+            estacao_id: alerta.estacao_id,
+            sensor: sensor?.nome || "Desconhecido",
+            sensor_id: alerta.parametro_id,
+            unidade: sensor?.unidade || "",
+            condicao: alerta.condicao,
+            num_condicao: alerta.num_condicao,
+            mensagem: alerta.mensagem,
+          };
+        });
+
+        setEstacoes(estacoesMap);
+        setSensores(sensoresMap);
+        setAlertas(alertasCompletos);
+      } catch (err) {
+        console.error("Erro ao carregar alertas:", err);
+      }
+    };
+
+    fetchDados();
+  }, []);
 
   return (
     <div className="pagina_wrapper">
@@ -50,7 +75,7 @@ export default function Alertas() {
 
           <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
 
-          <div className="alerta_lista">
+          <div className="lista_espaços_3">
             {alertas.map((alerta) => (
               <CardAlerta
                 key={alerta.id}
@@ -63,7 +88,7 @@ export default function Alertas() {
                 estacao_id={alerta.estacao_id}
                 condicao={alerta.condicao}
                 num_condicao={alerta.num_condicao}
-            />
+              />
             ))}
           </div>
         </div>
