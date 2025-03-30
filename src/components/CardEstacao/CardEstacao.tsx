@@ -5,6 +5,12 @@ import { IconBroadcast, IconCircle, IconPencil, IconMapPin, IconBorderCorners } 
 import Swal from "sweetalert2";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 
+interface Sensor {
+  id: number;
+  nome: string;
+  unidade: string;
+}
+
 interface CardEstacaoProps {
   id: string;
   titulo: string;
@@ -12,7 +18,7 @@ interface CardEstacaoProps {
   endereco: string;
   latitude: string;
   longitude: string;
-  sensores: string[];
+  sensores: Sensor[];
 }
 
 export default function CardEstacao({
@@ -34,12 +40,13 @@ export default function CardEstacao({
       imageWidth: 100,
       imageHeight: 100,
       title: "Sensores da Estação",
-      html: `<ul style="text-align: left;">${sensores.map((sensor) => `<li>${sensor}</li>`).join("")}</ul>`,
+      html: `<ul style="text-align: left;">${sensores.map((sensor) => `<li>${sensor.nome} (${sensor.unidade})</li>`).join("")}</ul>`,
       confirmButtonText: "Fechar",
       confirmButtonColor: "#5751D5",
       customClass: { title: "swal_titulo" },
     });
   };
+  
 
   return (
     <div className="caes_wrapper">
@@ -89,12 +96,12 @@ export default function CardEstacao({
         </div>
         <BotaoCTA
           cor="cor_primario"
-          escrito={sensores.length > 0 ? `Ver Sensores (${sensores.length})` : "Sem Sensores"}
+          escrito={sensores?.length > 0 ? `Ver Sensores (${sensores.length})` : "Sem Sensores"}
           aparencia="secundario"
           pequeno={true}
           img={<IconBorderCorners stroke="2" width={28} height={28} />}
-          onClick={sensores.length > 0 ? mostrarSensores : undefined}
-          desativado={sensores.length === 0}
+          onClick={sensores?.length > 0 ? mostrarSensores : undefined}
+          desativado={!sensores || sensores.length === 0}
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./styles.scss";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -9,15 +9,19 @@ import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 export default function CriarEditarAlerta() {
   const location = useLocation();
+  const navigate = useNavigate();
   const dadosRecebidos = location.state || null;
 
   const [modoEdicao, setModoEdicao] = useState(false);
-
   const [sensorValidadoID, setSensorValidadoID] = useState<string | null>(null);
   const [, setEstacaoValidadaID] = useState<string | null>(null);
+
+  const [estacoes, setEstacoes] = useState<Record<string, string>>({});
+  const [sensores, setSensores] = useState<Record<string, { nome: string; unidade: string }>>({});
 
   const [dadosAlerta, setDadosAlerta] = useState({
     estacao_id: "",
@@ -35,17 +39,54 @@ export default function CriarEditarAlerta() {
     mensagem: false,
   });
 
-  const estacoes = {
-    "1": "FATEC",
-    "2": "Eugenio de Melo",
-    "3": "Parque de Inovacao",
-  };
+  const options = [
+    { value: "maior_igual", label: "Maior ou igual a" },
+    { value: "menor", label: "Menor que" },
+  ];
 
-  const sensores = {
-    "1": { nome: "Umidade", unidade: "%" },
-    "2": { nome: "Temperatura", unidade: "°C" },
-    "3": { nome: "Pressão", unidade: "hPa" },
-  };
+  const selectedCondicao = options.find(opt => opt.value === dadosAlerta.condicao) || null;
+
+  useEffect(() => {
+    if (dadosRecebidos) {
+      setModoEdicao(true);
+      setDadosAlerta({
+        estacao_id: String(dadosRecebidos.estacao_id || ""),
+        sensor_id: String(dadosRecebidos.parametro_id || ""), // <- backend chama de parametro_id
+        condicao: dadosRecebidos.condicao || "",
+        num_condicao: String(dadosRecebidos.num_condicao || ""),
+        mensagem: dadosRecebidos.mensagem || "",
+      });
+    }
+  }, [dadosRecebidos]);
+
+  useEffect(() => {
+    const fetchEstacoes = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/estacoes");
+        const data = await res.json();
+        const mapped = Object.fromEntries(data.map((e: any) => [e.id.toString(), e.nome]));
+        setEstacoes(mapped);
+      } catch (err) {
+        console.error("Erro ao carregar estações:", err);
+      }
+    };
+
+    const fetchSensores = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/parametros");
+        const data = await res.json();
+        const mapped = Object.fromEntries(
+          data.map((s: any) => [s.id.toString(), { nome: s.nome, unidade: s.unidade }])
+        );
+        setSensores(mapped);
+      } catch (err) {
+        console.error("Erro ao carregar sensores:", err);
+      }
+    };
+
+    fetchEstacoes();
+    fetchSensores();
+  }, []);
 
   const sensorSelecionado = sensorValidadoID
     ? sensores[sensorValidadoID as keyof typeof sensores]
@@ -55,52 +96,17 @@ export default function CriarEditarAlerta() {
     ? `${sensorSelecionado.nome} (${sensorSelecionado.unidade})`
     : "Selecione um Sensor";
 
-  const options = [
-    { value: "maior_igual", label: "Maior ou igual a" },
-    { value: "menor", label: "Menor que" },
-  ];
-
-  const selectedCondicao =
-    options.find((opt) => opt.value === dadosAlerta.condicao) || null;
-
-  useEffect(() => {
-    if (dadosRecebidos) {
-      setModoEdicao(true);
-      setDadosAlerta({
-        estacao_id: String(dadosRecebidos.estacao_id || ""),
-        sensor_id: String(dadosRecebidos.sensor_id || ""),
-        condicao: dadosRecebidos.condicao || "",
-        num_condicao: String(dadosRecebidos.num_condicao || ""),
-        mensagem: dadosRecebidos.mensagem || "",
-      });
-    }
-  }, [dadosRecebidos]);
-
   const handleInputChange = (tag: string, value: string) => {
-    setDadosAlerta((prev) => ({
-      ...prev,
-      [tag]: value,
-    }));
-
-    setErrors((prev) => ({
-      ...prev,
-      [tag]: false,
-    }));
+    setDadosAlerta(prev => ({ ...prev, [tag]: value }));
+    setErrors(prev => ({ ...prev, [tag]: false }));
   };
 
   const handleCondicaoChange = (selectedOption: any) => {
-    setDadosAlerta((prev) => ({
-      ...prev,
-      condicao: selectedOption ? selectedOption.value : "",
-    }));
-
-    setErrors((prev) => ({
-      ...prev,
-      condicao: false,
-    }));
+    setDadosAlerta(prev => ({ ...prev, condicao: selectedOption?.value || "" }));
+    setErrors(prev => ({ ...prev, condicao: false }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors = {
@@ -112,18 +118,59 @@ export default function CriarEditarAlerta() {
     };
 
     setErrors(newErrors);
-
-    if (Object.values(newErrors).some((error) => error)) return;
+    if (Object.values(newErrors).some(e => e)) return;
 
     const jsonFinal = {
-      estacao_id: dadosAlerta.estacao_id,
-      sensor_id: dadosAlerta.sensor_id,
+      estacao_id: parseInt(dadosAlerta.estacao_id),
+      parametro_id: parseInt(dadosAlerta.sensor_id),
       condicao: dadosAlerta.condicao,
+      num_condicao: parseFloat(dadosAlerta.num_condicao),
       mensagem: dadosAlerta.mensagem,
-      num_condicao: dadosAlerta.num_condicao
+      ativo: true
     };
 
-    console.log("JSON do Alerta a ser enviado:", jsonFinal);
+    try {
+      const response = await fetch(
+        modoEdicao && dadosRecebidos?.id
+          ? `http://localhost:8000/alertas-definidos/${dadosRecebidos.id}`
+          : "http://localhost:8000/alertas-definidos/",
+        {
+          method: modoEdicao ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(jsonFinal),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Erro ao salvar alerta.");
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: modoEdicao ? "Alerta atualizado com sucesso!" : "Alerta cadastrado com sucesso!",
+        confirmButtonColor: "#5751D5",
+      }).then(() => navigate(-1));
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao salvar alerta",
+        text: error.message || "Erro desconhecido",
+        confirmButtonColor: "#ED3C5C",
+      });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`http://127.0.0.1:8000/alerta/${id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("Erro ao excluir estação:", err);
+    }
   };
 
   return (
@@ -135,6 +182,7 @@ export default function CriarEditarAlerta() {
             nome={modoEdicao ? "Editar Alerta" : "Criar Alerta"}
             tipo="voltar"
             entidade={modoEdicao ? "Alerta" : undefined}
+            onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
           />
 
           <form onSubmit={handleSubmit}>
@@ -144,9 +192,7 @@ export default function CriarEditarAlerta() {
                 tag="estacao_id"
                 width={25}
                 value={dadosAlerta.estacao_id}
-                onChange={(e) =>
-                  handleInputChange("estacao_id", e.target.value)
-                }
+                onChange={(e) => handleInputChange("estacao_id", e.target.value)}
                 mostrarErro={errors.estacao_id}
                 onChecar={(valor) => {
                   const existe = Object.keys(estacoes).includes(valor);
@@ -160,9 +206,7 @@ export default function CriarEditarAlerta() {
                 tag="sensor_id"
                 width={25}
                 value={dadosAlerta.sensor_id}
-                onChange={(e) =>
-                  handleInputChange("sensor_id", e.target.value)
-                }
+                onChange={(e) => handleInputChange("sensor_id", e.target.value)}
                 mostrarErro={errors.sensor_id}
                 onChecar={(valor) => {
                   const existe = Object.keys(sensores).includes(valor);
@@ -189,9 +233,7 @@ export default function CriarEditarAlerta() {
                   tag="num_condicao"
                   width={50}
                   value={dadosAlerta.num_condicao}
-                  onChange={(e) =>
-                    handleInputChange("num_condicao", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("num_condicao", e.target.value)}
                   mostrarErro={errors.num_condicao}
                   placeholder="Número"
                 />
@@ -204,9 +246,7 @@ export default function CriarEditarAlerta() {
                 tag="mensagem"
                 width={100}
                 value={dadosAlerta.mensagem}
-                onChange={(e) =>
-                  handleInputChange("mensagem", e.target.value)
-                }
+                onChange={(e) => handleInputChange("mensagem", e.target.value)}
                 mostrarErro={errors.mensagem}
               />
             </div>

@@ -36,13 +36,25 @@ export default function CriarEditarEstacao() {
     sensores: [] as Sensor[],
   });
 
-  const sensoresEstaticos = [
-    { value: "01", label: "Temperatura - ID 01" },
-    { value: "02", label: "Vento - ID 02" },
-    { value: "03", label: "Vento - ID 03" },
-    { value: "04", label: "Umidade - ID 04" },
-    { value: "05", label: "Umidade - ID 05" },
-  ];
+  const [sensoresDisponiveis, setSensoresDisponiveis] = useState<Sensor[]>([]);
+
+  useEffect(() => {
+    const fetchSensores = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/parametros");
+        const data = await response.json();
+        const sensoresFormatados = data.map((sensor: any) => ({
+          value: sensor.id.toString(),
+          label: `${sensor.nome} - ID ${sensor.id}`,
+        }));
+        setSensoresDisponiveis(sensoresFormatados);
+      } catch (err) {
+        console.error("Erro ao buscar sensores:", err);
+      }
+    };
+
+    fetchSensores();
+  }, []);
 
   const handleDelete = async (id: number) => {
     try {
@@ -55,7 +67,7 @@ export default function CriarEditarEstacao() {
   };
 
   useEffect(() => {
-    if (dadosRecebidos) {
+    if (dadosRecebidos && sensoresDisponiveis.length > 0) {
       setModoEdicao(true);
       const enderecoParts = dadosRecebidos.endereco.split(",");
       const rua = enderecoParts[0]?.trim() || "";
@@ -65,7 +77,15 @@ export default function CriarEditarEstacao() {
       const bairro = numeroBairro[1]?.trim() || "";
       const cidade = bairroCidadeCep[0]?.trim() || "";
       const cep = bairroCidadeCep[1]?.trim() || "";
-
+  
+      // Mapeia os sensores de string para objetos { value, label } com base nos sensores disponíveis
+      const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensorNome: string) => {
+        const sensorEncontrado = sensoresDisponiveis.find((s) =>
+          s.label.toLowerCase().includes(sensorNome.toLowerCase())
+        );
+        return sensorEncontrado || { value: "", label: sensorNome };
+      });
+  
       setDadosEstacao({
         nome: dadosRecebidos.titulo,
         latitude: dadosRecebidos.latitude,
@@ -76,13 +96,11 @@ export default function CriarEditarEstacao() {
         cidade,
         cep,
         status: dadosRecebidos.ativo,
-        sensores: dadosRecebidos.sensores.map((sensor: any, index: any) => ({
-          value: `0${index + 1}`,
-          label: sensor,
-        })),
+        sensores: sensoresMapeados,
       });
     }
-  }, [dadosRecebidos]);
+  }, [dadosRecebidos, sensoresDisponiveis]);
+  
 
   const [errors, setErrors] = useState({
     nome: false,
@@ -173,6 +191,7 @@ export default function CriarEditarEstacao() {
       longitude: parseFloat(dadosEstacao.longitude),
       data_instalacao: new Date().toISOString().split("T")[0],
       status: dadosEstacao.status ? "ativa" : "inativa",
+      sensores: dadosEstacao.sensores.map((sensor) => parseInt(sensor.value)),
     };
 
     try {
@@ -223,7 +242,7 @@ export default function CriarEditarEstacao() {
           title: modoEdicao ? "Estação atualizada com sucesso!" : "Estação cadastrada com sucesso!",
           confirmButtonColor: "#5751D5",
         }).then(() => {
-          navigate(-1); // volta após clicar em "OK"
+          navigate(-1);
         });
 
       } else {
@@ -300,7 +319,7 @@ export default function CriarEditarEstacao() {
             <div className="cees_escolher_sensores cima">
               <p className="subtitulo baixo">Sensores</p>
               <Select
-                options={sensoresEstaticos}
+                options={sensoresDisponiveis}
                 isMulti
                 placeholder="Selecione os sensores"
                 value={dadosEstacao.sensores}

@@ -8,8 +8,8 @@ import Swal from "sweetalert2";
 interface BarraCimaProps {
   nome: string;
   tipo: "home" | "voltar" | "estacao" | "sensor" | "alerta" | "usuario";
-  entidade?: "Estação" | "Sensor" | "Alerta" | "Usuário"; // Nova prop opcional
-  onDelete?: () => void; // Função de exclusão passada como prop
+  entidade?: "Estação" | "Sensor" | "Alerta" | "Usuário" | "Tipo Sensor";
+  onDelete?: () => void;
 }
 
 export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaProps) {
@@ -24,10 +24,11 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
 
   // Mapeamento de tipo para texto e link
   const tipoMap: Record<string, { texto: string; link: string }> = {
-    estacao: { texto: "estação", link: "/estacoes/criar" },
-    sensor: { texto: "sensor", link: "/sensores/criar" },
-    alerta: { texto: "alerta", link: "/alertas/criar" },
-    usuario: { texto: "usuário", link: "/usuarios/criar" },
+    estacao: { texto: "Estação", link: "/estacoes/criar" },
+    sensor: { texto: "Sensor", link: "/sensores/criar" },
+    alerta: { texto: "Alerta", link: "/alertas/criar" },
+    usuario: { texto: "Usuário", link: "/usuarios/criar" },
+    tipo_sensor: { texto: "Tipo Sensor", link: "/tipo-sensores/criar" },
   };
 
   const { texto, link } = tipoMap[tipo] || { texto: "item", link: "/" };

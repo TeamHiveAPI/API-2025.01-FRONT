@@ -8,6 +8,7 @@ import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
+import Swal from "sweetalert2";
 
 export default function CriarEditarUsuario() {
   const location = useLocation();
@@ -17,7 +18,6 @@ export default function CriarEditarUsuario() {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [senhasIguais, setSenhasIguais] = useState(true);
 
-  // Estado inicial dos dados do usuário
   const [dadosUsuario, setDadosUsuario] = useState({
     nome: "",
     email: "",
@@ -25,7 +25,6 @@ export default function CriarEditarUsuario() {
     confirmarSenha: "",
   });
 
-  // Estado para erros de validação
   const [errors, setErrors] = useState({
     nome: false,
     email: false,
@@ -33,39 +32,19 @@ export default function CriarEditarUsuario() {
     confirmarSenha: false,
   });
 
-  const handleDelete = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:8000/usuarios/1", {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao excluir usuário");
-      }
-
-      console.log("Usuário excluído com sucesso");
-      navigate("/usuarios"); // Redireciona para a lista de usuários
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro ao excluir usuário. Por favor, tente novamente.");
-    }
-  };
-
-  // Carregar dados recebidos para edição
   useEffect(() => {
     if (dadosRecebidos) {
       setModoEdicao(true);
       setDadosUsuario({
         nome: dadosRecebidos.nome || "",
         email: dadosRecebidos.email || "",
-        senha: "", // Senha começa vazia na edição
+        senha: "",
         confirmarSenha: "",
       });
       setSenhasIguais(true);
     }
   }, [dadosRecebidos]);
 
-  // Função para lidar com mudanças nos inputs
   const handleInputChange = (tag: string, value: string) => {
     setDadosUsuario((prev) => ({
       ...prev,
@@ -84,45 +63,44 @@ export default function CriarEditarUsuario() {
     }
   };
 
-  // Função para lidar com o envio do formulário
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`http://127.0.0.1:8000/usuarios/${id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("Erro ao excluir sensor:", err);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validar campos
     const newErrors = {
       nome: !dadosUsuario.nome,
       email: !dadosUsuario.email,
-      senha: modoEdicao ? false : !dadosUsuario.senha, // Senha é opcional na edição
+      senha: modoEdicao ? false : !dadosUsuario.senha,
       confirmarSenha: modoEdicao ? false : !dadosUsuario.confirmarSenha,
     };
 
     setErrors(newErrors);
 
-    if (
-      Object.values(newErrors).some((error) => error) ||
-      (!modoEdicao && !senhasIguais)
-    ) {
+    if (Object.values(newErrors).some((error) => error) || (!modoEdicao && !senhasIguais)) {
       return;
     }
 
-    // Criar o objeto JSON final
     const jsonFinal = {
       nome: dadosUsuario.nome,
       email: dadosUsuario.email,
-      senha: dadosUsuario.senha || undefined, // Enviar senha apenas se preenchida
+      senha: dadosUsuario.senha || undefined,
     };
 
-    console.log("JSON do Usuário a ser enviado:", jsonFinal);
-
-    // URL da API
     const url = modoEdicao
       ? `http://127.0.0.1:8000/usuarios/${dadosRecebidos.id}`
       : "http://127.0.0.1:8000/usuarios/";
 
-    // Método HTTP
     const method = modoEdicao ? "PUT" : "POST";
 
-    // Fazer a chamada à API
     fetch(url, {
       method,
       headers: {
@@ -137,13 +115,29 @@ export default function CriarEditarUsuario() {
         return response.json();
       })
       .then((data) => {
-        console.log(modoEdicao ? "Usuário atualizado com sucesso:" : "Usuário criado com sucesso:", data);
-        alert(modoEdicao ? "Usuário atualizado com sucesso!" : "Usuário criado com sucesso!");
-        navigate("/usuarios"); // Redirecionar para a lista de usuários
+        console.log("Usuário salvo:", data);
+
+        Swal.fire({
+          icon: "success",
+          title: modoEdicao ? "Usuário atualizado com sucesso!" : "Usuário criado com sucesso!",
+          confirmButtonColor: "#5751D5",
+        }).then(() => {
+          navigate("/usuarios", {
+            state: {
+              sucesso: true,
+              tipo: modoEdicao ? "editado" : "criado",
+            },
+          });
+        });
       })
       .catch((error) => {
         console.error("Erro:", error);
-        alert(modoEdicao ? "Erro ao atualizar usuário. Por favor, tente novamente." : "Erro ao criar usuário. Por favor, tente novamente.");
+        Swal.fire({
+          icon: "error",
+          title: modoEdicao ? "Erro ao atualizar usuário" : "Erro ao criar usuário",
+          text: "Verifique os dados e tente novamente.",
+          confirmButtonColor: "#ED3C5C",
+        });
       });
   };
 
@@ -156,7 +150,7 @@ export default function CriarEditarUsuario() {
             nome={modoEdicao ? "Editar Usuário" : "Criar Usuário"}
             tipo="voltar"
             entidade={modoEdicao ? "Usuário" : undefined}
-            onDelete={handleDelete}
+            onDelete={() => handleDelete(dadosRecebidos.id)}
           />
 
           <form onSubmit={handleSubmit}>
@@ -191,7 +185,6 @@ export default function CriarEditarUsuario() {
                 value={dadosUsuario.senha}
                 onChange={(e) => handleInputChange("senha", e.target.value)}
                 mostrarErro={errors.senha}
-                // type="password" removido para exibir caracteres
               />
             </div>
 
@@ -203,7 +196,6 @@ export default function CriarEditarUsuario() {
                 value={dadosUsuario.confirmarSenha}
                 onChange={(e) => handleInputChange("confirmarSenha", e.target.value)}
                 mostrarErro={errors.confirmarSenha || !senhasIguais}
-                // type="password" removido para exibir caracteres
                 mensagemErro={
                   errors.confirmarSenha
                     ? "Preencha este campo"

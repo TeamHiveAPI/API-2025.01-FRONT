@@ -1,13 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
+
 import Estacoes from "./pages/Estacoes/Estacoes";
 import CriarEditarEstacao from "./pages/CriarEditarEstacao/CriarEditarEstacao";
+
 import Sensores from "./pages/Sensor/Sensores";
 import CriarEditarSensor from "./pages/CriarEditarSensor/CriarEditarSensor";
-import TipoSensores from "./pages/TipoSensores/TipoSensores";
-import CriarEditarTipoSensor from "./pages/CriarEditarTipoParametro/CriarEditarTipoSensor";
+import CriarEditarTipoSensor from "./pages/CriarEditarTipoSensor/CriarEditarTipoSensor";
+
 import Usuarios from "./pages/Usuários/Usuarios";
 import CriarEditarUsuario from "./pages/CriarEditarUsuario/CriarEditarUsuario";
+
 import Alertas from "./pages/Alertas/Alertas";
 import CriarEditarAlerta from "./pages/CriarEditarAlerta/CriarEditarAlerta";
 
@@ -28,8 +31,8 @@ export default function App() {
         <Route path="/sensores/editar/:id" element={<CriarEditarSensor />} />
 
         {/* Rotas para Tipo de Sensores */}
-        <Route path="/tipo-sensores" element={<TipoSensores />} />
-        <Route path="/tipo-sensor" element={<CriarEditarTipoSensor />} />
+        <Route path="/tipo-sensores/criar" element={<CriarEditarTipoSensor />} />
+        <Route path="/tipo-sensores/editar/:id" element={<CriarEditarTipoSensor />} />
 
         {/* Rotas para Usuários */}
         <Route path="/usuarios" element={<Usuarios />} />

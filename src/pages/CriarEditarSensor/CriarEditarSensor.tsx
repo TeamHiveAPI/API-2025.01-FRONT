@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./styles.scss";
+import styles_select from "../CriarEditarEstacao/styles_select";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -8,6 +9,8 @@ import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import { IconPlus } from "@tabler/icons-react";
+import Select from "react-select";
+import Swal from "sweetalert2";
 
 interface TipoSensor {
   id: number;
@@ -17,8 +20,11 @@ interface TipoSensor {
 
 export default function CriarEditarSensor() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dadosRecebidos = location.state || null;
 
-  // Estado para os dados do sensor
+  const [modoEdicao, setModoEdicao] = useState(false);
+
   const [dadosSensor, setDadosSensor] = useState({
     nome: "",
     unidade: "",
@@ -29,10 +35,8 @@ export default function CriarEditarSensor() {
     tipo_sensor_id: ""
   });
 
-  // Estado para os tipos de sensor (usados no select)
   const [sensorTypes, setSensorTypes] = useState<TipoSensor[]>([]);
 
-  // Estado para os erros dos campos do formulário
   const [errors, setErrors] = useState({
     nome: false,
     unidade: false,
@@ -43,15 +47,9 @@ export default function CriarEditarSensor() {
     tipo_sensor_id: false
   });
 
-  // Busca os tipos de sensor do backend e ordena alfabeticamente
   useEffect(() => {
     fetch("http://localhost:8000/tipo_parametros/")
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Erro ao carregar os tipos de sensores");
-        }
-        return response.json();
-      })
+      .then(response => response.json())
       .then((data: TipoSensor[]) => {
         const sortedData = data.sort((a, b) => a.nome.localeCompare(b.nome));
         setSensorTypes(sortedData);
@@ -59,24 +57,48 @@ export default function CriarEditarSensor() {
       .catch(error => console.error("Erro:", error));
   }, []);
 
-  // Atualiza o estado conforme o input
+  const sensorTypeOptions = sensorTypes.map(sensor => ({
+    value: sensor.id.toString(),
+    label: sensor.nome
+  }));
+
+  useEffect(() => {
+    if (dadosRecebidos && sensorTypes.length > 0) {
+      setModoEdicao(true);
+      console.log("Dados recebidos no modo edição:", dadosRecebidos);
+      console.log("Tipos de sensor disponíveis:", sensorTypes);
+
+      setDadosSensor({
+        nome: dadosRecebidos.nome || "",
+        unidade: dadosRecebidos.unidade || "",
+        descricao: dadosRecebidos.descricao || "",
+        quantidade_casas_decimais: dadosRecebidos.quantidade_casas_decimais?.toString() || "",
+        fator_conversao: dadosRecebidos.fator_conversao?.toString() || "",
+        offset: dadosRecebidos.offset?.toString() || "",
+        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || ""
+      });
+    }
+  }, [dadosRecebidos, sensorTypes]);  
+
   const handleInputChange = (tag: string, value: string) => {
     setDadosSensor(prev => ({ ...prev, [tag]: value }));
     setErrors(prev => ({ ...prev, [tag]: false }));
   };
 
-  // Trata a mudança do select
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (value === "adicionar_novo") {
-      // Redireciona para a página de criação de um novo tipo de sensor
-      navigate("/tipo-sensor");
-    } else {
-      handleInputChange("tipo_sensor_id", value);
+  const handleSensorTypeSelect = (selectedOption: any) => {
+    handleInputChange("tipo_sensor_id", selectedOption?.value);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`http://127.0.0.1:8000/parametros/${id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("Erro ao excluir sensor:", err);
     }
   };
 
-  // Submete os dados para criar o sensor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -93,7 +115,6 @@ export default function CriarEditarSensor() {
     setErrors(newErrors);
     if (Object.values(newErrors).some(error => error)) return;
 
-    // Cria o objeto com os dados, convertendo para os tipos necessários
     const sensorData = {
       nome: dadosSensor.nome,
       unidade: dadosSensor.unidade,
@@ -105,23 +126,37 @@ export default function CriarEditarSensor() {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/parametros/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sensorData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Erro ao criar sensor");
+      let response;
+      if (modoEdicao && dadosRecebidos?.id) {
+        response = await fetch(`http://localhost:8000/parametros/${dadosRecebidos.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sensorData)
+        });
+      } else {
+        response = await fetch("http://localhost:8000/parametros/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sensorData)
+        });
       }
 
-      const data = await response.json();
-      console.log("Sensor criado com ID:", data);
-      navigate("/sensores");
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: modoEdicao ? "Sensor atualizado com sucesso!" : "Sensor cadastrado com sucesso!",
+          confirmButtonColor: "#5751D5"
+        }).then(() => navigate("/sensores"));
+      } else {
+        throw new Error("Erro ao salvar sensor");
+      }
     } catch (error: any) {
-      console.error("Erro:", error.message);
-      // Opcional: exiba uma mensagem de erro para o usuário
+      Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: error.message || "Erro desconhecido",
+        confirmButtonColor: "#ED3C5C"
+      });
     }
   };
 
@@ -130,7 +165,12 @@ export default function CriarEditarSensor() {
       <Sidebar />
       <div>
         <div className="pagina_container">
-          <BarraCima nome="Criar Sensor" tipo="voltar" entidade="Sensor" />
+          <BarraCima
+            nome={modoEdicao ? "Editar Sensor" : "Criar Sensor"}
+            tipo="voltar"
+            entidade="Sensor"
+            onDelete={() => handleDelete(dadosRecebidos.id)}
+          />
           <form onSubmit={handleSubmit}>
             <div className="secao_input cima">
               <InputMelhor
@@ -142,8 +182,7 @@ export default function CriarEditarSensor() {
                 mostrarErro={errors.nome}
                 placeholder="Nome do sensor"
               />
-            </div>
-            <div className="secao_input cima">
+
               <InputMelhor
                 label="Unidade"
                 tag="unidade"
@@ -154,6 +193,7 @@ export default function CriarEditarSensor() {
                 placeholder="Unidade do sensor (Ex: °C, %)"
               />
             </div>
+
             <div className="secao_input cima">
               <InputMelhor
                 label="Descrição"
@@ -165,35 +205,34 @@ export default function CriarEditarSensor() {
                 placeholder="Descrição do sensor"
               />
             </div>
+
             <div className="secao_input cima">
               <InputMelhor
                 label="Quantidade de Casas Decimais"
                 tag="quantidade_casas_decimais"
-                width={30}
+                width={33}
                 type="number"
                 value={dadosSensor.quantidade_casas_decimais}
                 onChange={(e) => handleInputChange("quantidade_casas_decimais", e.target.value)}
                 mostrarErro={errors.quantidade_casas_decimais}
                 placeholder="Número de casas decimais"
               />
-            </div>
-            <div className="secao_input cima">
+
               <InputMelhor
                 label="Fator de Conversão"
                 tag="fator_conversao"
-                width={30}
+                width={33}
                 type="number"
                 value={dadosSensor.fator_conversao}
                 onChange={(e) => handleInputChange("fator_conversao", e.target.value)}
                 mostrarErro={errors.fator_conversao}
                 placeholder="Fator de conversão"
               />
-            </div>
-            <div className="secao_input cima">
+
               <InputMelhor
                 label="Offset"
                 tag="offset"
-                width={30}
+                width={33}
                 type="number"
                 value={dadosSensor.offset}
                 onChange={(e) => handleInputChange("offset", e.target.value)}
@@ -201,22 +240,33 @@ export default function CriarEditarSensor() {
                 placeholder="Offset"
               />
             </div>
+
             <div className="secao_input cima">
-              <label>Tipo Sensor</label>
-              <select value={dadosSensor.tipo_sensor_id} onChange={handleSelectChange}>
-                <option value="">Selecione um tipo de sensor</option>
-                <option value="adicionar_novo">Adicionar novo tipo de sensor</option>
-                {sensorTypes.map(tipo => (
-                  <option key={tipo.id} value={tipo.id}>{tipo.nome}</option>
-                ))}
-              </select>
-              {errors.tipo_sensor_id && <p className="erro">Selecione um tipo de sensor</p>}
+              <p className="ceal_escrito">Tipo de Sensor</p>
+              <Select
+                options={sensorTypeOptions}
+                value={sensorTypeOptions.find(option => option.value === dadosSensor.tipo_sensor_id)}
+                onChange={handleSensorTypeSelect}
+                placeholder="Selecione um tipo de sensor"
+                styles={styles_select}
+              />
+
+              <BotaoCTA
+                aparencia="secundario"
+                cor="cor_primario"
+                escrito="Cadastrar Novo Tipo de Sensor"
+                img={<IconPlus stroke="2" />}
+                type="button"
+                onClick={() => navigate("/tipo-sensores/criar")}
+              />
             </div>
+            {errors.tipo_sensor_id && <p className="input_erro">Preencha este campo.</p>}
+
             <div className="cima80">
               <BotaoCTA
                 aparencia="primario"
                 cor="cor_primario"
-                escrito="Cadastrar Sensor"
+                escrito={modoEdicao ? "Atualizar Sensor" : "Cadastrar Sensor"}
                 img={<IconPlus stroke="2" />}
                 type="submit"
               />

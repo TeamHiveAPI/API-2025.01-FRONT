@@ -49,9 +49,7 @@ export default function Usuarios() {
         <div className="pagina_container">
           <BarraCima nome="Usuários" tipo="usuario" />
 
-          <h4 className="num_cadastros">{`${usuarios.length} usuário${
-            usuarios.length !== 1 ? "s" : ""
-          } cadastrado${usuarios.length !== 1 ? "s" : ""}`}</h4>
+          <h4 className="num_cadastros">{`${usuarios.length} usuários cadastrados`}</h4>
 
           <div className="usu_lista">
             {usuarios.length > 0 ? (
