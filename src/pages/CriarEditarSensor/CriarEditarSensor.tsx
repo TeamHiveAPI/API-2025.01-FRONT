@@ -248,6 +248,7 @@ export default function CriarEditarSensor() {
                 value={sensorTypeOptions.find(option => option.value === dadosSensor.tipo_sensor_id)}
                 onChange={handleSensorTypeSelect}
                 placeholder="Selecione um tipo de sensor"
+                classNamePrefix="id"
                 styles={styles_select}
               />
 

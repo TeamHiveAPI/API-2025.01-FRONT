@@ -76,20 +76,24 @@ export default function Alertas() {
           <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
 
           <div className="lista_espaços_3">
-            {alertas.map((alerta) => (
-              <CardAlerta
-                key={alerta.id}
-                id={alerta.id}
-                titulo={`${alerta.sensor} ${alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"} ${alerta.num_condicao}${alerta.unidade}`}
-                mensagem={alerta.mensagem}
-                sensor={alerta.sensor}
-                sensor_id={alerta.sensor_id}
-                estacao={alerta.estacao}
-                estacao_id={alerta.estacao_id}
-                condicao={alerta.condicao}
-                num_condicao={alerta.num_condicao}
-              />
-            ))}
+            {alertas.length > 0 ? (
+              alertas.map((alerta) => (
+                <CardAlerta
+                  key={alerta.id}
+                  id={alerta.id}
+                  titulo={`${alerta.sensor} ${alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"} ${alerta.num_condicao}${alerta.unidade}`}
+                  mensagem={alerta.mensagem}
+                  sensor={alerta.sensor}
+                  sensor_id={alerta.sensor_id}
+                  estacao={alerta.estacao}
+                  estacao_id={alerta.estacao_id}
+                  condicao={alerta.condicao}
+                  num_condicao={alerta.num_condicao}
+                />
+              ))
+            ) : (
+              <p className="card_nenhum">Nenhum alerta cadastrado.</p>
+            )}
           </div>
         </div>
         <Footer />

@@ -10,6 +10,7 @@ import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import Select from "react-select";
 import Swal from "sweetalert2";
+import styles_select from "../CriarEditarEstacao/styles_select";
 
 export default function CriarEditarAlerta() {
   const location = useLocation();
@@ -51,13 +52,27 @@ export default function CriarEditarAlerta() {
       setModoEdicao(true);
       setDadosAlerta({
         estacao_id: String(dadosRecebidos.estacao_id || ""),
-        sensor_id: String(dadosRecebidos.parametro_id || ""), // <- backend chama de parametro_id
+        sensor_id: String(dadosRecebidos.parametro_id || ""),
         condicao: dadosRecebidos.condicao || "",
         num_condicao: String(dadosRecebidos.num_condicao || ""),
         mensagem: dadosRecebidos.mensagem || "",
       });
     }
   }, [dadosRecebidos]);
+
+  useEffect(() => {
+    if (dadosAlerta.sensor_id && Object.keys(sensores).length > 0) {
+      const existe = Object.keys(sensores).includes(dadosAlerta.sensor_id);
+      setSensorValidadoID(existe ? dadosAlerta.sensor_id : null);
+    }
+  }, [dadosAlerta.sensor_id, sensores]);
+
+  useEffect(() => {
+    if (dadosAlerta.estacao_id && Object.keys(estacoes).length > 0) {
+      const existe = Object.keys(estacoes).includes(dadosAlerta.estacao_id);
+      setEstacaoValidadaID(existe ? dadosAlerta.estacao_id : null);
+    }
+  }, [dadosAlerta.estacao_id, estacoes]);  
 
   useEffect(() => {
     const fetchEstacoes = async () => {
@@ -129,6 +144,21 @@ export default function CriarEditarAlerta() {
       ativo: true
     };
 
+    const estacaoExiste = Object.keys(estacoes).includes(dadosAlerta.estacao_id);
+    const sensorExiste = Object.keys(sensores).includes(dadosAlerta.sensor_id);
+
+    if (!estacaoExiste || !sensorExiste) {
+      Swal.fire({
+        icon: "error",
+        title: "ID inválido",
+        text: !estacaoExiste
+          ? `Estação com ID ${dadosAlerta.estacao_id} não existe.`
+          : `Sensor com ID ${dadosAlerta.sensor_id} não existe.`,
+        confirmButtonColor: "#ED3C5C",
+      });
+      return;
+    }
+
     try {
       const response = await fetch(
         modoEdicao && dadosRecebidos?.id
@@ -165,7 +195,7 @@ export default function CriarEditarAlerta() {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://127.0.0.1:8000/alerta/${id}`, {
+      await fetch(`http://127.0.0.1:8000/alertas-definidos/${id}`, {
         method: "DELETE",
       });
     } catch (err) {
@@ -187,33 +217,57 @@ export default function CriarEditarAlerta() {
 
           <form onSubmit={handleSubmit}>
             <div className="secao_input bottom">
-              <InputMelhor
-                label="Estação ID"
-                tag="estacao_id"
-                width={25}
-                value={dadosAlerta.estacao_id}
-                onChange={(e) => handleInputChange("estacao_id", e.target.value)}
-                mostrarErro={errors.estacao_id}
-                onChecar={(valor) => {
-                  const existe = Object.keys(estacoes).includes(valor);
-                  setEstacaoValidadaID(existe ? valor : null);
-                  return existe;
-                }}
-              />
+              <div className="ceal_gap_12">
+                <label className="label_separado" htmlFor="estacao_id">Estação</label>
+                <Select
+                  id="estacao_id"
+                  options={Object.entries(estacoes).map(([id, nome]) => ({
+                    value: id,
+                    label: `${nome} (ID ${id})`,
+                  }))}
+                  value={
+                    dadosAlerta.estacao_id
+                      ? {
+                          value: dadosAlerta.estacao_id,
+                          label: `${estacoes[dadosAlerta.estacao_id]} (ID ${dadosAlerta.estacao_id})`,
+                        }
+                      : null
+                  }
+                  onChange={(selected) =>
+                    handleInputChange("estacao_id", selected?.value || "")
+                  }
+                  placeholder="Selecione a estação"
+                  classNamePrefix="ceal id"
+                  styles={styles_select}
+                />
+                {errors.estacao_id && <p className="input_erro">Preencha este campo.</p>}
+              </div>
 
-              <InputMelhor
-                label="Sensor ID"
-                tag="sensor_id"
-                width={25}
-                value={dadosAlerta.sensor_id}
-                onChange={(e) => handleInputChange("sensor_id", e.target.value)}
-                mostrarErro={errors.sensor_id}
-                onChecar={(valor) => {
-                  const existe = Object.keys(sensores).includes(valor);
-                  setSensorValidadoID(existe ? valor : null);
-                  return existe;
-                }}
-              />
+              <div className="ceal_gap_12">
+                <label className="label_separado" htmlFor="sensor_id">Sensor</label>
+                <Select
+                  id="sensor_id"
+                  options={Object.entries(sensores).map(([id, { nome, unidade }]) => ({
+                    value: id,
+                    label: `${nome} (${unidade}) - ID ${id}`,
+                  }))}
+                  value={
+                    dadosAlerta.sensor_id
+                      ? {
+                          value: dadosAlerta.sensor_id,
+                          label: `${sensores[dadosAlerta.sensor_id]?.nome} (${sensores[dadosAlerta.sensor_id]?.unidade}) - ID ${dadosAlerta.sensor_id}`,
+                        }
+                      : null
+                  }
+                  onChange={(selected) =>
+                    handleInputChange("sensor_id", selected?.value || "")
+                  }
+                  placeholder="Selecione o sensor"
+                  classNamePrefix="ceal id"
+                  styles={styles_select}
+                />
+                {errors.sensor_id && <p className="input_erro">Preencha este campo.</p>}
+              </div>
             </div>
 
             <p className="subtitulo">Configurações de Condição</p>
@@ -221,13 +275,19 @@ export default function CriarEditarAlerta() {
             <div className="secao_input cima ceal">
               <p className="ceal_escrito">Sensor mediu:</p>
               <p className="ceal_escrito">{textoSensor}</p>
-              <Select
-                options={options}
-                value={selectedCondicao}
-                onChange={handleCondicaoChange}
-                placeholder="Selecione a condição"
-                classNamePrefix="ceal"
-              />
+              <div>
+                <Select
+                  options={options}
+                  value={selectedCondicao}
+                  onChange={handleCondicaoChange}
+                  placeholder="Selecione a condição"
+                  classNamePrefix="ceal"
+                  styles={styles_select}
+                />
+                {errors.condicao && (
+                  <p className="input_erro">Preencha este campo.</p>
+                )}
+              </div>
               <div className="ceal_input_num_condicao">
                 <InputMelhor
                   tag="num_condicao"

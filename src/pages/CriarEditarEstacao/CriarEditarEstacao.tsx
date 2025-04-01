@@ -67,39 +67,43 @@ export default function CriarEditarEstacao() {
   };
 
   useEffect(() => {
-    if (dadosRecebidos && sensoresDisponiveis.length > 0) {
-      setModoEdicao(true);
-      const enderecoParts = dadosRecebidos.endereco.split(",");
-      const rua = enderecoParts[0]?.trim() || "";
-      const numeroBairro = enderecoParts[1]?.split(" - ") || ["", ""];
-      const numero = numeroBairro[0]?.trim() || "";
-      const bairroCidadeCep = enderecoParts[2]?.split(" - ") || ["", ""];
-      const bairro = numeroBairro[1]?.trim() || "";
-      const cidade = bairroCidadeCep[0]?.trim() || "";
-      const cep = bairroCidadeCep[1]?.trim() || "";
+    if (!dadosRecebidos) return;
   
-      // Mapeia os sensores de string para objetos { value, label } com base nos sensores disponíveis
-      const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensorNome: string) => {
-        const sensorEncontrado = sensoresDisponiveis.find((s) =>
-          s.label.toLowerCase().includes(sensorNome.toLowerCase())
-        );
-        return sensorEncontrado || { value: "", label: sensorNome };
-      });
+    setModoEdicao(true);
   
-      setDadosEstacao({
-        nome: dadosRecebidos.titulo,
-        latitude: dadosRecebidos.latitude,
-        longitude: dadosRecebidos.longitude,
-        rua,
-        numero,
-        bairro,
-        cidade,
-        cep,
-        status: dadosRecebidos.ativo,
-        sensores: sensoresMapeados,
-      });
-    }
-  }, [dadosRecebidos, sensoresDisponiveis]);
+    // Extrair e formatar o endereço
+    const enderecoParts = dadosRecebidos.endereco.split(",");
+    const rua = enderecoParts[0]?.trim() || "";
+    const numeroBairro = enderecoParts[1]?.split(" - ") || ["", ""];
+    const numero = numeroBairro[0]?.trim() || "";
+    const bairroCidadeCep = enderecoParts[2]?.split(" - ") || ["", ""];
+    const bairro = numeroBairro[1]?.trim() || "";
+    const cidade = bairroCidadeCep[0]?.trim() || "";
+    const cep = bairroCidadeCep[1]?.trim() || "";
+  
+    // Espera os sensores serem carregados
+    const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensor: { nome: string }) => {
+      const sensorEncontrado = sensoresDisponiveis.find((s) =>
+        s.label.toLowerCase().includes(sensor.nome.toLowerCase())
+      );
+      return sensorEncontrado || { value: "", label: sensor.nome };
+    });
+  
+    setDadosEstacao({
+      nome: dadosRecebidos.titulo,
+      latitude: dadosRecebidos.latitude,
+      longitude: dadosRecebidos.longitude,
+      rua,
+      numero,
+      bairro,
+      cidade,
+      cep,
+      status: dadosRecebidos.ativo,
+      sensores: sensoresMapeados,
+    });
+  
+  }, [sensoresDisponiveis]);
+  
   
 
   const [errors, setErrors] = useState({
@@ -288,10 +292,10 @@ export default function CriarEditarEstacao() {
                 <h4>Estado Inicial</h4>
                 <div className="cees_cima_inputs">
                   <div className={`cees_input_radius ${dadosEstacao.status ? "escolhido" : ""}`} onClick={() => handleStatusChange(true)}>
-                    <p>Ativa</p>
+                    <p>Ativo</p>
                   </div>
                   <div className={`cees_input_radius ${!dadosEstacao.status ? "escolhido" : ""}`} onClick={() => handleStatusChange(false)}>
-                    <p>Inativa</p>
+                    <p>Inativo</p>
                   </div>
                 </div>
               </div>

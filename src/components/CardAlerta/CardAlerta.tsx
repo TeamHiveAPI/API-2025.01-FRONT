@@ -31,7 +31,8 @@ export default function CardAlerta({
   const handleEditar = () => {
     navigate(`/alertas/editar/${id}`, {
       state: {
-        sensor_id,
+        id,
+        parametro_id: sensor_id,
         estacao_id,
         condicao,
         num_condicao,
@@ -49,7 +50,7 @@ export default function CardAlerta({
               <IconHexagonPlus color="#FFFFFF" stroke="1.5" width={32} height={32} />
               <p>{id}</p>
             </div>
-            <h4 className="casa_titulo">{titulo}</h4>
+            <h4 className="casa_titulo max_linha_2">{titulo}</h4>
           </div>
           <div className="caes_cima_dir">
             <BotaoCTA
@@ -70,11 +71,11 @@ export default function CardAlerta({
       <div className="casa_baixo">
         <div>
           <h4 className="casa_margem">SENSOR</h4>
-          <p>{sensor}</p>
+          <p className="max_linha_1">{sensor}</p>
         </div>
         <div>
           <h4>ESTAÇÃO</h4>
-          <p>{estacao}</p>
+          <p className="max_linha_1">{estacao}</p>
         </div>
       </div>
     </div>
