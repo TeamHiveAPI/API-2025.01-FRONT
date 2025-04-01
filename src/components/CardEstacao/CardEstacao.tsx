@@ -57,7 +57,7 @@ export default function CardEstacao({
               <IconBroadcast color="#FFFFFF" stroke="1.5" width={32} height={32} />
               <p>{id}</p>
             </div>
-            <h4>{titulo}</h4>
+            <h4 className="max_linha_2">{titulo}</h4>
           </div>
           <div className="caes_cima_dir">
             <div className="caes_status">

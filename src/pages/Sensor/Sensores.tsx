@@ -99,7 +99,7 @@ export default function Sensores() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhum sensor cadastrado.</p>
+              <p className="card_nenhum">Nenhum tipo de sensor cadastrado.</p>
             )}
           </div>
         </div>

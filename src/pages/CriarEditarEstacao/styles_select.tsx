@@ -20,9 +20,10 @@ const styles_select = {
       ...provided,
       backgroundColor: state.isSelected ? "#5751D5" : "white",
       color: state.isSelected ? "white" : "#606060",
+      fontWeight: "500",
       "&:hover": {
-        backgroundColor: "#5751D5",
-        color: "white",
+        backgroundColor: "#E2E1F8",
+        color: "#5751D5",
       },
     }),
     multiValue: (provided: any) => ({

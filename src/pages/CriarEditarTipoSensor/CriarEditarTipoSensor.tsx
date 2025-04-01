@@ -42,13 +42,48 @@ export default function CriarEditarTipoSensor() {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://127.0.0.1:8000/tipo_parametros/${id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/tipo_parametros/${id}`, {
         method: "DELETE",
       });
-    } catch (err) {
-      console.error("Erro ao excluir sensor:", err);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+  
+        // Checa se veio o erro de ForeignKeyViolation
+        if (errorText.includes("violates foreign key constraint") || errorText.includes("violação de chave estrangeira") || errorText.includes("violates") || errorText.includes("referenciada pela tabela")) {
+          Swal.fire({
+            icon: "error",
+            title: "Não é possível excluir",
+            text: "Este tipo de sensor está vinculado a um ou mais sensores. Desvincule os sensores antes de tentar excluir.",
+            confirmButtonColor: "#ED3C5C",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Erro ao excluir",
+            text: "Ocorreu um erro ao tentar excluir o tipo de sensor.",
+            confirmButtonColor: "#ED3C5C",
+          });
+        }
+  
+        return;
+      }
+  
+      Swal.fire({
+        icon: "success",
+        title: "Tipo de Sensor excluído com sucesso!",
+        confirmButtonColor: "#5751D5",
+      }).then(() => navigate(-1));
+  
+    } catch (err: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro inesperado",
+        text: err.message || "Erro desconhecido ao tentar excluir tipo de sensor.",
+        confirmButtonColor: "#ED3C5C",
+      });
     }
-  };
+  };  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
