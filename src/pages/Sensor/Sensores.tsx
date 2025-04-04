@@ -73,7 +73,7 @@ export default function Sensores() {
                   id={sensor.id.toString()}
                   titulo={sensor.nome}
                   unidOuSensor={sensor.unidade}
-                  estacao={"Sem estação"}
+                  estacao={"Sem Estação"}
                   estacao_id={""}
                   descricao={sensor.descricao}
                   quantidade_casas_decimais={sensor.quantidade_casas_decimais}
