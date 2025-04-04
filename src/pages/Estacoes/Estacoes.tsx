@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import "./styles.scss";
+
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardEstacao from "../../components/CardEstacao/CardEstacao";
+import MapaEstacoes from "../../components/MapaEstacoes/MapaEstacoes";
 
 interface Sensor {
   id: number;
@@ -39,6 +41,9 @@ export default function Estacoes() {
           throw new Error("Falha ao buscar estações");
         }
         const data = await response.json();
+    
+        data.sort((a: Estacao, b: Estacao) => a.id - b.id);
+    
         setEstacoes(data);
       } catch (err) {
         setError("Erro ao carregar estações");
@@ -57,6 +62,7 @@ export default function Estacoes() {
       <div>
         <div className="pagina_container">
           <BarraCima nome="Estações" tipo="estacao" />
+          <MapaEstacoes estacoes={estacoes} />
           <h4 className="num_cadastros">{estacoes.length} estações cadastradas</h4>
           <div className="esta_lista">
             {estacoes.length > 0 ? (
