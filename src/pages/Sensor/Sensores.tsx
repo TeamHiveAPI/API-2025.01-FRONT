@@ -13,6 +13,7 @@ interface Sensor {
   unidOuSensor: string;
   estacao: string;
   estacao_id: string;
+  estacao_nome: string;
   descricao: string;
   quantidade_casas_decimais: number;
   fator_conversao: number;
@@ -73,7 +74,7 @@ export default function Sensores() {
                   id={sensor.id.toString()}
                   titulo={sensor.nome}
                   unidOuSensor={sensor.unidade}
-                  estacao={"Sem Estação"}
+                  estacao={sensor.estacao_nome ? sensor.estacao_nome : "Sem Estação"}
                   estacao_id={""}
                   descricao={sensor.descricao}
                   quantidade_casas_decimais={sensor.quantidade_casas_decimais}
