@@ -14,11 +14,18 @@ import CriarEditarUsuario from "./pages/CriarEditarUsuario/CriarEditarUsuario";
 import Alertas from "./pages/Alertas/Alertas";
 import CriarEditarAlerta from "./pages/CriarEditarAlerta/CriarEditarAlerta";
 
+import Login from "./pages/Login/Login";
+import Cadastro from "./pages/Cadastro/Cadastro";
+
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+
+        {/* Login e Cadastro */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
 
         {/* Rotas para Estações */}
         <Route path="/estacoes" element={<Estacoes />} />
