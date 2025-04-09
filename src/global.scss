@@ -19,6 +19,9 @@ $verde-hover: #126618;
 $vermelho: #ED3C5C;
 $vermelho-hover: #BE304A;
 
+
+
+
 * {
   margin: 0;
   padding: 0;
@@ -39,4 +42,63 @@ $vermelho-hover: #BE304A;
   margin-left: 15vw;
   padding: 48px;
   min-height: 100vh;
+}
+
+
+
+
+// Customização Swal
+
+.swal_rapido {
+  --animate-duration: 0.3s !important;
+}
+
+.swal_titulo {
+  font-family: Poppins;
+  color: #404040;
+  margin-bottom: 20px;
+}
+
+.swal_botao_cancelar_texto_cor {
+  color: $roxo;
+  font-weight: 600;
+}
+
+
+
+
+.card_nenhum {
+  font-weight: 500;
+  color: #606060;
+  padding: 32px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.max_linha_1 {
+  display: -webkit-box;
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.max_linha_2 {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.max_linha_3 {
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -1,0 +1,7 @@
+@use "../../global.scss" as *;
+
+.usu_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}

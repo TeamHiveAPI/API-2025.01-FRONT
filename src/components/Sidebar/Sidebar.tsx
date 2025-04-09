@@ -21,7 +21,7 @@ export default function Home() {
     <div className="side_wrapper">
         <div className="side_cima">
 
-            <img src="../../public/tecsus_logo.svg" />
+            <img src="../../tecsus_logo.svg" />
 
             {/* Botão Home */}
             <Link to="/" className={`side_botao ${location.pathname === "/" ? "ativo" : ""}`}>
@@ -52,7 +52,7 @@ export default function Home() {
 
         <div className="side_usuario">
             <div>
-                <img src="../../public/foto_usuario.png" />
+                <img src="../../foto_admin.svg" />
                 <h4>{formatarNome(usuario)}</h4>
             </div>
             <Link to="/" className="side_botao_logout">

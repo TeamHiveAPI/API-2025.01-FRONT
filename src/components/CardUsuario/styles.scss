@@ -1,0 +1,50 @@
+@use "../../global.scss" as *;
+
+.caes_wrapper.usu {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0px;
+}
+
+.caus_esq {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    min-width: 50%;
+}
+
+.caus_esq img {
+    width: 72px;
+}
+
+.caus_esq h4 {
+    color: #404040;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: "Poppins";
+}
+
+.caus_esq p {
+    color: $roxo;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.caus_info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.caus_info.meio {
+    min-width: 40%;
+    align-items: flex-end;
+}
+
+.caus_info_texto {
+    color: #808080;
+    font-weight: 500;
+    font-size: 14px;
+}

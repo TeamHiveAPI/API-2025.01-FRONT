@@ -1,0 +1,104 @@
+@use "../../global.scss" as *;
+
+.pagina_titulo {
+    font-size: 40px;
+    font-family: "Poppins";
+    color: $roxo;
+    margin-bottom: 64px;
+}
+
+.secao_input {
+    display: flex;
+    gap: 2%;
+}
+
+.cima {
+    margin-top: 40px;
+}
+
+.cima80 {
+    margin-top: 80px;
+}
+
+.subtitulo {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins";
+    color: $roxo;
+    margin-top: 40px;
+}
+
+.cees_card_endereco {
+    padding: 32px;
+    margin-top: 60px;
+    width: 50%;
+    background-color: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+
+    h4 {
+        color: #404040;
+        font-weight: 600;
+        margin-bottom: 32px;
+    }
+
+    p {
+        color: #606060;
+    }
+}
+
+.cees_cima {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cees_cima_dir {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 12px;
+    width: 33%;
+}
+
+.cees_cima_dir h4 {
+    color: #606060;
+    font-weight: 500;
+}
+
+.cees_cima_inputs {
+    display: flex;
+    gap: 4%;
+}
+
+.cees_input_radius {
+    padding: 12px 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.025);
+    font-size: 14px;
+    width: 256px;
+    font-weight: 500;
+    color: #808080;
+    
+    &:hover {
+    cursor: pointer;
+    background-color: #FAFAFA;
+    }
+}
+
+.cees_input_radius.escolhido {
+    border-color: $roxo;
+    border-width: 2px;
+    color: $roxo;
+    font-weight: 600;
+
+    &:hover {
+        cursor: auto;
+        background-color: white;
+        }
+}
+
+.baixo {
+    margin-bottom: 12px;
+}

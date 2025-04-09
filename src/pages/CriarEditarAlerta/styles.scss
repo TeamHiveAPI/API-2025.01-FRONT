@@ -1,0 +1,71 @@
+@use "../../global.scss" as *;
+
+.ceal_escrito {
+  color: #606060;
+  font-weight: 500;
+  background-color: #fafafa;
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.ceal_input_num_condicao {
+  width: 33%;
+}
+
+.secao_input.ceal {
+  align-items: center;
+}
+
+.secao_input.bottom {
+  align-items: flex-end;
+}
+
+.ceal_gap_12 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ceal__control {
+  padding: 2px;
+}
+
+.id__control {
+  width: 400px;
+}
+
+.ceal__menu {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.ceal__option {
+  color: #606060;
+  background-color: white;
+  cursor: pointer;
+}
+
+.ceal__option:hover {
+  background-color: #5751D5;
+  color: white;
+}
+
+
+.ceal__control {
+  box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.025);
+  transition: none !important;
+  min-width: 235px;
+}
+
+.ceal__control--is-focused {
+  box-shadow: 0 0 0px 1px #5751D5 !important;
+}
+
+.ceal__option--is-selected {
+  background-color: #5751D5;
+  color: white;
+}
+
+.ceal__single-value {
+  color: #5751D5;
+}

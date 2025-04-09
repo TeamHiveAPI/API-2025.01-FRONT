@@ -21,6 +21,10 @@
     margin-bottom: 40px;
 }
 
+.casa_titulo {
+    font-size: 14px !important;
+}
+
 .casa_meio h4, .casa_baixo h4 {
     color: $roxo;
 }
@@ -31,6 +35,16 @@
     font-size: 14px;
     line-height: 20px;
 }
+
+.casa_meio p {
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
 
 .casa_baixo div {
     display: flex;
