@@ -1,5 +1,19 @@
 @use "../../global.scss" as *;
 
+.home_cima {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.home_cima p {
+    font-size: 24px;
+    font-weight: 600;
+    color: #404040;
+    font-family: Poppins;
+}
+
 .mensagem img {
     width: 100%;
 }
