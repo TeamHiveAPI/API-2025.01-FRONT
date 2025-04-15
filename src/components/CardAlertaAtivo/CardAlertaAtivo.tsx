@@ -1,18 +1,19 @@
-import { useEffect } from "react";
-import { IconClock } from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
+import { IconBroadcast, IconChevronDown, IconClock, IconX } from "@tabler/icons-react";
 import L from "leaflet";
 import "./styles.scss";
 import MapPinRoxo from "../../../public/map_pin_roxo.svg";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
-// Interface das props
 interface CardAlertaAtivoProps {
+    id: string;
     alertaAtivo: boolean;
     titulo: string;
     tempoAtivo: string;
     descricaoAlerta: string;
     estacao: string;
-    coordenadas: [number, number]; // [latitude, longitude]
+    coordenadas: [number, number];
+    mini?: boolean;
 }
 
 export default function CardAlertaAtivo({
@@ -22,17 +23,23 @@ export default function CardAlertaAtivo({
     descricaoAlerta,
     estacao,
     coordenadas,
+    id,
 }: CardAlertaAtivoProps) {
 
+    const rippleContainerRef = useRef<HTMLDivElement | null>(null);
+    const [Expandir, setExpandir] = useState(false);
+    const [mostrarModal, setMostrarModal] = useState(false);
+
+
     useEffect(() => {
+        if (!Expandir) return;
+
         const createRipple = () => {
-            const rippleContainer = document.querySelector(".ripple_effect");
+            if (!rippleContainerRef.current) return;
 
-            if (!rippleContainer || !(rippleContainer instanceof HTMLElement)) return;
-
+            const rippleContainer = rippleContainerRef.current;
             const centerX = rippleContainer.offsetWidth / 2;
             const centerY = rippleContainer.offsetHeight / 2;
-
             const circleSize = 35;
 
             const ripple = document.createElement("div");
@@ -42,7 +49,6 @@ export default function CardAlertaAtivo({
             ripple.style.borderRadius = "50%";
             ripple.style.transform = "scale(0)";
             ripple.style.animation = "ripple-animation 4s ease-out";
-
             ripple.style.width = `${circleSize}px`;
             ripple.style.height = `${circleSize}px`;
             ripple.style.left = `${centerX - circleSize / 2}px`;
@@ -57,13 +63,44 @@ export default function CardAlertaAtivo({
 
         const interval = setInterval(createRipple, 1250);
 
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
+        return () => clearInterval(interval);
+    }, [Expandir]);
 
     useEffect(() => {
-        // Ícone e sombra do pin permanecem fixos
+        if (!Expandir || mostrarModal) return;
+      
+        const Pin = new L.Icon({
+          iconUrl: MapPinRoxo,
+          shadowUrl: markerShadowPng,
+          iconSize: [25, 42],
+          iconAnchor: [12, 42],
+          popupAnchor: [1, -34],
+          shadowSize: [25, 25],
+        });
+      
+        const map = L.map(id, {
+          center: coordenadas,
+          zoom: 12,
+          zoomControl: false,
+          attributionControl: false,
+          scrollWheelZoom: false,
+          dragging: false,
+          touchZoom: false,
+          doubleClickZoom: false,
+        });
+      
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(map);
+        L.marker(coordenadas, { icon: Pin }).addTo(map);
+      
+        return () => {
+          map.remove();
+        };
+        
+      }, [coordenadas, id, Expandir, mostrarModal]);
+
+      useEffect(() => {
+        if (!mostrarModal) return;
+    
         const Pin = new L.Icon({
             iconUrl: MapPinRoxo,
             shadowUrl: markerShadowPng,
@@ -72,54 +109,103 @@ export default function CardAlertaAtivo({
             popupAnchor: [1, -34],
             shadowSize: [25, 25],
         });
-
-        const map = L.map("map", {
+    
+        const modalMap = L.map(`modal-${id}`, {
             center: coordenadas,
             zoom: 12,
-            zoomControl: false,
+            zoomControl: true,
             attributionControl: false,
-            scrollWheelZoom: false,
-            dragging: false,
-            touchZoom: false,
-            doubleClickZoom: false,
+            scrollWheelZoom: true,
+            dragging: true,
+            doubleClickZoom: true,
         });
+    
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(modalMap);
+        L.marker(coordenadas, { icon: Pin }).addTo(modalMap);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(map);
-
-        L.marker(coordenadas, { icon: Pin }).addTo(map);
-
-        // Limpar o mapa quando o componente for desmontado
+        setTimeout(() => {
+            modalMap.invalidateSize();
+            modalMap.setView(coordenadas, 12);
+        }, 100);
+    
         return () => {
-            map.remove();
+            modalMap.remove();
         };
-    }, [coordenadas]);
+
+    }, [mostrarModal, coordenadas, id]);    
 
     return (
+        <>
         <div className="caes_wrapper caal">
             <div className="caal_esq">
                 <div>
-                    <div className="caal_cima">
-                        <div className={alertaAtivo ? "caal_ativo" : "caal_inativo"}>
+                    <div className={`caal_cima ${!Expandir ? 'sem_margem' : ''}`}>
+                        <div className="caal_info_esq">
+                            <div className={alertaAtivo ? "caal_ativo" : "caal_inativo"}></div>
+                            <h5 className="caal_titulo">{titulo}</h5>
+                            <div className="caal_tempo">
+                                <IconClock width={16} stroke={1.5} color="#808080" />
+                                <p>{tempoAtivo}</p>
+                            </div>
                         </div>
-                        <h5 className="caal_titulo">{titulo}</h5>
-                        <div className="caal_tempo">
-                            <IconClock width={16} stroke={1.5} color="#808080" />
-                            <p>{tempoAtivo}</p>
+                        {!Expandir && (
+                            <>
+                                <div className="caal_info mini">
+                                    <IconBroadcast width={32} stroke={1.5} color="#808080" />
+                                    <p>{estacao}</p>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    {Expandir && (
+                        <div className="caal_meio">
+                            <p>{descricaoAlerta}</p>
                         </div>
-                    </div>
-                    <div className="caal_meio">
-                        <p>{descricaoAlerta}</p>
-                    </div>
+                    )}
                 </div>
-                <div className="caal_info">
-                    <p>ESTAÇÃO</p>
-                    <p>{estacao}</p>
-                </div>
+
+                {Expandir && (
+                    <div className="caal_info">
+                        <p>ESTAÇÃO</p>
+                        <p>{estacao}</p>
+                    </div>
+                )}
             </div>
+
             <div className="caal_dir">
-                <div className="ripple_effect"></div>
-                <div id="map" className="caal_mapa"></div>
+                {Expandir && !mostrarModal && (
+                <>
+                    <div ref={rippleContainerRef} className="ripple_effect" />
+                    <div id={id} className="caal_mapa" onClick={() => setMostrarModal(true)} />
+                </>
+                )}
+
+                <div className={`caal_expandir ${Expandir ? 'aberto' : ''}`} onClick={() => setExpandir((prev) => !prev)}>
+                    <IconChevronDown
+                        width={48}
+                        height={48}
+                        stroke={1.5}
+                        color="#808080"
+                    />
+                </div>
             </div>
         </div>
+
+        {mostrarModal && (
+            <>
+            <div className="modal_mapa">
+                <div className="modal_overlay" onClick={() => setMostrarModal(false)} />
+                <div className="modal_content">
+                    <div className="modal_mapa_cima">
+                        <p>Mapa Expandido</p>
+                        <IconX width={32} height={32} color={"#404040"} onClick={() => setMostrarModal(false)} />
+                    </div>
+                    <div id={`modal-${id}`} className="caal_mapa_modal" />
+                </div>
+            </div>
+==          </>
+        )}
+        </>
     );
 }

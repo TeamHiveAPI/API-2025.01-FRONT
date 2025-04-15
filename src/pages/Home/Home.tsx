@@ -7,8 +7,12 @@ import BarraCima from "../../components/BarraCima/BarraCima";
 import CardAlertaAtivo from "../../components/CardAlertaAtivo/CardAlertaAtivo";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconHexagonPlus } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+
+  const navigate = useNavigate();
+
   return (
     <div className="pagina_wrapper">
       <Sidebar />
@@ -24,10 +28,12 @@ export default function Home() {
               escrito="Ver Tudo"
               img={<IconHexagonPlus stroke="1.5" />}
               type="submit"
+              onClick={() => navigate("/historico-alerta")}
             />
           </div>
           
           <CardAlertaAtivo
+            id="1"
             alertaAtivo={true}
             titulo={"Temperatura menor que 5°C"}
             tempoAtivo="2h30min"
