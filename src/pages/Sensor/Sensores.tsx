@@ -4,6 +4,8 @@ import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardSensor from "../../components/CardSensor/CardSensor";
 import CardTipoSensor from "../../components/CardTipoSensor/CardTipoSensor";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Sensor {
   id: string;
@@ -31,6 +33,13 @@ export default function Sensores() {
   const [sensores, setSensores] = useState<Sensor[]>([]);
   const [tipos, setTipos] = useState<TipoSensor[]>([]);
 
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
+
+  const sensoresFiltrados = sensores.filter((sensor) =>
+    sensor.nome.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  );
+
   useEffect(() => {
     fetch("http://localhost:8000/parametros")
       .then((response) => {
@@ -57,7 +66,6 @@ export default function Sensores() {
       .catch((err) => console.error(err));
   }, []);
   
-
   return (
     <div className="pagina_wrapper">
       <Sidebar />
@@ -66,9 +74,11 @@ export default function Sensores() {
           <BarraCima nome="Sensores" tipo="sensor" />
           <h4 className="num_cadastros">{sensores.length} sensores cadastrados</h4>
 
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="lista_espaços_3">
-            {sensores.length > 0 ? (
-              sensores.map((sensor) => (
+            {sensoresFiltrados.length > 0 ? (
+              sensoresFiltrados.map((sensor) => (
                 <CardSensor
                   key={sensor.id}
                   id={sensor.id.toString()}
@@ -84,7 +94,7 @@ export default function Sensores() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhum sensor cadastrado.</p>
+              <p className="card_nenhum">Nenhum sensor encontrado.</p>
             )}
           </div>
 

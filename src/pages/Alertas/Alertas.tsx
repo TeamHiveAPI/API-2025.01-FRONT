@@ -4,13 +4,25 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardAlerta from "../../components/CardAlerta/CardAlerta";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 export default function Alertas() {
   const [alertas, setAlertas] = useState<any[]>([]);
   const [, setEstacoes] = useState<Record<number, string>>({});
   const [, setSensores] = useState<Record<number, { nome: string; unidade: string }>>({});
 
-  // Buscar dados
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
+
+  const alertasFiltrados = alertas.filter((alerta) => {
+    const titulo = `${alerta.sensor} ${alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"} ${alerta.num_condicao}${alerta.unidade}`;
+    return (
+      titulo.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+      alerta.mensagem.toLowerCase().includes(debouncedSearchText.toLowerCase())
+    );
+  });
+
   useEffect(() => {
     const fetchDados = async () => {
       try {
@@ -75,9 +87,11 @@ export default function Alertas() {
 
           <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
 
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="lista_espaços_3">
-            {alertas.length > 0 ? (
-              alertas.map((alerta) => (
+            {alertasFiltrados.length > 0 ? (
+              alertasFiltrados.map((alerta) => (
                 <CardAlerta
                   key={alerta.id}
                   id={alerta.id}
@@ -92,7 +106,7 @@ export default function Alertas() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhum alerta cadastrado.</p>
+              <p className="card_nenhum">Nenhum alerta encontrado.</p>
             )}
           </div>
         </div>
