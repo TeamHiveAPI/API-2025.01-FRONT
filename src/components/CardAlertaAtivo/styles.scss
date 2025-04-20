@@ -9,6 +9,11 @@
     margin-bottom: 24px;
 }
 
+.caes_wrapper.caal:hover {
+  filter: brightness(98%);
+  cursor: pointer;
+}
+
 .caal_esq {
     display: flex;
     flex-direction: column;
@@ -31,13 +36,14 @@
 }
 
 .caal_inativo {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   background-color: #808080;
   border-radius: 100px;
 }
 
 .caal_titulo {
+    max-width: 75%;
     font-size: 20px;
     font-weight: 600;
     color: #404040;
@@ -46,6 +52,9 @@
     border-right-width: 2px;
     border-right-color: #C4C4C4;
     font-family: Poppins;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }
 
 .caal_tempo {
@@ -83,6 +92,9 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 
     & p:first-child {
         color: #404040;
@@ -189,10 +201,6 @@
   bottom: 0;
   border-radius: 4px 0px 4px 0px;
 
-}
-
-.caal_expandir:hover {
-  filter: brightness(95%);
 }
 
 .caal_cima.sem_margem {

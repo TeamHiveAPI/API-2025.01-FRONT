@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IconBroadcast, IconChevronDown, IconClock, IconX } from "@tabler/icons-react";
+import { IconBroadcast, IconCalendarWeekFilled, IconChevronDown, IconClock, IconX } from "@tabler/icons-react";
 import L from "leaflet";
 import "./styles.scss";
 import MapPinRoxo from "../../../public/map_pin_roxo.svg";
@@ -13,7 +13,7 @@ interface CardAlertaAtivoProps {
     descricaoAlerta: string;
     estacao: string;
     coordenadas: [number, number];
-    mini?: boolean;
+    expandido?: boolean;
 }
 
 export default function CardAlertaAtivo({
@@ -24,10 +24,11 @@ export default function CardAlertaAtivo({
     estacao,
     coordenadas,
     id,
+    expandido = false
 }: CardAlertaAtivoProps) {
 
     const rippleContainerRef = useRef<HTMLDivElement | null>(null);
-    const [Expandir, setExpandir] = useState(false);
+    const [Expandir, setExpandir] = useState(expandido);
     const [mostrarModal, setMostrarModal] = useState(false);
 
 
@@ -136,7 +137,7 @@ export default function CardAlertaAtivo({
 
     return (
         <>
-        <div className="caes_wrapper caal">
+        <div className="caes_wrapper caal" onClick={() => setExpandir((prev) => !prev)}>
             <div className="caal_esq">
                 <div>
                     <div className={`caal_cima ${!Expandir ? 'sem_margem' : ''}`}>
@@ -144,8 +145,12 @@ export default function CardAlertaAtivo({
                             <div className={alertaAtivo ? "caal_ativo" : "caal_inativo"}></div>
                             <h5 className="caal_titulo">{titulo}</h5>
                             <div className="caal_tempo">
-                                <IconClock width={16} stroke={1.5} color="#808080" />
-                                <p>{tempoAtivo}</p>
+                            {alertaAtivo ? (
+                            <IconClock width={16} stroke={1.5} color="#808080" />
+                            ) : (
+                            <IconCalendarWeekFilled width={16} stroke={1.5} color="#808080" />
+                            )}
+                            <p>{tempoAtivo}</p>
                             </div>
                         </div>
                         {!Expandir && (
@@ -181,13 +186,8 @@ export default function CardAlertaAtivo({
                 </>
                 )}
 
-                <div className={`caal_expandir ${Expandir ? 'aberto' : ''}`} onClick={() => setExpandir((prev) => !prev)}>
-                    <IconChevronDown
-                        width={48}
-                        height={48}
-                        stroke={1.5}
-                        color="#808080"
-                    />
+                <div className={`caal_expandir ${Expandir ? 'aberto' : ''}`}>
+                    <IconChevronDown width={48} height={48} stroke={1.5} color="#808080"/>
                 </div>
             </div>
         </div>
@@ -204,7 +204,7 @@ export default function CardAlertaAtivo({
                     <div id={`modal-${id}`} className="caal_mapa_modal" />
                 </div>
             </div>
-==          </>
+            </>
         )}
         </>
     );

@@ -3,12 +3,16 @@
 .home_cima {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: 20px;
+    gap: 20px;
 }
 
-.home_cima p {
-    font-size: 24px;
+.home_cima_alerta {
+    background-color: #FAFAFA;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 18px;
     font-weight: 600;
     color: #404040;
     font-family: Poppins;
@@ -16,4 +20,28 @@
 
 .mensagem img {
     width: 100%;
+}
+
+.caes_wrapper.caal.mini {
+    padding: 12px;
+    margin-bottom: 0px;
+    width: 80%;
+    box-shadow: none;
+    border-radius: 8px;
+}
+
+.caes_wrapper.caal.mini:hover {
+    filter: none;
+    cursor: auto;
+}
+
+.caal_titulo.mini {
+    font-size: 16px;
+}
+
+.home_cima_titulo h2 {
+    color: #808080;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
 }
