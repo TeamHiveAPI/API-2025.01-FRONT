@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, } from "react-router-dom";
 import "./styles.scss";
 import styles_select from "../CriarEditarEstacao/styles_select";
 
@@ -11,6 +12,7 @@ import BarraCima from "../../components/BarraCima/BarraCima";
 import { IconPlus } from "@tabler/icons-react";
 import Select from "react-select";
 import Swal from "sweetalert2";
+// import { jsx } from "react/jsx-runtime";
 
 interface TipoSensor {
   id: number;
@@ -32,7 +34,8 @@ export default function CriarEditarSensor() {
     quantidade_casas_decimais: "",
     fator_conversao: "",
     offset: "",
-    tipo_sensor_id: ""
+    tipo_sensor_id: "",
+    json: ""
   });
 
   const [sensorTypes, setSensorTypes] = useState<TipoSensor[]>([]);
@@ -44,7 +47,8 @@ export default function CriarEditarSensor() {
     quantidade_casas_decimais: false,
     fator_conversao: false,
     offset: false,
-    tipo_sensor_id: false
+    tipo_sensor_id: false,
+    json: false
   });
 
   useEffect(() => {
@@ -75,7 +79,8 @@ export default function CriarEditarSensor() {
         quantidade_casas_decimais: dadosRecebidos.quantidade_casas_decimais?.toString() || "",
         fator_conversao: dadosRecebidos.fator_conversao?.toString() || "",
         offset: dadosRecebidos.offset?.toString() || "",
-        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || ""
+        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || "",
+        json: dadosRecebidos.json || ""
       });
     }
   }, [dadosRecebidos, sensorTypes]);  
@@ -109,7 +114,8 @@ export default function CriarEditarSensor() {
       quantidade_casas_decimais: !dadosSensor.quantidade_casas_decimais,
       fator_conversao: !dadosSensor.fator_conversao,
       offset: !dadosSensor.offset,
-      tipo_sensor_id: !dadosSensor.tipo_sensor_id
+      tipo_sensor_id: !dadosSensor.tipo_sensor_id,
+      json:!dadosSensor.json
     };
 
     setErrors(newErrors);
@@ -122,7 +128,8 @@ export default function CriarEditarSensor() {
       quantidade_casas_decimais: Number(dadosSensor.quantidade_casas_decimais),
       fator_conversao: Number(dadosSensor.fator_conversao),
       offset: Number(dadosSensor.offset),
-      tipo_parametro_id: Number(dadosSensor.tipo_sensor_id)
+      tipo_parametro_id: Number(dadosSensor.tipo_sensor_id),
+      json: dadosSensor.json
     };
 
     try {
@@ -150,6 +157,7 @@ export default function CriarEditarSensor() {
       } else {
         throw new Error("Erro ao salvar sensor");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       Swal.fire({
         icon: "error",
@@ -238,6 +246,17 @@ export default function CriarEditarSensor() {
                 onChange={(e) => handleInputChange("offset", e.target.value)}
                 mostrarErro={errors.offset}
                 placeholder="Offset"
+              />
+
+              <InputMelhor
+                label="JSON"
+                tag="offset"
+                width={33}
+                type="string"
+                value={dadosSensor.json}
+                onChange={(e) => handleInputChange("json", e.target.value)}
+                mostrarErro={errors.json}
+                placeholder="JSON"
               />
             </div>
 

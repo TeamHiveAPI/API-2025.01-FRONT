@@ -13,6 +13,7 @@ interface Sensor {
 
 interface CardEstacaoProps {
   id: string;
+  uid: string;
   titulo: string;
   ativo: boolean;
   endereco: string;
@@ -23,6 +24,7 @@ interface CardEstacaoProps {
 
 export default function CardEstacao({
   id,
+  uid,
   titulo,
   ativo,
   endereco,
@@ -57,7 +59,7 @@ export default function CardEstacao({
               <IconBroadcast color="#FFFFFF" stroke="1.5" width={32} height={32} />
               <p>{id}</p>
             </div>
-            <h4 className="max_linha_2">{titulo}</h4>
+            <h4 className="max_linha_2">{titulo} </h4>
           </div>
           <div className="caes_cima_dir">
             <div className="caes_status">
@@ -70,7 +72,7 @@ export default function CardEstacao({
               img={<IconPencil stroke="1.5" width={28} height={28} />}
               onClick={() =>
                 navigate(`/estacoes/editar/${id}`, {
-                  state: { id, titulo, ativo, endereco, latitude, longitude, sensores },
+                  state: { id, uid,  titulo, ativo, endereco, latitude, longitude, sensores },
                 })
               }
             />
@@ -82,6 +84,13 @@ export default function CardEstacao({
           </div>
           <p>{endereco}</p>
         </div>
+        <div className="caes_endereco">
+          <div>
+            <IconMapPin color="#5751D5" stroke="1.5" width={32} height={32} />
+          </div>
+          <p>{uid}</p>
+        </div>
+        
       </div>
       <div className="caes_baixo">
         <div className="caes_baixo_esq">
@@ -93,6 +102,7 @@ export default function CardEstacao({
             <p>LONG</p>
             <p>{longitude}</p>
           </div>
+          
         </div>
         <BotaoCTA
           cor="cor_primario"
