@@ -17,6 +17,8 @@ import CriarEditarAlerta from "./pages/CriarEditarAlerta/CriarEditarAlerta";
 import Login from "./pages/Login/Login";
 import Cadastro from "./pages/Cadastro/Cadastro";
 
+import HistoricoAlerta from "./pages/HistoricoAlerta/HistoricoAlerta";
+
 export default function App() {
   return (
     <Router>
@@ -26,6 +28,9 @@ export default function App() {
         {/* Login e Cadastro */}
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+
+        {/* Histórico */}
+        <Route path="/historico-alerta" element={<HistoricoAlerta />} />
 
         {/* Rotas para Estações */}
         <Route path="/estacoes" element={<Estacoes />} />

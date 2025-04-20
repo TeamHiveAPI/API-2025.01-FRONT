@@ -50,7 +50,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       text: `Tem certeza que deseja excluir ${entidade.toLowerCase() === "estação" ? "esta" : "este"} ${entidade.toLowerCase()}? Esta ação não pode ser desfeita.`,
       showCancelButton: true,
       confirmButtonColor: "#ED3C5C",
-      cancelButtonColor: "#E2E1F8",
+      cancelButtonColor: "#5751D5",
       confirmButtonText: `Excluir ${entidade.toLowerCase()}`,
       cancelButtonText: "Cancelar",
       customClass: {
