@@ -6,6 +6,8 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardUsuario from "../../components/CardUsuario/CardUsuario";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Usuario {
   id: number;
@@ -19,6 +21,14 @@ interface Usuario {
 export default function Usuarios() {
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
+
+  const usuariosFiltrados = usuarios.filter((usuario) =>
+    usuario.nome.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+    usuario.email.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  );
 
   // Função para buscar os usuários do backend
   const fetchUsuarios = async () => {
@@ -51,9 +61,11 @@ export default function Usuarios() {
 
           <h4 className="num_cadastros">{`${usuarios.length} usuários cadastrados`}</h4>
 
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="usu_lista">
-            {usuarios.length > 0 ? (
-              usuarios.map((usuario) => (
+            {usuariosFiltrados.length > 0 ? (
+              usuariosFiltrados.map((usuario) => (
                 <CardUsuario
                   key={usuario.id}
                   id={usuario.id}
@@ -66,7 +78,7 @@ export default function Usuarios() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhum usuário cadastrado.</p>
+              <p className="card_nenhum">Nenhum usuário encontrado.</p>
             )}
           </div>
         </div>

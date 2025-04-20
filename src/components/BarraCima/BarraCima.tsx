@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IconChevronLeft, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
-import "./styles.scss";
-import BotaoCTA from "../BotaoCTA/BotaoCTA";
 import Swal from "sweetalert2";
+import BotaoCTA from "../BotaoCTA/BotaoCTA";
+import "./styles.scss";
 
 interface BarraCimaProps {
   nome: string;
@@ -14,6 +14,10 @@ interface BarraCimaProps {
 
 export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaProps) {
   const [pesquisa, setPesquisa] = useState("");
+  const [mostrarPesquisaInterna, setMostrarPesquisaInterna] = useState(false);
+  const [animarBotaoPesquisa, setAnimarBotaoPesquisa] = useState(false);
+  const [animarPesquisaInterna, setAnimarPesquisaInterna] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -22,20 +26,17 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
     }
   };
 
-  // Mapeamento de tipo para texto e link
-  const tipoMap: Record<string, { texto: string; link: string }> = {
-    estacao: { texto: "Estação", link: "/estacoes/criar" },
-    sensor: { texto: "Sensor", link: "/sensores/criar" },
-    alerta: { texto: "Alerta", link: "/alertas/criar" },
-    usuario: { texto: "Usuário", link: "/usuarios/criar" },
-    tipo_sensor: { texto: "Tipo Sensor", link: "/tipo-sensores/criar" },
+  const handleClickBotaoPesquisa = () => {
+    setAnimarBotaoPesquisa(true);
+    setTimeout(() => {
+      setMostrarPesquisaInterna(true);
+      setAnimarPesquisaInterna(true);
+    }, 300);
   };
-
-  const { texto, link } = tipoMap[tipo] || { texto: "item", link: "/" };
 
   const handleExcluir = () => {
     if (!entidade) return;
-  
+
     Swal.fire({
       showClass: {
         popup: "animate__animated animate__fadeInUp swal_rapido",
@@ -62,7 +63,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
         if (onDelete) {
           onDelete();
         }
-  
+
         Swal.fire({
           icon: "success",
           title: "Excluído!",
@@ -76,7 +77,16 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       }
     });
   };
-  
+
+  const tipoMap: Record<string, { texto: string; link: string }> = {
+    estacao: { texto: "Estação", link: "/estacoes/criar" },
+    sensor: { texto: "Sensor", link: "/sensores/criar" },
+    alerta: { texto: "Alerta", link: "/alertas/criar" },
+    usuario: { texto: "Usuário", link: "/usuarios/criar" },
+    tipo_sensor: { texto: "Tipo Sensor", link: "/tipo-sensores/criar" },
+  };
+
+  const { texto, link } = tipoMap[tipo] || { texto: "item", link: "/" };
 
   return (
     <div className="baci_container">
@@ -95,12 +105,12 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
         </div>
       )}
 
-      {tipo !== "home" && tipo !== "voltar" && (
-        <div className="baci_pesquisa interno">
+      {tipo !== "home" && tipo !== "voltar" && mostrarPesquisaInterna && (
+        <div className={`baci_pesquisa interno_ativo ${animarPesquisaInterna ? 'descer' : ''}`}>
           <IconSearch width={32} stroke={1.5} color="#606060" />
           <input
             type="text"
-            placeholder="Pesquisar"
+            placeholder="Pesquise por informações"
             value={pesquisa}
             onChange={(e) => setPesquisa(e.target.value)}
           />
@@ -109,6 +119,8 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
 
       {tipo !== "home" && tipo !== "voltar" && (
         <div className="baci_dir">
+          
+          <div className="botaoCTA_width_fixo">
           <BotaoCTA
             cor="cor_primario"
             escrito={`Adicionar ${texto}`}
@@ -116,6 +128,16 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
             img={<IconPlus stroke="2" />}
             onClick={() => navigate(link)}
           />
+          </div>
+
+          {!mostrarPesquisaInterna && (
+            <div
+              className={`baci_pesquisa interno botao ${animarBotaoPesquisa ? 'subir' : ''}`}
+              onClick={handleClickBotaoPesquisa}
+            >
+              <IconSearch width={32} stroke={1.5} color="#606060" />
+            </div>
+          )}
         </div>
       )}
 
@@ -128,8 +150,6 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
             img={<IconChevronLeft stroke="2" />}
             onClick={() => navigate(-1)}
           />
-
-          {/* Botão de excluir aparece apenas se a prop "entidade" estiver definida */}
           {entidade && (
             <BotaoCTA
               cor="vermelho"
