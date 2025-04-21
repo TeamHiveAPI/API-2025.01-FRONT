@@ -6,6 +6,8 @@ import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardEstacao from "../../components/CardEstacao/CardEstacao";
 import MapaEstacoes from "../../components/MapaEstacoes/MapaEstacoes";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Sensor {
   id: number;
@@ -30,9 +32,18 @@ interface Estacao {
 }
 
 export default function Estacoes() {
+
   const [estacoes, setEstacoes] = useState<Estacao[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
+
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
+
+  const estacoesFiltradas = estacoes.filter((estacao) =>
+    estacao.nome.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  );
+  
 
   useEffect(() => {
     const fetchEstacoes = async () => {
@@ -65,9 +76,12 @@ export default function Estacoes() {
           <BarraCima nome="Estações" tipo="estacao" />
           <MapaEstacoes estacoes={estacoes} />
           <h4 className="num_cadastros">{estacoes.length} estações cadastradas</h4>
+
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="esta_lista">
-            {estacoes.length > 0 ? (
-              estacoes.map((estacao) => (
+            {estacoesFiltradas.length > 0 ? (
+              estacoesFiltradas.map((estacao) => (
                 <CardEstacao
                   key={estacao.id}
                   id={estacao.id.toString()}
@@ -81,7 +95,7 @@ export default function Estacoes() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhuma estação cadastrada.</p>
+              <p className="card_nenhum">Nenhuma estação encontrada.</p>
             )}
           </div>
         </div>
