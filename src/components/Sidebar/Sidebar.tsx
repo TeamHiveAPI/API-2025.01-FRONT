@@ -25,7 +25,7 @@ export default function Home() {
 
             {/* Botão Home */}
             <Link to="/" className={`side_botao ${location.pathname === "/" ? "ativo" : ""}`}>
-              <IconCube size={32} color="#404040" stroke={1.5} /> <span>Início</span>
+              <IconCube size={32} color="#404040" stroke={1.5} /> <span>Dashboard</span>
             </Link>
 
             {/* Botão Estações */}
