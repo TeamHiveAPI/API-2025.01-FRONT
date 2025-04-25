@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import api from "../../services/api";
+
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
@@ -41,30 +43,34 @@ export default function Sensores() {
   );
 
   useEffect(() => {
-    fetch("http://localhost:8000/parametros")
-      .then((response) => {
-        if (!response.ok) throw new Error("Erro ao carregar sensores");
-        return response.json();
-      })
-      .then((data: Sensor[]) => {
+    const fetchSensores = async () => {
+      try {
+        const response = await api.get("/parametros");
+        const data: Sensor[] = response.data;
         const ordenados = data.sort((a, b) => Number(a.id) - Number(b.id));
         setSensores(ordenados);
-      })
-      .catch((err) => console.error(err));
+      } catch (err) {
+        console.error("Erro ao carregar sensores:", err);
+      }
+    };
+  
+    fetchSensores();
   }, []);
   
   useEffect(() => {
-    fetch("http://localhost:8000/tipo_parametros")
-      .then((response) => {
-        if (!response.ok) throw new Error("Erro ao carregar tipos de sensores");
-        return response.json();
-      })
-      .then((data: TipoSensor[]) => {
+    const fetchTipos = async () => {
+      try {
+        const response = await api.get("/tipo_parametros");
+        const data: TipoSensor[] = response.data;
         const ordenados = data.sort((a, b) => a.id - b.id);
         setTipos(ordenados);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+      } catch (err) {
+        console.error("Erro ao carregar tipos de sensores:", err);
+      }
+    };
+  
+    fetchTipos();
+  }, []);  
   
   return (
     <div className="pagina_wrapper">

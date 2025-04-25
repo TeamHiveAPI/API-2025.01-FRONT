@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import api from "../../services/api";
+
 import Select from "react-select";
 import "./styles.scss";
 import styles_select from "./styles_select";
@@ -41,8 +43,8 @@ export default function CriarEditarEstacao() {
   useEffect(() => {
     const fetchSensores = async () => {
       try {
-        const response = await fetch("http://localhost:8000/parametros");
-        const data = await response.json();
+        const response = await api.get("/parametros");
+        const data = response.data;
         const sensoresFormatados = data.map((sensor: any) => ({
           value: sensor.id.toString(),
           label: `${sensor.nome} - ID ${sensor.id}`,
@@ -52,15 +54,14 @@ export default function CriarEditarEstacao() {
         console.error("Erro ao buscar sensores:", err);
       }
     };
+    
 
     fetchSensores();
   }, []);
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://127.0.0.1:8000/estacoes/${id}`, {
-        method: "DELETE",
-      });
+      await api.delete(`/estacoes/${id}`);
     } catch (err) {
       console.error("Erro ao excluir estação:", err);
     }
@@ -200,6 +201,7 @@ export default function CriarEditarEstacao() {
 
     try {
       let response;
+    
       if (modoEdicao) {
         if (!dadosRecebidos?.id) {
           Swal.fire({
@@ -210,22 +212,13 @@ export default function CriarEditarEstacao() {
           });
           return;
         }
-        response = await fetch(`http://127.0.0.1:8000/estacoes/${dadosRecebidos.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dadosParaEnviar),
-        });
+    
+        response = await api.put(`/estacoes/${dadosRecebidos.id}`, dadosParaEnviar);
       } else {
-        response = await fetch("http://127.0.0.1:8000/estacoes/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dadosParaEnviar),
-        });
+        response = await api.post("/estacoes/", dadosParaEnviar);
       }
-
-      if (response.ok) {
-        await response.json();
-
+    
+      if (response.status >= 200 && response.status < 300) {
         if (!modoEdicao) {
           setDadosEstacao({
             nome: "",
@@ -240,7 +233,7 @@ export default function CriarEditarEstacao() {
             sensores: [],
           });
         }
-
+    
         Swal.fire({
           icon: "success",
           title: modoEdicao ? "Estação atualizada com sucesso!" : "Estação cadastrada com sucesso!",
@@ -248,7 +241,6 @@ export default function CriarEditarEstacao() {
         }).then(() => {
           navigate(-1);
         });
-
       } else {
         Swal.fire({
           icon: "error",
@@ -265,7 +257,7 @@ export default function CriarEditarEstacao() {
         confirmButtonColor: "#ED3C5C",
       });
     }
-  };
+  }    
 
   return (
     <div className="pagina_wrapper">

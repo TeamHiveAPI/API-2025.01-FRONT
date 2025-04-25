@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import api from "../../services/api";
+
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -40,8 +42,8 @@ export default function Home() {
   useEffect(() => {
     const fetchEstacoes = async () => {
       try {
-        const res = await fetch("http://localhost:8000/estacoes");
-        const data = await res.json();
+        const res = await api.get("/estacoes");
+        const data = res.data;        
         const mapped = Object.fromEntries(data.map((e: any) => [e.id.toString(), e.nome]));
         setEstacoes(mapped);
       } catch (err) {
@@ -51,8 +53,8 @@ export default function Home() {
 
     const fetchSensores = async () => {
       try {
-        const res = await fetch("http://localhost:8000/parametros");
-        const data = await res.json();
+        const res = await api.get("/parametros");
+        const data = res.data;        
         const mapped = Object.fromEntries(
           data.map((s: any) => [s.id.toString(), { nome: s.nome, unidade: s.unidade }])
         );

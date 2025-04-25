@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import api from "../../services/api";
 import "./styles.scss";
 import styles_select from "../CriarEditarEstacao/styles_select";
 
@@ -48,13 +49,18 @@ export default function CriarEditarSensor() {
   });
 
   useEffect(() => {
-    fetch("http://localhost:8000/tipo_parametros/")
-      .then(response => response.json())
-      .then((data: TipoSensor[]) => {
-        const sortedData = data.sort((a, b) => a.nome.localeCompare(b.nome));
+    const fetchTiposSensores = async () => {
+      try {
+        const response = await api.get("/tipo_parametros/");
+        const data = response.data;
+        const sortedData = data.sort((a: TipoSensor, b: TipoSensor) => a.nome.localeCompare(b.nome));
         setSensorTypes(sortedData);
-      })
-      .catch(error => console.error("Erro:", error));
+      } catch (error) {
+        console.error("Erro ao buscar tipos de sensores:", error);
+      }
+    };
+  
+    fetchTiposSensores();
   }, []);
 
   const sensorTypeOptions = sensorTypes.map(sensor => ({
@@ -91,13 +97,12 @@ export default function CriarEditarSensor() {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://127.0.0.1:8000/parametros/${id}`, {
-        method: "DELETE",
-      });
+      await api.delete(`/parametros/${id}`);
     } catch (err) {
       console.error("Erro ao excluir sensor:", err);
     }
   };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,36 +133,24 @@ export default function CriarEditarSensor() {
     try {
       let response;
       if (modoEdicao && dadosRecebidos?.id) {
-        response = await fetch(`http://localhost:8000/parametros/${dadosRecebidos.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(sensorData)
-        });
+        response = await api.put(`/parametros/${dadosRecebidos.id}`, sensorData);
       } else {
-        response = await fetch("http://localhost:8000/parametros/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(sensorData)
-        });
+        response = await api.post("/parametros/", sensorData);
       }
-
-      if (response.ok) {
-        Swal.fire({
-          icon: "success",
-          title: modoEdicao ? "Sensor atualizado com sucesso!" : "Sensor cadastrado com sucesso!",
-          confirmButtonColor: "#5751D5"
-        }).then(() => navigate("/sensores"));
-      } else {
-        throw new Error("Erro ao salvar sensor");
-      }
+    
+      Swal.fire({
+        icon: "success",
+        title: modoEdicao ? "Sensor atualizado com sucesso!" : "Sensor cadastrado com sucesso!",
+        confirmButtonColor: "#5751D5"
+      }).then(() => navigate("/sensores"));
     } catch (error: any) {
       Swal.fire({
         icon: "error",
         title: "Erro",
-        text: error.message || "Erro desconhecido",
+        text: error?.response?.data?.detail || error.message || "Erro desconhecido",
         confirmButtonColor: "#ED3C5C"
       });
-    }
+    }    
   };
 
   return (
