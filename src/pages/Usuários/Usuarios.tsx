@@ -1,6 +1,7 @@
 import "./styles.scss";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -21,7 +22,7 @@ interface Usuario {
 export default function Usuarios() {
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-
+  
   const [searchText, setSearchText] = useState<string>("");
   const debouncedSearchText = useDebounce(searchText, 250);
 
@@ -30,17 +31,12 @@ export default function Usuarios() {
     usuario.email.toLowerCase().includes(debouncedSearchText.toLowerCase())
   );
 
-  // Função para buscar os usuários do backend
   const fetchUsuarios = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/usuarios/");
-      if (!response.ok) {
-        throw new Error("Erro ao buscar usuários");
-      }
-      const data: Usuario[] = await response.json();
-      setUsuarios(data);
+      const res = await api.get("/usuarios");
+      setUsuarios(res.data);
     } catch (error) {
-      console.error("Erro:", error);
+      console.error("Erro ao buscar usuários:", error);
     }
   };
 

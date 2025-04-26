@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "./styles.scss";
+import api from "../../services/api";
+
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
@@ -9,9 +11,6 @@ import { useDebounce } from "../../hooks/useDebounce";
 
 export default function Alertas() {
   const [alertas, setAlertas] = useState<any[]>([]);
-  const [, setEstacoes] = useState<Record<number, string>>({});
-  const [, setSensores] = useState<Record<number, { nome: string; unidade: string }>>({});
-
   const [searchText, setSearchText] = useState<string>("");
   const debouncedSearchText = useDebounce(searchText, 250);
 
@@ -27,18 +26,15 @@ export default function Alertas() {
     const fetchDados = async () => {
       try {
         const [alertasRes, estacoesRes, sensoresRes] = await Promise.all([
-          fetch("http://localhost:8000/alertas-definidos"),
-          fetch("http://localhost:8000/estacoes"),
-          fetch("http://localhost:8000/parametros"),
+          api.get("/alertas-definidos"),
+          api.get("/estacoes"),
+          api.get("/parametros"),
         ]);
 
-        const [alertasData, estacoesData, sensoresData] = await Promise.all([
-          alertasRes.json(),
-          estacoesRes.json(),
-          sensoresRes.json(),
-        ]);
+        const alertasData = alertasRes.data;
+        const estacoesData = estacoesRes.data;
+        const sensoresData = sensoresRes.data;
 
-        // Mapear para acesso rápido
         const estacoesMap: Record<number, string> = {};
         estacoesData.forEach((e: any) => {
           estacoesMap[e.id] = e.nome;
@@ -49,7 +45,6 @@ export default function Alertas() {
           sensoresMap[s.id] = { nome: s.nome, unidade: s.unidade };
         });
 
-        // Enriquecer dados dos alertas
         const alertasCompletos = alertasData.map((alerta: any) => {
           const sensor = sensoresMap[alerta.parametro_id];
           const estacao = estacoesMap[alerta.estacao_id];
@@ -67,8 +62,6 @@ export default function Alertas() {
           };
         });
 
-        setEstacoes(estacoesMap);
-        setSensores(sensoresMap);
         setAlertas(alertasCompletos);
       } catch (err) {
         console.error("Erro ao carregar alertas:", err);

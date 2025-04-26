@@ -1,0 +1,26 @@
+@use "../../global.scss" as *;
+
+.grafico_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.visu_grande .grafico_wrapper {
+    min-height: 320px;
+    padding-bottom: 44px;
+}
+
+.grafico_wrapper h3 {
+    color: $roxo;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-family: Poppins;
+}
+
+.grafico_wrapper p {
+    color: #808080;
+    margin-bottom: 32px;
+    font-weight: 500;
+}

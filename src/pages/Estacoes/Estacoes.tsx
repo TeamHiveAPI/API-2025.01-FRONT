@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./styles.scss";
+import api from "../../services/api";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -48,14 +49,11 @@ export default function Estacoes() {
   useEffect(() => {
     const fetchEstacoes = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/estacoes/");
-        if (!response.ok) {
-          throw new Error("Falha ao buscar estações");
-        }
-        const data = await response.json();
-    
+        const response = await api.get("/estacoes/");
+        const data = response.data;
+  
         data.sort((a: Estacao, b: Estacao) => a.id - b.id);
-    
+  
         setEstacoes(data);
       } catch (err) {
         setError("Erro ao carregar estações");
@@ -64,9 +62,10 @@ export default function Estacoes() {
         setLoading(false);
       }
     };
-
+  
     fetchEstacoes();
   }, []);
+  
 
   return (
     <div className="pagina_wrapper">

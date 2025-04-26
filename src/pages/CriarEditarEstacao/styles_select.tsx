@@ -10,6 +10,7 @@ const styles_select = {
         borderWidth: "2px"
       },
       borderRadius: "8px",
+      transition: "none"
     }),
     menu: (provided: any) => ({
       ...provided,

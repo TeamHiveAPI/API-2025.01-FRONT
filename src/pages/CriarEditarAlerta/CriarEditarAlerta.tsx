@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import "./styles.scss";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -77,8 +78,8 @@ export default function CriarEditarAlerta() {
   useEffect(() => {
     const fetchEstacoes = async () => {
       try {
-        const res = await fetch("http://localhost:8000/estacoes");
-        const data = await res.json();
+        const res = await api.get("/estacoes");
+        const data = res.data;        
         const mapped = Object.fromEntries(data.map((e: any) => [e.id.toString(), e.nome]));
         setEstacoes(mapped);
       } catch (err) {
@@ -88,8 +89,8 @@ export default function CriarEditarAlerta() {
 
     const fetchSensores = async () => {
       try {
-        const res = await fetch("http://localhost:8000/parametros");
-        const data = await res.json();
+        const res = await api.get("/parametros");
+        const data = res.data;
         const mapped = Object.fromEntries(
           data.map((s: any) => [s.id.toString(), { nome: s.nome, unidade: s.unidade }])
         );
@@ -160,22 +161,12 @@ export default function CriarEditarAlerta() {
     }
 
     try {
-      const response = await fetch(
-        modoEdicao && dadosRecebidos?.id
-          ? `http://localhost:8000/alertas-definidos/${dadosRecebidos.id}`
-          : "http://localhost:8000/alertas-definidos/",
-        {
-          method: modoEdicao ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(jsonFinal),
-        }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Erro ao salvar alerta.");
+      if (modoEdicao && dadosRecebidos?.id) {
+        await api.put(`/alertas-definidos/${dadosRecebidos.id}`, jsonFinal);
+      } else {
+        console.log("Enviando:", jsonFinal);
+        await api.post("/alertas-definidos/", jsonFinal);
       }
 
       Swal.fire({
@@ -184,22 +175,33 @@ export default function CriarEditarAlerta() {
         confirmButtonColor: "#5751D5",
       }).then(() => navigate(-1));
     } catch (error: any) {
+      const backendMsg = error?.response?.data?.detail;
+    
+      if (backendMsg === "Sensor não vinculado à estação informada") {
+        Swal.fire({
+          icon: "error",
+          title: "Sensor não vinculado",
+          text: "É necessário vinculor o sensor selecionado à estação selecionada.",
+          confirmButtonColor: "#ED3C5C",
+        });
+        return;
+      }
+    
       Swal.fire({
         icon: "error",
         title: "Erro ao salvar alerta",
-        text: error.message || "Erro desconhecido",
+        text: backendMsg || error.message || "Erro desconhecido",
         confirmButtonColor: "#ED3C5C",
       });
     }
+    
   };
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://127.0.0.1:8000/alertas-definidos/${id}`, {
-        method: "DELETE",
-      });
+      await api.delete(`/alertas-definidos/${id}`);
     } catch (err) {
-      console.error("Erro ao excluir estação:", err);
+      console.error("Erro ao excluir alerta:", err);
     }
   };
 
