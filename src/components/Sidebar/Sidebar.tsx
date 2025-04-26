@@ -15,6 +15,8 @@ export default function Sidebar() {
   const { logout, user } = useAuth();
   const location = useLocation();
 
+  if (!user) return null;
+
   const nomeUsuario = user?.user_nome || "Usuário";
 
   return (

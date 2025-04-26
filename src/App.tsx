@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/authContext";
+import { AuthProvider } from "./context/AuthContext";
 
 import Home from "./pages/Home/Home";
 import Estacoes from "./pages/Estacoes/Estacoes";
@@ -20,43 +20,42 @@ import Cadastro from "./pages/Cadastro/Cadastro";
 
 import HistoricoAlerta from "./pages/HistoricoAlerta/HistoricoAlerta";
 
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+
 export default function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
+          {/* Públicas */}
           <Route path="/" element={<Home />} />
-
-          {/* Login e Cadastro */}
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
-
-          {/* Histórico */}
           <Route path="/historico-alerta" element={<HistoricoAlerta />} />
-
-          {/* Rotas para Estações */}
           <Route path="/estacoes" element={<Estacoes />} />
-          <Route path="/estacoes/criar" element={<CriarEditarEstacao />} />
-          <Route path="/estacoes/editar/:id" element={<CriarEditarEstacao />} />
 
-          {/* Rotas para Sensores */}
-          <Route path="/sensores" element={<Sensores />} />
-          <Route path="/sensores/criar" element={<CriarEditarSensor />} />
-          <Route path="/sensores/editar/:id" element={<CriarEditarSensor />} />
+          {/* Estações protegidas */}
+          <Route path="/estacoes/criar" element={<PrivateRoute><CriarEditarEstacao /></PrivateRoute>} />
+          <Route path="/estacoes/editar/:id" element={<PrivateRoute><CriarEditarEstacao /></PrivateRoute>} />
 
-          {/* Rotas para Tipo de Sensores */}
-          <Route path="/tipo-sensores/criar" element={<CriarEditarTipoSensor />} />
-          <Route path="/tipo-sensores/editar/:id" element={<CriarEditarTipoSensor />} />
+          {/* Sensores protegidos */}
+          <Route path="/sensores" element={<PrivateRoute><Sensores /></PrivateRoute>} />
+          <Route path="/sensores/criar" element={<PrivateRoute><CriarEditarSensor /></PrivateRoute>} />
+          <Route path="/sensores/editar/:id" element={<PrivateRoute><CriarEditarSensor /></PrivateRoute>} />
 
-          {/* Rotas para Usuários */}
-          <Route path="/usuarios" element={<Usuarios />} />
-          <Route path="/usuarios/criar" element={<CriarEditarUsuario />} />
-          <Route path="/usuarios/editar/:id" element={<CriarEditarUsuario />} />
+          {/* Tipo Sensor protegido */}
+          <Route path="/tipo-sensores/criar" element={<PrivateRoute><CriarEditarTipoSensor /></PrivateRoute>} />
+          <Route path="/tipo-sensores/editar/:id" element={<PrivateRoute><CriarEditarTipoSensor /></PrivateRoute>} />
 
-          {/* Rotas para Alertas */}
-          <Route path="/alertas" element={<Alertas />} />
-          <Route path="/alertas/criar" element={<CriarEditarAlerta />} />
-          <Route path="/alertas/editar/:id" element={<CriarEditarAlerta />} />
+          {/* Usuários protegidos */}
+          <Route path="/usuarios" element={<PrivateRoute><Usuarios /></PrivateRoute>} />
+          <Route path="/usuarios/criar" element={<PrivateRoute><CriarEditarUsuario /></PrivateRoute>} />
+          <Route path="/usuarios/editar/:id" element={<PrivateRoute><CriarEditarUsuario /></PrivateRoute>} />
+
+          {/* Alertas protegidos */}
+          <Route path="/alertas" element={<PrivateRoute><Alertas /></PrivateRoute>} />
+          <Route path="/alertas/criar" element={<PrivateRoute><CriarEditarAlerta /></PrivateRoute>} />
+          <Route path="/alertas/editar/:id" element={<PrivateRoute><CriarEditarAlerta /></PrivateRoute>} />
         </Routes>
       </AuthProvider>
     </Router>
