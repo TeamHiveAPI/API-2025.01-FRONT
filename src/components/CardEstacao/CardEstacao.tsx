@@ -84,7 +84,7 @@ export default function CardEstacao({
           </div>
           <p>{endereco}</p>
         </div>
-        <div className="caes_endereco">
+        <div className="caes_endereco uid">
           <div>
             <IconMapPin color="#5751D5" stroke="1.5" width={32} height={32} />
           </div>
