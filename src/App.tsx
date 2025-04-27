@@ -19,6 +19,7 @@ import Login from "./pages/Login/Login";
 import Cadastro from "./pages/Cadastro/Cadastro";
 
 import HistoricoAlerta from "./pages/HistoricoAlerta/HistoricoAlerta";
+import Medidas from "./pages/Medidas/Medidas";
 
 export default function App() {
   return (
@@ -45,8 +46,14 @@ export default function App() {
           <Route path="/sensores/editar/:id" element={<CriarEditarSensor />} />
 
           {/* Rotas para Tipo de Sensores */}
-          <Route path="/tipo-sensores/criar" element={<CriarEditarTipoSensor />} />
-          <Route path="/tipo-sensores/editar/:id" element={<CriarEditarTipoSensor />} />
+          <Route
+            path="/tipo-sensores/criar"
+            element={<CriarEditarTipoSensor />}
+          />
+          <Route
+            path="/tipo-sensores/editar/:id"
+            element={<CriarEditarTipoSensor />}
+          />
 
           {/* Rotas para Usuários */}
           <Route path="/usuarios" element={<Usuarios />} />
@@ -57,6 +64,8 @@ export default function App() {
           <Route path="/alertas" element={<Alertas />} />
           <Route path="/alertas/criar" element={<CriarEditarAlerta />} />
           <Route path="/alertas/editar/:id" element={<CriarEditarAlerta />} />
+
+          <Route path="/medidas" element={<Medidas />} />
         </Routes>
       </AuthProvider>
     </Router>

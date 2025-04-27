@@ -8,7 +8,7 @@ interface Medida {
   estacao_id: number;
   parametro_id: number;
   valor: number;
-  data_hora: string;
+  data_hora: number;
   id: number;
 }
 
@@ -86,13 +86,13 @@ export default function Medidas() {
                 </tr>
               </thead>
               <tbody>
-                {medidas.map((medida) => (
+              {medidas.map((medida) => (
                   <tr key={medida.id}>
                     <td>{medida.id}</td>
                     <td>{estacoes[medida.estacao_id] || `ID ${medida.estacao_id}`}</td>
                     <td>{parametros[medida.parametro_id] || `ID ${medida.parametro_id}`}</td>
                     <td>{medida.valor}</td>
-                    <td>{new Date(medida.data_hora).toLocaleString()}</td>
+                    <td>{new Date(medida.data_hora * 1000).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
                   </tr>
                 ))}
               </tbody>
