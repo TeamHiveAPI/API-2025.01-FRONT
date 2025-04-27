@@ -17,6 +17,7 @@ import CriarEditarAlerta from "./pages/CriarEditarAlerta/CriarEditarAlerta";
 
 import Login from "./pages/Login/Login";
 import Cadastro from "./pages/Cadastro/Cadastro";
+import Medidas from "./pages/Medidas/Medidas";
 
 import HistoricoAlerta from "./pages/HistoricoAlerta/HistoricoAlerta";
 
@@ -52,6 +53,12 @@ export default function App() {
           <Route path="/usuarios/criar" element={<PrivateRoute><CriarEditarUsuario /></PrivateRoute>} />
           <Route path="/usuarios/editar/:id" element={<PrivateRoute><CriarEditarUsuario /></PrivateRoute>} />
 
+          {/* Rotas para Alertas */}
+          <Route path="/alertas" element={<Alertas />} />
+          <Route path="/alertas/criar" element={<CriarEditarAlerta />} />
+          <Route path="/alertas/editar/:id" element={<CriarEditarAlerta />} />
+
+          <Route path="/medidas" element={<Medidas />} />
           {/* Alertas protegidos */}
           <Route path="/alertas" element={<PrivateRoute><Alertas /></PrivateRoute>} />
           <Route path="/alertas/criar" element={<PrivateRoute><CriarEditarAlerta /></PrivateRoute>} />
