@@ -131,3 +131,13 @@
   display: flex;
   justify-content: space-between;
 }
+
+.login_form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.login_input_wrapper.cad {
+  margin-top: 18px;
+}

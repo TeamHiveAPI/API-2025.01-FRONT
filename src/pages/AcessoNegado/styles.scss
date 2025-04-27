@@ -1,0 +1,70 @@
+@use "../../global.scss" as *;
+
+.aces_wrapper {
+    width: 100dvw;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aces_container {
+    width: 70dvw;
+    height: 60dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.05);
+    border-radius: 32px;
+    overflow: hidden;
+    border: 1px solid #E8E8E8;
+}
+
+.aces_esq {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35%;
+    height: 100%;
+    background-image: url("/fundo_linhas.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+}
+
+.aces_esq img {
+    width: 50%;
+}
+
+.aces_dir {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 65%;
+    height: 100%;
+    padding: 48px;
+}
+
+.aces_dir_cima h4 {
+    color: $roxo;
+    font-size: 56px;
+    font-weight: 700;
+    font-family: "Poppins";
+    margin-bottom: 16px;
+}
+
+.aces_dir_cima a {
+    color: #38A0FF;
+}
+
+.aces_dir_cima a:hover {
+    filter: brightness(70%)
+}
+
+.aces_dir_cima p {
+    color: #606060;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+}
