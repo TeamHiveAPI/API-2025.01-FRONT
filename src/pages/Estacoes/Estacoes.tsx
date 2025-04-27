@@ -18,6 +18,7 @@ interface Sensor {
 
 interface Estacao {
   id: number;
+  uid: string;
   nome: string;
   cep: string;
   rua: string;
@@ -83,6 +84,7 @@ export default function Estacoes() {
                 <CardEstacao
                   key={estacao.id}
                   id={estacao.id.toString()}
+                  uid={estacao.uid}
                   titulo={estacao.nome}
                   ativo={estacao.status === "ativa"}
                   endereco={`${estacao.rua}, ${estacao.numero} - ${estacao.bairro}, ${estacao.cidade} - ${estacao.cep}`}

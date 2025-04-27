@@ -23,6 +23,7 @@ interface Sensor {
   fator_conversao: number;
   offset: number;
   tipo_parametro_id: number;
+  json: string;
 }
 
 interface TipoSensor {
@@ -97,6 +98,7 @@ export default function Sensores() {
                   fator_conversao={sensor.fator_conversao}
                   offset={sensor.offset}
                   tipo_parametro_id={sensor.tipo_parametro_id}
+                  json={sensor.json}
                 />
               ))
             ) : (
