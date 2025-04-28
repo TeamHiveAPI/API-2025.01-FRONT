@@ -128,19 +128,51 @@ export default function Home() {
   // Função para buscar alertas e processar para gráficos e último alerta
   const fetchAlertas = async () => {
     try {
-      const res = await fetch("http://localhost:8000/alertas");
-      const data = await res.json();
-
+      const [alertasRes, alertasDefinidosRes] = await Promise.all([
+        fetch("http://localhost:8000/alertas"),
+        fetch("http://localhost:8000/alertas-definidos"),
+      ]);
+      const [alertasData, alertasDefinidosData] = await Promise.all([
+        alertasRes.json(),
+        alertasDefinidosRes.json(),
+      ]);
+  
+      console.log("Alertas recebidos:", alertasData);
+      console.log("Alertas definidos recebidos:", alertasDefinidosData);
+      console.log("Estações disponíveis:", estacoes);
+      console.log("Sensores disponíveis:", sensores);
+      console.log("Tipos de parâmetros disponíveis:", tipoParametros);
+  
+      // Mapear alertas definidos para acesso rápido
+      const alertasDefinidosMap: Record<string, any> = {};
+      alertasDefinidosData.forEach((ad: any) => {
+        alertasDefinidosMap[ad.id] = ad;
+      });
+  
+      // Enriquecer alertas com dados do alerta definido
+      const alertasCompletos = alertasData.map((alerta: any) => {
+        const alertaDefinido = alertasDefinidosMap[alerta.alerta_definido_id];
+        return {
+          ...alerta,
+          estacao_id: alertaDefinido?.estacao_id || alerta.estacao_id,
+          parametro_id: alertaDefinido?.parametro_id || alerta.parametro_id,
+          condicao: alertaDefinido?.condicao,
+          num_condicao: alertaDefinido?.num_condicao,
+        };
+      });
+  
       // Último alerta
-      const sortedAlertas = data.sort((a: any, b: any) => new Date(b.data_inicio).getTime() - new Date(a.data_inicio).getTime());
+      const sortedAlertas = alertasCompletos.sort(
+        (a: any, b: any) => new Date(b.data_hora).getTime() - new Date(a.data_hora).getTime()
+      );
       setUltimoAlerta(sortedAlertas[0] || null);
-
+  
       // Dados para GraficoHorasAlerta
-      const horasPorEstacao = data.reduce((acc: Record<string, number>, alerta: any) => {
+      const horasPorEstacao = alertasCompletos.reduce((acc: Record<string, number>, alerta: any) => {
         const estacaoNome = estacoes[alerta.estacao_id] || "Desconhecida";
-        const dataInicio = new Date(alerta.data_inicio);
+        const dataInicio = new Date(alerta.data_hora);
         const dataFim = alerta.data_fim ? new Date(alerta.data_fim) : new Date();
-        const horas = (dataFim.getTime() - dataInicio.getTime()) / (1000 * 60 * 60); // Converter para horas
+        const horas = (dataFim.getTime() - dataInicio.getTime()) / (1000 * 60 * 60);
         acc[estacaoNome] = (acc[estacaoNome] || 0) + horas;
         return acc;
       }, {});
@@ -149,11 +181,15 @@ export default function Home() {
         horasAlerta: parseFloat(horasAlerta.toFixed(1)),
       }));
       setDadosAlertaPorEstacao(dadosHoras);
-
+  
       // Dados para GraficoTiposAlerta
-      const contagemPorTipo = data.reduce((acc: Record<string, number>, alerta: any) => {
-        const tipoNome = tipoParametros[alerta.parametro_id] || "Desconhecido";
-        acc[tipoNome] = (acc[tipoNome] || 0) + 1;
+      const contagemPorTipo = alertasCompletos.reduce((acc: Record<string, number>, alerta: any) => {
+        const condicaoFormatada = alerta.condicao
+          ? `${sensores[alerta.parametro_id]?.nome || "Parâmetro"} ${
+              alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"
+            } ${alerta.num_condicao}${sensores[alerta.parametro_id]?.unidade || ""}`
+          : "Desconhecido";
+        acc[condicaoFormatada] = (acc[condicaoFormatada] || 0) + 1;
         return acc;
       }, {});
       const dadosTipos = Object.entries(contagemPorTipo).map(([tipo, quantidade]) => ({
@@ -312,20 +348,33 @@ export default function Home() {
 
   // Dados para MiniCardAlerta
   const alertaProps = ultimoAlerta
-    ? {
-        titulo: `${sensores[ultimoAlerta.parametro_id]?.nome || "Parâmetro"} ${ultimoAlerta.operador} ${ultimoAlerta.valor_referencia} ${sensores[ultimoAlerta.parametro_id]?.unidade || ""}`,
-        tempoAtivo: (() => {
-          const inicio = new Date(ultimoAlerta.data_inicio);
-          const fim = ultimoAlerta.data_fim ? new Date(ultimoAlerta.data_fim) : new Date();
-          const diffMs = fim.getTime() - inicio.getTime();
-          const horas = Math.floor(diffMs / (1000 * 60 * 60));
-          const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-          return `${horas}h${minutos.toString().padStart(2, "0")}min`;
-        })(),
-        estacao: estacoes[ultimoAlerta.estacao_id] || "Desconhecida",
-        alertaAtivo: !ultimoAlerta.data_fim,
-      }
-    : null;
+  ? {
+      titulo: ultimoAlerta.condicao
+        ? `${sensores[ultimoAlerta.parametro_id]?.nome || "Parâmetro"} ${
+            ultimoAlerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"
+          } ${ultimoAlerta.num_condicao}${sensores[ultimoAlerta.parametro_id]?.unidade || ""}`
+        : `Parâmetro: ${ultimoAlerta.valor_medido}${sensores[ultimoAlerta.parametro_id]?.unidade || ""}`,
+      tempoAtivo: (() => {
+        const inicio = new Date(ultimoAlerta.data_hora);
+        if (isNaN(inicio.getTime())) {
+          return "Data inválida";
+        }
+        const fim = ultimoAlerta.data_fim ? new Date(ultimoAlerta.data_fim) : new Date();
+        if (isNaN(fim.getTime())) {
+          return "Data de fim inválida";
+        }
+        const diffMs = fim.getTime() - inicio.getTime();
+        if (diffMs < 0) {
+          return "Período inválido";
+        }
+        const horas = Math.floor(diffMs / (1000 * 60 * 60));
+        const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        return `${horas}h${minutos.toString().padStart(2, "0")}min`;
+      })(),
+      estacao: estacoes[ultimoAlerta.estacao_id] || "Desconhecida",
+      alertaAtivo: !ultimoAlerta.data_fim,
+    }
+  : null;
 
   return (
     <div className="pagina_wrapper">
