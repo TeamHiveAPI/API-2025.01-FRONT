@@ -8,7 +8,7 @@ import GraficoSensor from "../../components/GraficoSensor/GraficoSensor";
 import { IconHexagonPlus, IconBroadcast, IconClock, IconBorderCorners, IconUsers } from "@tabler/icons-react";
 import GraficoFiltros from "../../components/GraficoFiltros/GraficoFiltros";
 import { JSX } from "react";
-import "./styles.scss"
+import "./styles.scss";
 import GraficoHorasAlerta from "../../components/GraficoHoraAlerta/GraficoHoraAlerta";
 import GraficoTiposAlerta from "../../components/GraficoTipoAlerta/GraficoTipoAlerta";
 
@@ -17,6 +17,7 @@ export default function Home() {
 
   const [estacoes, setEstacoes] = useState<Record<string, string>>({});
   const [sensores, setSensores] = useState<Record<string, { nome: string; unidade: string }>>({});
+  const [tipoParametros, setTipoParametros] = useState<Record<string, string>>({});
   const [filtros, setFiltros] = useState<{
     estacaoId: string | null;
     sensorId: string | null;
@@ -32,64 +33,146 @@ export default function Home() {
   });
 
   const [visualizacao, setVisualizacao] = useState<"pequeno" | "grande">("pequeno");
+  const [dashboardData, setDashboardData] = useState<{
+    numEstacoes: number;
+    numSensores: number;
+    numAlertas: number;
+    numUsuarios: number;
+  } | null>(null);
+  const [medidas, setMedidas] = useState<any[]>([]);
+  const [dadosAgregados, setDadosAgregados] = useState<any[]>([]);
+  const [ultimoAlerta, setUltimoAlerta] = useState<any | null>(null);
+  const [dadosAlertaPorEstacao, setDadosAlertaPorEstacao] = useState<{ estacao: string; horasAlerta: number }[]>([]);
+  const [dadosTiposAlertas, setDadosTiposAlertas] = useState<{ tipo: string; quantidade: number }[]>([]);
 
   const handleVisualizacao = (tipo: "pequeno" | "grande") => {
     setVisualizacao(tipo);
   };
 
-  useEffect(() => {
-    const fetchEstacoes = async () => {
-      try {
-        const res = await fetch("http://localhost:8000/estacoes");
-        const data = await res.json();
-        const mapped = Object.fromEntries(data.map((e: any) => [e.id.toString(), e.nome]));
-        setEstacoes(mapped);
-      } catch (err) {
-        console.error("Erro ao carregar estações:", err);
-      }
-    };
+  // Função para buscar dados do dashboard
+  const fetchDashboardData = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/dashboard/contagem-entidades");
+      const data = await res.json();
+      setDashboardData(data);
+    } catch (err) {
+      console.error("Erro ao carregar dados do dashboard:", err);
+    }
+  };
 
-    const fetchSensores = async () => {
-      try {
-        const res = await fetch("http://localhost:8000/parametros");
-        const data = await res.json();
-        const mapped = Object.fromEntries(
-          data.map((s: any) => [s.id.toString(), { nome: s.nome, unidade: s.unidade }])
+  // Função para buscar estações
+  const fetchEstacoes = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/estacoes");
+      const data = await res.json();
+      const mapped = Object.fromEntries(data.map((e: any) => [e.id.toString(), e.nome]));
+      setEstacoes(mapped);
+    } catch (err) {
+      console.error("Erro ao carregar estações:", err);
+    }
+  };
+
+  // Função para buscar sensores
+  const fetchSensores = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/parametros");
+      const data = await res.json();
+      const mapped = Object.fromEntries(
+        data.map((s: any) => [s.id.toString(), { nome: s.nome, unidade: s.unidade }])
+      );
+      setSensores(mapped);
+    } catch (err) {
+      console.error("Erro ao carregar sensores:", err);
+    }
+  };
+
+  // Função para buscar tipos de parâmetros
+  const fetchTipoParametros = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/tipo_parametros");
+      const data = await res.json();
+      const mapped = Object.fromEntries(data.map((t: any) => [t.id.toString(), t.nome]));
+      setTipoParametros(mapped);
+    } catch (err) {
+      console.error("Erro ao carregar tipos de parâmetros:", err);
+    }
+  };
+
+  // Função para buscar medidas com base nos filtros
+  const fetchMedidas = async () => {
+    if (!filtros.estacaoId || !filtros.sensorId || !filtros.dataInicio || !filtros.dataFim) return;
+
+    try {
+      const res = await fetch("http://localhost:8000/medidas");
+      const data = await res.json();
+      // Filtrar medidas no frontend, já que a rota /medidas não suporta query params
+      const filteredData = data.filter((m: any) => {
+        const dataHora = new Date(m.data_hora * 1000); // Converter timestamp para Date
+        return (
+          m.estacao_id.toString() === filtros.estacaoId &&
+          m.parametro_id.toString() === filtros.sensorId &&
+          dataHora >= filtros.dataInicio! &&
+          dataHora <= filtros.dataFim!
         );
-        setSensores(mapped);
-      } catch (err) {
-        console.error("Erro ao carregar sensores:", err);
-      }
-    };
+      });
+      setMedidas(filteredData);
 
-    fetchEstacoes();
-    fetchSensores();
-  }, []);
+      // Agregar os dados
+      const aggregated = calcularValores(filteredData);
+      setDadosAgregados(aggregated);
+    } catch (err) {
+      console.error("Erro ao carregar medidas:", err);
+    }
+  };
 
-  const dadosBrutos: { data: string; valor_bruto: number }[] = [];
+  // Função para buscar alertas e processar para gráficos e último alerta
+  const fetchAlertas = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/alertas");
+      const data = await res.json();
 
-  const inicio = new Date("2025-04-01T00:00:00");
-  const fim = new Date("2025-04-07T23:30:00");
-  
-  let temperaturaAtual = 22 + Math.random() * 4; // começa entre 22°C e 26°C
-  
-  for (let d = new Date(inicio); d <= fim; d.setMinutes(d.getMinutes() + 30)) {
-    const variacao = (Math.random() - 0.5) * 1.5; // varia entre -0.75°C e +0.75°C
-    temperaturaAtual += variacao;
-    temperaturaAtual = Math.min(Math.max(temperaturaAtual, 15), 30);
-  
-    dadosBrutos.push({
-      data: d.toISOString(),
-      valor_bruto: parseFloat(temperaturaAtual.toFixed(1)),
-    });
-  }
+      // Último alerta
+      const sortedAlertas = data.sort((a: any, b: any) => new Date(b.data_inicio).getTime() - new Date(a.data_inicio).getTime());
+      setUltimoAlerta(sortedAlertas[0] || null);
 
-  // Função para calcular os valores de mínimo, médio e máximo
-  const calcularValores = (dados: { data: string; valor_bruto: number }[]) => {
+      // Dados para GraficoHorasAlerta
+      const horasPorEstacao = data.reduce((acc: Record<string, number>, alerta: any) => {
+        const estacaoNome = estacoes[alerta.estacao_id] || "Desconhecida";
+        const dataInicio = new Date(alerta.data_inicio);
+        const dataFim = alerta.data_fim ? new Date(alerta.data_fim) : new Date();
+        const horas = (dataFim.getTime() - dataInicio.getTime()) / (1000 * 60 * 60); // Converter para horas
+        acc[estacaoNome] = (acc[estacaoNome] || 0) + horas;
+        return acc;
+      }, {});
+      const dadosHoras = Object.entries(horasPorEstacao).map(([estacao, horasAlerta]) => ({
+        estacao,
+        horasAlerta: parseFloat(horasAlerta.toFixed(1)),
+      }));
+      setDadosAlertaPorEstacao(dadosHoras);
+
+      // Dados para GraficoTiposAlerta
+      const contagemPorTipo = data.reduce((acc: Record<string, number>, alerta: any) => {
+        const tipoNome = tipoParametros[alerta.parametro_id] || "Desconhecido";
+        acc[tipoNome] = (acc[tipoNome] || 0) + 1;
+        return acc;
+      }, {});
+      const dadosTipos = Object.entries(contagemPorTipo).map(([tipo, quantidade]) => ({
+        tipo,
+        quantidade,
+      }));
+      setDadosTiposAlertas(dadosTipos);
+    } catch (err) {
+      console.error("Erro ao carregar alertas:", err);
+    }
+  };
+
+  // Função para calcular valores agregados
+  const calcularValores = (dados: { data_hora: number; valor: number }[]) => {
     const agrupados = dados.reduce((acc, curr) => {
-      const dia = curr.data.split('T')[0]; // Agrupando por data
+      const dataHora = new Date(curr.data_hora * 1000); // Converter timestamp para Date
+      const dia = dataHora.toISOString().split("T")[0];
       if (!acc[dia]) acc[dia] = [];
-      acc[dia].push(curr.valor_bruto);
+      acc[dia].push(curr.valor);
       return acc;
     }, {} as Record<string, number[]>);
 
@@ -110,8 +193,22 @@ export default function Home() {
     return dadosAgregados;
   };
 
-  const dadosAgregados = calcularValores(dadosBrutos);
+  // Carregar dados iniciais
+  useEffect(() => {
+    fetchDashboardData();
+    fetchEstacoes();
+    fetchSensores();
+    fetchTipoParametros();
+    fetchAlertas();
+  }, []);
 
+  // Atualizar medidas e alertas quando filtros ou estações/tipos mudarem
+  useEffect(() => {
+    fetchMedidas();
+    fetchAlertas();
+  }, [filtros, estacoes, tipoParametros]);
+
+  // Dados para GraficoSensor
   const dadosTeste = {
     estacao: {
       id: Number(filtros.estacaoId),
@@ -123,36 +220,17 @@ export default function Home() {
       unidade: filtros.sensorId ? sensores[filtros.sensorId]?.unidade : "°C",
     },
     periodo: {
-      inicio: filtros.dataInicio ? filtros.dataInicio.toISOString().split('T')[0] : "",
-      fim: filtros.dataFim ? filtros.dataFim.toISOString().split('T')[0] : "",
+      inicio: filtros.dataInicio ? filtros.dataInicio.toISOString().split("T")[0] : "",
+      fim: filtros.dataFim ? filtros.dataFim.toISOString().split("T")[0] : "",
     },
     dados: dadosAgregados,
-    dadosBrutos: dadosBrutos
+    dadosBrutos: medidas.map((m) => ({
+      data: new Date(m.data_hora * 1000).toISOString(),
+      valor_bruto: m.valor,
+    })),
   };
 
-  const dadosAlertaPorEstacao = [
-    { estacao: "São José dos Campos", horasAlerta: 5 },
-    { estacao: "Campinas", horasAlerta: 2 },
-    { estacao: "Rio de Janeiro", horasAlerta: 9 },
-    { estacao: "São Paulo", horasAlerta: 4 },
-    { estacao: "Brasília", horasAlerta: 7 },
-    { estacao: "Manaus", horasAlerta: 9 },
-    { estacao: "Curitiba", horasAlerta: 4 },
-    { estacao: "Salvador", horasAlerta: 7 },
-    { estacao: "Fortaleza", horasAlerta: 9 },
-    { estacao: "Ceará", horasAlerta: 4 },
-  ];
-
-  const dadosTiposAlertas = [
-    { tipo: "Temperatura", quantidade: 15 },
-    { tipo: "Vento", quantidade: 8 },
-    { tipo: "Umidade", quantidade: 12 },
-    { tipo: "Pressão", quantidade: 5 },
-    { tipo: "Outros", quantidade: 3 },
-  ];
-
   const todosFiltrosPreenchidos = filtros.estacaoId && filtros.sensorId && filtros.dataInicio && filtros.dataFim;
-
   const dataInvalida = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
 
   const MiniCardAlerta = ({
@@ -206,28 +284,48 @@ export default function Home() {
     </div>
   );
 
-  const dashboardCards = [
-    {
-      icon: <IconBroadcast width={32} height={32} stroke="1.5" color="#606060" />,
-      titulo: "Estações",
-      valor: 5,
-    },
-    {
-      icon: <IconBorderCorners width={32} height={32} stroke="1.5" color="#606060" />,
-      titulo: "Sensores",
-      valor: 12,
-    },
-    {
-      icon: <IconHexagonPlus width={32} height={32} stroke="1.5" color="#606060" />,
-      titulo: "Alertas",
-      valor: 8,
-    },
-    {
-      icon: <IconUsers width={32} height={32} stroke="1.5" color="#606060" />,
-      valor: 208,
-      titulo: "Usuários",
-    },
-  ];
+  // Cards dinâmicos
+  const dashboardCards = dashboardData
+    ? [
+        {
+          icon: <IconBroadcast width={32} height={32} stroke="1.5" color="#606060" />,
+          titulo: "Estações",
+          valor: dashboardData.numEstacoes,
+        },
+        {
+          icon: <IconBorderCorners width={32} height={32} stroke="1.5" color="#606060" />,
+          titulo: "Sensores",
+          valor: dashboardData.numSensores,
+        },
+        {
+          icon: <IconHexagonPlus width={32} height={32} stroke="1.5" color="#606060" />,
+          titulo: "Alertas",
+          valor: dashboardData.numAlertas,
+        },
+        {
+          icon: <IconUsers width={32} height={32} stroke="1.5" color="#606060" />,
+          titulo: "Usuários",
+          valor: dashboardData.numUsuarios,
+        },
+      ]
+    : [];
+
+  // Dados para MiniCardAlerta
+  const alertaProps = ultimoAlerta
+    ? {
+        titulo: `${sensores[ultimoAlerta.parametro_id]?.nome || "Parâmetro"} ${ultimoAlerta.operador} ${ultimoAlerta.valor_referencia} ${sensores[ultimoAlerta.parametro_id]?.unidade || ""}`,
+        tempoAtivo: (() => {
+          const inicio = new Date(ultimoAlerta.data_inicio);
+          const fim = ultimoAlerta.data_fim ? new Date(ultimoAlerta.data_fim) : new Date();
+          const diffMs = fim.getTime() - inicio.getTime();
+          const horas = Math.floor(diffMs / (1000 * 60 * 60));
+          const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+          return `${horas}h${minutos.toString().padStart(2, "0")}min`;
+        })(),
+        estacao: estacoes[ultimoAlerta.estacao_id] || "Desconhecida",
+        alertaAtivo: !ultimoAlerta.data_fim,
+      }
+    : null;
 
   return (
     <div className="pagina_wrapper">
@@ -241,12 +339,16 @@ export default function Home() {
           </div>
 
           <div className="home_cima">
-            <MiniCardAlerta
-              titulo="Temperatura maior ou igual a 5°C"
-              tempoAtivo="2h30min"
-              estacao="Nome da Estação Aqui"
-              alertaAtivo={true}
-            />
+            {alertaProps ? (
+              <MiniCardAlerta
+                titulo={alertaProps.titulo}
+                tempoAtivo={alertaProps.tempoAtivo}
+                estacao={alertaProps.estacao}
+                alertaAtivo={alertaProps.alertaAtivo}
+              />
+            ) : (
+              <p>Nenhum alerta disponível</p>
+            )}
 
             <BotaoCTA
               aparencia="primario"
@@ -268,7 +370,7 @@ export default function Home() {
               />
             ))}
           </div>
-          
+
           <div className="dashboard_grafico">
             <div className="dashboard_grafico_cima filtros">
               <div className="dashboard_filtros_cima">
@@ -343,7 +445,6 @@ export default function Home() {
                 <GraficoTiposAlerta dados={dadosTiposAlertas} />
               </div>
             </div>
-
           </div>
         </div>
         <Footer />
