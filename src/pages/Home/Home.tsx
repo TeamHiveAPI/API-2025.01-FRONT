@@ -136,7 +136,7 @@ export default function Home() {
       setUltimoAlerta(sortedAlertas[0] || null);
 
       // Dados para GraficoHorasAlerta
-      const horasPorEstacao = data.reduce((acc: Record<string, number>, alerta: any) => {
+      const horasPorEstacao: Record<string, number> = data.reduce((acc: any, alerta: any) => {
         const estacaoNome = estacoes[alerta.estacao_id] || "Desconhecida";
         const dataInicio = new Date(alerta.data_inicio);
         const dataFim = alerta.data_fim ? new Date(alerta.data_fim) : new Date();
@@ -158,9 +158,11 @@ export default function Home() {
       }, {});
       const dadosTipos = Object.entries(contagemPorTipo).map(([tipo, quantidade]) => ({
         tipo,
-        quantidade,
+        quantidade: Number(quantidade),
       }));
+
       setDadosTiposAlertas(dadosTipos);
+      
     } catch (err) {
       console.error("Erro ao carregar alertas:", err);
     }
