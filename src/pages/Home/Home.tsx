@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import api from "../../services/api";
 
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -103,29 +102,33 @@ export default function Home() {
   // Função para buscar medidas com base nos filtros
   const fetchMedidas = async () => {
     if (!filtros.estacaoId || !filtros.sensorId || !filtros.dataInicio || !filtros.dataFim) return;
-
+  
     try {
       const res = await fetch("http://localhost:8000/medidas");
       const data = await res.json();
-      // Filtrar medidas no frontend, já que a rota /medidas não suporta query params
+  
+      const dataFimCorrigido = new Date(filtros.dataFim!);
+      dataFimCorrigido.setHours(23, 59, 59, 999);
+  
       const filteredData = data.filter((m: any) => {
-        const dataHora = new Date(m.data_hora * 1000); // Converter timestamp para Date
+        const dataHora = new Date(m.data_hora * 1000);
         return (
           m.estacao_id.toString() === filtros.estacaoId &&
           m.parametro_id.toString() === filtros.sensorId &&
           dataHora >= filtros.dataInicio! &&
-          dataHora <= filtros.dataFim!
+          dataHora <= dataFimCorrigido
         );
       });
+            
       setMedidas(filteredData);
-
-      // Agregar os dados
+  
       const aggregated = calcularValores(filteredData);
       setDadosAgregados(aggregated);
     } catch (err) {
       console.error("Erro ao carregar medidas:", err);
     }
   };
+  
 
   // Função para buscar alertas e processar para gráficos e último alerta
   const fetchAlertas = async () => {
@@ -351,7 +354,7 @@ export default function Home() {
                 alertaAtivo={alertaProps.alertaAtivo}
               />
             ) : (
-              <p>Nenhum alerta disponível</p>
+              <p className="home_alerta_nenhum">Nenhum alerta disponível</p>
             )}
 
             <BotaoCTA

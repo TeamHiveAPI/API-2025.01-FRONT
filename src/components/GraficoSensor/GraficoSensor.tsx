@@ -50,8 +50,8 @@ export default function GraficoSensor({
   bruto = false,
 }: GraficoProps) {
 
-  const dataInicioFormatada = format(new Date(periodo.inicio), 'dd/MM/yy');
-  const dataFimFormatada = format(new Date(periodo.fim), 'dd/MM/yy');
+  const dataInicioFormatada = format(new Date(periodo.inicio + "T00:00:00"), 'dd/MM');
+  const dataFimFormatada = format(new Date(periodo.fim + "T23:59:59"), 'dd/MM/yy');
 
   const geraDatasets = () => {
     if (bruto && dadosBrutos) {
@@ -144,10 +144,10 @@ export default function GraficoSensor({
   
   const chartData = {
     labels: bruto
-      ? dadosBrutos?.map((item) => format(new Date(item.data), 'dd/MM')) || []
-      : medidaSelecionada === "bruto"
-      ? dadosBrutos?.map((item) => format(new Date(item.data), 'dd/MM')) || []
-      : dados.map((item) => format(new Date(item.data), 'dd/MM')),
+    ? dadosBrutos?.map((item) => format(new Date(item.data), 'dd/MM')) || []
+    : medidaSelecionada === "bruto"
+    ? dadosBrutos?.map((item) => format(new Date(item.data), 'dd/MM')) || []
+    : dados.map((item) => format(new Date(item.data + "T00:00:00"), 'dd/MM')),  
     datasets: geraDatasets(),
   };  
 

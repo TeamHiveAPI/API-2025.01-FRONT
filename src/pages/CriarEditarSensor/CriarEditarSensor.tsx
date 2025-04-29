@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./styles.scss";
+
 import styles_select from "../CriarEditarEstacao/styles_select";
 import api from "../../services/api";
  
