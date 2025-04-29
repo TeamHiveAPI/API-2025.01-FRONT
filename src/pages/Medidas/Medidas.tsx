@@ -22,7 +22,7 @@ interface Parametro {
   nome: string;
 }
 
-export default function Medidas() {
+export default function PaginaMedidas() {
   const [medidas, setMedidas] = useState<Medida[]>([]);
   const [estacoes, setEstacoes] = useState<Record<number, string>>({});
   const [parametros, setParametros] = useState<Record<number, string>>({});
