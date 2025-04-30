@@ -14,18 +14,23 @@ interface HorasAlertaPorEstacaoProps {
   dados: {
     estacao: string;
     horasAlerta: number;
+    qtdAlertas: number;
   }[];
 }
 
 export default function GraficoHorasAlerta({ dados }: HorasAlertaPorEstacaoProps) {
+  // Ordena os dados por horas em alerta (do maior para o menor)
   const dadosOrdenados = [...dados].sort((a, b) => b.horasAlerta - a.horasAlerta);
 
   const chartData = {
-    labels: dadosOrdenados.map((item) => item.estacao),
+    // Mostra o nome da estação e quantidade de alertas entre parênteses
+    labels: dadosOrdenados.map((item) => `${item.estacao}`),
     datasets: [
       {
         label: "Horas em Alerta",
-        data: dadosOrdenados.map((item) => item.horasAlerta),
+        // Arredonda as horas para 2 casas decimais
+        data: dadosOrdenados.map((item) => Number(item.horasAlerta.toFixed(2))),
+        // Muda a cor baseado no tempo em alerta (rosa se > 6 horas, azul se <= 6 horas)
         backgroundColor: dadosOrdenados.map((item) =>
           item.horasAlerta > 6 ? "rgba(232, 132, 180, 0.8)" : "rgba(54, 162, 235, 0.8)"
         ),
@@ -46,7 +51,12 @@ export default function GraficoHorasAlerta({ dados }: HorasAlertaPorEstacaoProps
       },
       tooltip: {
         callbacks: {
-          label: (tooltipItem: any) => `${tooltipItem.raw} horas em alerta`,
+          // Formata o tooltip para mostrar horas e minutos
+          label: (tooltipItem: any) => {
+            const horas = Math.floor(tooltipItem.raw);
+            const minutos = Math.round((tooltipItem.raw - horas) * 60);
+            return `${horas}h ${minutos}min em alerta`;
+          },
         },
       },
     },
@@ -69,7 +79,11 @@ export default function GraficoHorasAlerta({ dados }: HorasAlertaPorEstacaoProps
   return (
     <div className="grafico_wrapper">
       <h3>Horas em Alerta por Estação</h3>
-      <Bar data={chartData} options={chartOptions} />
+      {dados && dados.length > 0 ? (
+        <Bar data={chartData} options={chartOptions} />
+      ) : (
+        <p>Nenhum dado de alerta disponível</p>
+      )}
     </div>
   );
 }

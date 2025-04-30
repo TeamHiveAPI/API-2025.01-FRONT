@@ -42,8 +42,11 @@ export default function Home() {
   } | null>(null);
   const [medidas, setMedidas] = useState<any[]>([]);
   const [dadosAgregados, setDadosAgregados] = useState<any[]>([]);
-  const [ultimoAlerta, setUltimoAlerta] = useState<any | null>(null);
-  const [dadosAlertaPorEstacao, setDadosAlertaPorEstacao] = useState<{ estacao: string; horasAlerta: number }[]>([]);
+  const [dadosAlerta, setDadosAlerta] = useState<Array<{
+    estacao: string;
+    horasAlerta: number;
+    qtdAlertas: number;
+  }>>([]);
   const [dadosTiposAlertas, setDadosTiposAlertas] = useState<{ tipo: string; quantidade: number }[]>([]);
 
   const handleVisualizacao = (tipo: "pequeno" | "grande") => {
@@ -133,41 +136,45 @@ export default function Home() {
   // Função para buscar alertas e processar para gráficos e último alerta
   const fetchAlertas = async () => {
     try {
-      const res = await fetch("http://localhost:8000/alertas");
-      const data = await res.json();
-
-      // Último alerta
-      const sortedAlertas = data.sort((a: any, b: any) => new Date(b.data_inicio).getTime() - new Date(a.data_inicio).getTime());
-      setUltimoAlerta(sortedAlertas[0] || null);
-
-      // Dados para GraficoHorasAlerta
-      const horasPorEstacao: Record<string, number> = data.reduce((acc: any, alerta: any) => {
-        const estacaoNome = estacoes[alerta.estacao_id] || "Desconhecida";
-        const dataInicio = new Date(alerta.data_inicio);
-        const dataFim = alerta.data_fim ? new Date(alerta.data_fim) : new Date();
-        const horas = (dataFim.getTime() - dataInicio.getTime()) / (1000 * 60 * 60); // Converter para horas
-        acc[estacaoNome] = (acc[estacaoNome] || 0) + horas;
-        return acc;
-      }, {});
-      const dadosHoras = Object.entries(horasPorEstacao).map(([estacao, horasAlerta]) => ({
-        estacao,
-        horasAlerta: parseFloat(horasAlerta.toFixed(1)),
+      // Buscar dados de horas em alerta por estação
+      const resHorasAlerta = await fetch("http://localhost:8000/tempo-em-alerta-por-estacao");
+      const dadosHorasAlerta = await resHorasAlerta.json();
+  
+      // Formatar dados para o gráfico de horas em alerta
+      const dadosFormatados = dadosHorasAlerta.map((item: any) => ({
+        estacao: item.estacao,
+        horasAlerta: Number(item.horasAlerta.toFixed(2)),
+        qtdAlertas: item.qtdAlertas
       }));
-      setDadosAlertaPorEstacao(dadosHoras);
-
-      // Dados para GraficoTiposAlerta
+      setDadosAlerta(dadosFormatados);
+  
+      // Buscar todos os alertas para processamento adicional
+      const resAlertas = await fetch("http://localhost:8000/alertas");
+      const data = await resAlertas.json();
+   
+      // Adicionar console.log para debug
+      console.log('Tipos de Parâmetros:', tipoParametros);
+      console.log('Alertas:', data);
+  
+      // Processar dados para o gráfico de tipos de alerta
       const contagemPorTipo = data.reduce((acc: Record<string, number>, alerta: any) => {
-        const tipoNome = tipoParametros[alerta.parametro_id] || "Desconhecido";
+        // Buscar o tipo do parâmetro diretamente do alerta
+        const tipoNome = sensores[alerta.parametro_id]?.nome || "Outros";
         acc[tipoNome] = (acc[tipoNome] || 0) + 1;
         return acc;
       }, {});
-      const dadosTipos = Object.entries(contagemPorTipo).map(([tipo, quantidade]) => ({
-        tipo,
-        quantidade: Number(quantidade),
-      }));
-
+  
+      console.log('Contagem por Tipo:', contagemPorTipo);
+  
+      const dadosTipos = Object.entries(contagemPorTipo)
+        .map(([tipo, quantidade]) => ({
+          tipo,
+          quantidade: Number(quantidade)
+        }))
+        .filter(item => item.tipo !== "Desconhecido" && item.tipo !== "undefined");
+  
       setDadosTiposAlertas(dadosTipos);
-      
+  
     } catch (err) {
       console.error("Erro ao carregar alertas:", err);
     }
@@ -200,6 +207,33 @@ export default function Home() {
     return dadosAgregados;
   };
 
+  const [miniAlerta, setMiniAlerta] = useState<{
+    titulo: string;
+    horario: string;
+    estacao: string;
+    alertaAtivo: boolean;
+  } | null>(null);
+
+  // Fetch apenas para o mini card (alerta de maior ID)
+  const fetchMiniAlerta = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/alertas");
+      const data = await res.json();
+      if (data.length > 0) {
+        // Ordena por ID decrescente e pega o primeiro
+        const ultimo = data.sort((a: any, b: any) => b.id - a.id)[0];
+        setMiniAlerta({
+          titulo: ultimo.titulo,
+          horario: new Date(ultimo.data_hora).toLocaleString(),
+          estacao: ultimo.estacao,
+          alertaAtivo: ultimo.tempoFim === null,
+        });
+      }
+    } catch (err) {
+      console.error("Erro ao buscar mini alerta:", err);
+    }
+  };
+
   // Carregar dados iniciais
   useEffect(() => {
     fetchDashboardData();
@@ -207,6 +241,7 @@ export default function Home() {
     fetchSensores();
     fetchTipoParametros();
     fetchAlertas();
+    fetchMiniAlerta();
   }, []);
 
   // Atualizar medidas e alertas quando filtros ou estações/tipos mudarem
@@ -242,12 +277,12 @@ export default function Home() {
 
   const MiniCardAlerta = ({
     titulo,
-    tempoAtivo,
+    horario,
     estacao,
     alertaAtivo,
   }: {
     titulo: string;
-    tempoAtivo: string;
+    horario: string;
     estacao: string;
     alertaAtivo: boolean;
   }) => (
@@ -260,7 +295,7 @@ export default function Home() {
               <h5 className="caal_titulo mini">{titulo}</h5>
               <div className="caal_tempo">
                 <IconClock width={16} stroke={1.5} color="#808080" />
-                <p>{tempoAtivo}</p>
+                <p>{horario}</p>
               </div>
             </div>
             <div className="caal_info mini">
@@ -317,23 +352,6 @@ export default function Home() {
       ]
     : [];
 
-  // Dados para MiniCardAlerta
-  const alertaProps = ultimoAlerta
-    ? {
-        titulo: `${sensores[ultimoAlerta.parametro_id]?.nome || "Parâmetro"} ${ultimoAlerta.operador} ${ultimoAlerta.valor_referencia} ${sensores[ultimoAlerta.parametro_id]?.unidade || ""}`,
-        tempoAtivo: (() => {
-          const inicio = new Date(ultimoAlerta.data_inicio);
-          const fim = ultimoAlerta.data_fim ? new Date(ultimoAlerta.data_fim) : new Date();
-          const diffMs = fim.getTime() - inicio.getTime();
-          const horas = Math.floor(diffMs / (1000 * 60 * 60));
-          const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-          return `${horas}h${minutos.toString().padStart(2, "0")}min`;
-        })(),
-        estacao: estacoes[ultimoAlerta.estacao_id] || "Desconhecida",
-        alertaAtivo: !ultimoAlerta.data_fim,
-      }
-    : null;
-
   return (
     <div className="pagina_wrapper">
       <Sidebar />
@@ -346,12 +364,12 @@ export default function Home() {
           </div>
 
           <div className="home_cima">
-            {alertaProps ? (
+            {miniAlerta ? (
               <MiniCardAlerta
-                titulo={alertaProps.titulo}
-                tempoAtivo={alertaProps.tempoAtivo}
-                estacao={alertaProps.estacao}
-                alertaAtivo={alertaProps.alertaAtivo}
+                titulo={miniAlerta.titulo}
+                horario={miniAlerta.horario}
+                estacao={miniAlerta.estacao}
+                alertaAtivo={miniAlerta.alertaAtivo}
               />
             ) : (
               <p className="home_alerta_nenhum">Nenhum alerta disponível</p>
@@ -444,11 +462,11 @@ export default function Home() {
             </div>
 
             <div className={`dashboard_grafico_baixo ${visualizacao === "grande" ? "visu_grande" : "visu_pequeno"}`}>
-              <div className={`dashboard_grafico_unidade ${visualizacao === "grande" ? "visu_grande" : ""}`}>
-                <GraficoHorasAlerta dados={dadosAlertaPorEstacao} />
-              </div>
+            <div className={`dashboard_grafico_unidade grande_temp ${visualizacao === "grande" ? "visu_grande" : ""}`}>
+              <GraficoHorasAlerta dados={dadosAlerta} />
+            </div>
 
-              <div className={`dashboard_grafico_unidade ${visualizacao === "grande" ? "visu_grande" : ""}`}>
+              <div className={`dashboard_grafico_unidade escondido_temp ${visualizacao === "grande" ? "visu_grande" : ""}`}>
                 <GraficoTiposAlerta dados={dadosTiposAlertas} />
               </div>
             </div>

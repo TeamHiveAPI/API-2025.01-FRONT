@@ -186,7 +186,7 @@ export default function PaginaMedidasCRUD() {
                       <td>{estacoes[medida.estacao_id] || `ID ${medida.estacao_id}`}</td>
                       <td>{parametros[medida.parametro_id] || `ID ${medida.parametro_id}`}</td>
                       <td>{medida.valor}</td>
-                      <td>{new Date(medida.data_hora).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
+                      <td>{new Date(Number(medida.data_hora) * 1000).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
                       <td>
                         <button
                           onClick={() => handleDelete(medida.id)}

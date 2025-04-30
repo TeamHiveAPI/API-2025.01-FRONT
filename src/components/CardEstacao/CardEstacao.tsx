@@ -106,7 +106,7 @@ export default function CardEstacao({
         </div>
         <BotaoCTA
           cor="cor_primario"
-          escrito={sensores?.length > 0 ? `Ver Sensores (${sensores.length})` : "Sem Sensores"}
+          escrito={sensores?.length > 0 ? `Ver Sensores (${String(sensores.length).padStart(2, '0')})` : "Sem Sensores"}
           aparencia="secundario"
           pequeno={true}
           img={<IconBorderCorners stroke="2" width={28} height={28} />}
