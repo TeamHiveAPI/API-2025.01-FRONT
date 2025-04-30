@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import "./styles.scss";
@@ -21,6 +22,7 @@ export default function Home() {
   const [alertasPassados, setAlertasPassados] = useState<CardAlertaAtivoProps[]>([]);
   const [estacoes, setEstacoes] = useState<Record<string, { nome: string; latitude: number; longitude: number }>>({});
   const [parametros, setParametros] = useState<Record<string, { nome: string; unidade: string }>>({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [alertasDefinidos, setAlertasDefinidos] = useState<Record<string, any>>({});
 
   // Fetch stations
@@ -104,7 +106,7 @@ export default function Home() {
 
         return {
           id: alerta.id.toString(),
-          alertaAtivo: alertaDefinido.ativo !== false, // Active only if ativo is true
+          alertaAtivo: alerta.tempoFim === null, // Alterado: usa tempoFim para determinar se está ativo
           titulo,
           tempoAtivo,
           descricaoAlerta,
