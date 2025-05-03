@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import "./styles.scss";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardAlertaAtivo from "../../components/CardAlertaAtivo/CardAlertaAtivo";
+import { FormatarDataHora } from "../../utils/FormatarDataHora";
 
 interface CardAlertaAtivoProps {
   id: string;
@@ -15,6 +15,8 @@ interface CardAlertaAtivoProps {
   estacao: string;
   coordenadas: [number, number];
   expandido?: boolean;
+  dataInicio: string;
+  dataFim: string | null; 
 }
 
 export default function Home() {
@@ -28,15 +30,14 @@ export default function Home() {
       const data = await res.json();
 
       const alertasFormatados: CardAlertaAtivoProps[] = data.map((alerta: any) => {
-        // Tempo ativo
         const inicio = new Date(alerta.data_hora);
         const fim = alerta.tempoFim ? new Date(alerta.tempoFim) : new Date();
+      
         const diffMs = fim.getTime() - inicio.getTime();
         const horas = Math.floor(diffMs / (1000 * 60 * 60));
         const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
         const tempoAtivo = `${horas}h${minutos.toString().padStart(2, "0")}min`;
-
-        // Coordenadas já vem array [lat, lon] na resposta (ou parse se vier string)
+      
         const coords: [number, number] = Array.isArray(alerta.coordenadas)
           ? alerta.coordenadas
           : (() => {
@@ -45,21 +46,34 @@ export default function Home() {
                 .split(",");
               return [parseFloat(lat), parseFloat(lon)];
             })();
-
+      
         return {
           id: alerta.id.toString(),
-          alertaAtivo: alerta.alertaAtivo,          // usa o campo do backend
-          titulo: alerta.titulo,                    // usa o título já curto
+          alertaAtivo: alerta.alertaAtivo,
+          titulo: alerta.titulo,
           tempoAtivo,
-          descricaoAlerta: alerta.descricaoAlerta,  // usa a descrição longa
+          descricaoAlerta: alerta.descricaoAlerta,
           estacao: alerta.estacao,
           coordenadas: coords,
           expandido: alerta.expandido,
+          dataInicio: FormatarDataHora(new Date(alerta.data_hora)),
+          dataFim: alerta.tempoFim ? FormatarDataHora(new Date(alerta.tempoFim)) : "Em Andamento",
+          
         };
-      });
+      });      
 
-      setAlertasAtivos(alertasFormatados.filter(a => a.alertaAtivo));
-      setAlertasPassados(alertasFormatados.filter(a => !a.alertaAtivo));
+      setAlertasAtivos(
+        alertasFormatados
+          .filter((a) => a.alertaAtivo)
+          .sort((a, b) => new Date(b.dataInicio).getTime() - new Date(a.dataInicio).getTime())
+      );
+      
+      setAlertasPassados(
+        alertasFormatados
+          .filter((a) => !a.alertaAtivo)
+          .sort((a, b) => new Date(b.dataInicio).getTime() - new Date(a.dataInicio).getTime())
+      );
+      
     } catch (err) {
       console.error("Erro ao carregar alertas:", err);
     }

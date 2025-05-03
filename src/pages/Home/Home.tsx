@@ -6,7 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import GraficoSensor from "../../components/GraficoSensor/GraficoSensor";
-import { IconHexagonPlus, IconBroadcast, IconClock, IconBorderCorners, IconUsers } from "@tabler/icons-react";
+import { IconHexagonPlus, IconBroadcast, IconBorderCorners, IconUsers, IconCalendarWeekFilled } from "@tabler/icons-react";
 import GraficoFiltros from "../../components/GraficoFiltros/GraficoFiltros";
 import { JSX } from "react";
 import "./styles.scss";
@@ -224,7 +224,15 @@ export default function Home() {
         const ultimo = data.sort((a: any, b: any) => b.id - a.id)[0];
         setMiniAlerta({
           titulo: ultimo.titulo,
-          horario: new Date(ultimo.data_hora).toLocaleString(),
+          horario: new Date(
+            ultimo.tempoFim ?? ultimo.data_hora
+          ).toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).replace(":", "h"),
           estacao: ultimo.estacao,
           alertaAtivo: ultimo.tempoFim === null,
         });
@@ -294,7 +302,7 @@ export default function Home() {
               <div className={alertaAtivo ? "caal_ativo" : "caal_inativo"}></div>
               <h5 className="caal_titulo mini">{titulo}</h5>
               <div className="caal_tempo">
-                <IconClock width={16} stroke={1.5} color="#808080" />
+                <IconCalendarWeekFilled width={16} stroke={1.5} color="#808080" />
                 <p>{horario}</p>
               </div>
             </div>

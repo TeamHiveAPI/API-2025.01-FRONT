@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IconBroadcast, IconCalendarWeekFilled, IconChevronDown, IconClock, IconX } from "@tabler/icons-react";
+import { IconBroadcast, IconChevronDown, IconClock, IconX } from "@tabler/icons-react";
 import L from "leaflet";
 import "./styles.scss";
 import MapPinRoxo from "../../../public/map_pin_roxo.svg";
@@ -8,6 +8,8 @@ import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 interface CardAlertaAtivoProps {
     id: string;
     alertaAtivo: boolean;
+    dataInicio: string;
+    dataFim: string | null;
     titulo: string;
     tempoAtivo: string;
     descricaoAlerta: string;
@@ -20,6 +22,8 @@ export default function CardAlertaAtivo({
     alertaAtivo,
     titulo,
     tempoAtivo,
+    dataInicio,
+    dataFim,
     descricaoAlerta,
     estacao,
     coordenadas,
@@ -145,11 +149,7 @@ export default function CardAlertaAtivo({
                             <div className={alertaAtivo ? "caal_ativo" : "caal_inativo"}></div>
                             <h5 className="caal_titulo">{titulo}</h5>
                             <div className="caal_tempo">
-                            {alertaAtivo ? (
                             <IconClock width={16} stroke={1.5} color="#808080" />
-                            ) : (
-                            <IconCalendarWeekFilled width={16} stroke={1.5} color="#808080" />
-                            )}
                             <p>{tempoAtivo}</p>
                             </div>
                         </div>
@@ -171,9 +171,21 @@ export default function CardAlertaAtivo({
                 </div>
 
                 {Expandir && (
-                    <div className="caal_info">
-                        <p>ESTAÇÃO</p>
-                        <p>{estacao}</p>
+                    <div className="caal_baixo">
+                        <div className="caal_info">
+                            <p>ESTAÇÃO</p>
+                            <p>{estacao}</p>
+                        </div>
+
+                        <div className="caal_info">
+                            <p>INÍCIO</p>
+                            <p>{dataInicio}</p>
+                        </div>
+
+                        <div className="caal_info">
+                            <p>FIM</p>
+                            <p>{dataFim}</p>
+                        </div>
                     </div>
                 )}
             </div>
