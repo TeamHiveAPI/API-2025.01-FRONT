@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import "./styles.scss";
+import api from "../../services/api";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardEstacao from "../../components/CardEstacao/CardEstacao";
 import MapaEstacoes from "../../components/MapaEstacoes/MapaEstacoes";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Sensor {
   id: number;
@@ -15,6 +18,7 @@ interface Sensor {
 
 interface Estacao {
   id: number;
+  uid: string;
   nome: string;
   cep: string;
   rua: string;
@@ -29,21 +33,27 @@ interface Estacao {
 }
 
 export default function Estacoes() {
+
   const [estacoes, setEstacoes] = useState<Estacao[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
 
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
+
+  const estacoesFiltradas = estacoes.filter((estacao) =>
+    estacao.nome.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  );
+  
+
   useEffect(() => {
     const fetchEstacoes = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/estacoes/");
-        if (!response.ok) {
-          throw new Error("Falha ao buscar estações");
-        }
-        const data = await response.json();
-    
+        const response = await api.get("/estacoes/");
+        const data = response.data;
+  
         data.sort((a: Estacao, b: Estacao) => a.id - b.id);
-    
+  
         setEstacoes(data);
       } catch (err) {
         setError("Erro ao carregar estações");
@@ -52,9 +62,10 @@ export default function Estacoes() {
         setLoading(false);
       }
     };
-
+  
     fetchEstacoes();
   }, []);
+  
 
   return (
     <div className="pagina_wrapper">
@@ -64,12 +75,16 @@ export default function Estacoes() {
           <BarraCima nome="Estações" tipo="estacao" />
           <MapaEstacoes estacoes={estacoes} />
           <h4 className="num_cadastros">{estacoes.length} estações cadastradas</h4>
+
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="esta_lista">
-            {estacoes.length > 0 ? (
-              estacoes.map((estacao) => (
+            {estacoesFiltradas.length > 0 ? (
+              estacoesFiltradas.map((estacao) => (
                 <CardEstacao
                   key={estacao.id}
                   id={estacao.id.toString()}
+                  uid={estacao.uid}
                   titulo={estacao.nome}
                   ativo={estacao.status === "ativa"}
                   endereco={`${estacao.rua}, ${estacao.numero} - ${estacao.bairro}, ${estacao.cidade} - ${estacao.cep}`}
@@ -79,7 +94,7 @@ export default function Estacoes() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhuma estação cadastrada.</p>
+              <p className="card_nenhum">Nenhuma estação encontrada.</p>
             )}
           </div>
         </div>

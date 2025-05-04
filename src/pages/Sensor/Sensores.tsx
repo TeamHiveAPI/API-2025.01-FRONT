@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import api from "../../services/api";
+
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardSensor from "../../components/CardSensor/CardSensor";
 import CardTipoSensor from "../../components/CardTipoSensor/CardTipoSensor";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Sensor {
   id: string;
@@ -19,6 +23,7 @@ interface Sensor {
   fator_conversao: number;
   offset: number;
   tipo_parametro_id: number;
+  json: string;
 }
 
 interface TipoSensor {
@@ -31,33 +36,43 @@ export default function Sensores() {
   const [sensores, setSensores] = useState<Sensor[]>([]);
   const [tipos, setTipos] = useState<TipoSensor[]>([]);
 
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
+
+  const sensoresFiltrados = sensores.filter((sensor) =>
+    sensor.nome.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  );
+
   useEffect(() => {
-    fetch("http://localhost:8000/parametros")
-      .then((response) => {
-        if (!response.ok) throw new Error("Erro ao carregar sensores");
-        return response.json();
-      })
-      .then((data: Sensor[]) => {
+    const fetchSensores = async () => {
+      try {
+        const response = await api.get("/parametros");
+        const data: Sensor[] = response.data;
         const ordenados = data.sort((a, b) => Number(a.id) - Number(b.id));
         setSensores(ordenados);
-      })
-      .catch((err) => console.error(err));
+      } catch (err) {
+        console.error("Erro ao carregar sensores:", err);
+      }
+    };
+  
+    fetchSensores();
   }, []);
   
   useEffect(() => {
-    fetch("http://localhost:8000/tipo_parametros")
-      .then((response) => {
-        if (!response.ok) throw new Error("Erro ao carregar tipos de sensores");
-        return response.json();
-      })
-      .then((data: TipoSensor[]) => {
+    const fetchTipos = async () => {
+      try {
+        const response = await api.get("/tipo_parametros");
+        const data: TipoSensor[] = response.data;
         const ordenados = data.sort((a, b) => a.id - b.id);
         setTipos(ordenados);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+      } catch (err) {
+        console.error("Erro ao carregar tipos de sensores:", err);
+      }
+    };
   
-
+    fetchTipos();
+  }, []);  
+  
   return (
     <div className="pagina_wrapper">
       <Sidebar />
@@ -66,9 +81,11 @@ export default function Sensores() {
           <BarraCima nome="Sensores" tipo="sensor" />
           <h4 className="num_cadastros">{sensores.length} sensores cadastrados</h4>
 
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="lista_espaços_3">
-            {sensores.length > 0 ? (
-              sensores.map((sensor) => (
+            {sensoresFiltrados.length > 0 ? (
+              sensoresFiltrados.map((sensor) => (
                 <CardSensor
                   key={sensor.id}
                   id={sensor.id.toString()}
@@ -81,10 +98,11 @@ export default function Sensores() {
                   fator_conversao={sensor.fator_conversao}
                   offset={sensor.offset}
                   tipo_parametro_id={sensor.tipo_parametro_id}
+                  json={sensor.json}
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhum sensor cadastrado.</p>
+              <p className="card_nenhum">Nenhum sensor encontrado.</p>
             )}
           </div>
 

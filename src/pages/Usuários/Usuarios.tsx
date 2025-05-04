@@ -1,11 +1,14 @@
 import "./styles.scss";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardUsuario from "../../components/CardUsuario/CardUsuario";
+import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Usuario {
   id: number;
@@ -19,18 +22,21 @@ interface Usuario {
 export default function Usuarios() {
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  
+  const [searchText, setSearchText] = useState<string>("");
+  const debouncedSearchText = useDebounce(searchText, 250);
 
-  // Função para buscar os usuários do backend
+  const usuariosFiltrados = usuarios.filter((usuario) =>
+    usuario.nome.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+    usuario.email.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  );
+
   const fetchUsuarios = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/usuarios/");
-      if (!response.ok) {
-        throw new Error("Erro ao buscar usuários");
-      }
-      const data: Usuario[] = await response.json();
-      setUsuarios(data);
+      const res = await api.get("/usuarios");
+      setUsuarios(res.data);
     } catch (error) {
-      console.error("Erro:", error);
+      console.error("Erro ao buscar usuários:", error);
     }
   };
 
@@ -51,9 +57,11 @@ export default function Usuarios() {
 
           <h4 className="num_cadastros">{`${usuarios.length} usuários cadastrados`}</h4>
 
+          <InputPesquisa value={searchText} onChange={setSearchText} />
+
           <div className="usu_lista">
-            {usuarios.length > 0 ? (
-              usuarios.map((usuario) => (
+            {usuariosFiltrados.length > 0 ? (
+              usuariosFiltrados.map((usuario) => (
                 <CardUsuario
                   key={usuario.id}
                   id={usuario.id}
@@ -66,7 +74,7 @@ export default function Usuarios() {
                 />
               ))
             ) : (
-              <p className="card_nenhum">Nenhum usuário cadastrado.</p>
+              <p className="card_nenhum">Nenhum usuário encontrado.</p>
             )}
           </div>
         </div>

@@ -1,0 +1,49 @@
+@use "../../global.scss" as *;
+
+.tabela_container {
+    margin-top: 32px;
+    overflow-x: auto;
+  }
+  
+  .tabela_container table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+  
+  .tabela_container th, .tabela_container td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .tabela_container th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+    color: #404040;
+  }
+  
+  .tabela_container tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .botao_deletar {
+    background-color: #ED3C5C;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .botao_deletar:hover {
+    background-color: #d23245;
+  }
+  
+  .card_nenhum {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+  

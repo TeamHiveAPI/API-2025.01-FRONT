@@ -1,0 +1,283 @@
+@use "../../global.scss" as *;
+
+.caes_wrapper.caal {
+    width: 100%;
+    flex-direction: row;
+    gap: 80px;
+    z-index: 0;
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.caes_wrapper.caal:hover {
+  filter: brightness(98%);
+  cursor: pointer;
+}
+
+.caal_esq {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.caal_cima {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.caal_ativo {
+    width: 12px;
+    height: 12px;
+    background-color: $verde;
+    border-radius: 100px;
+}
+
+.caal_inativo {
+  width: 12px;
+  height: 12px;
+  background-color: #808080;
+  border-radius: 100px;
+}
+
+.caal_titulo {
+    max-width: 75%;
+    font-size: 16px;
+    font-weight: 600;
+    color: #404040;
+    padding-right: 16px;
+    border-right-style: solid;
+    border-right-width: 2px;
+    border-right-color: #C4C4C4;
+    font-family: Poppins;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.caal_tempo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #808080;
+    font-size: 14px;
+}
+
+.caal_tempo p {
+    font-family: Poppins;
+}
+
+.caal_meio {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 24px;
+    color: #606060;
+}
+
+.caal_mapa {
+    width: 175px;
+    height: 175px;
+    border-radius: 8px;
+    z-index: 5;
+    cursor: pointer;
+}
+
+.caal_mapa:hover {
+  filter: brightness(95%);
+}
+
+.caal_info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+
+    & p:first-child {
+        color: #404040;
+        font-weight: 600;
+        font-size: 16px;
+        font-family: "Poppins";
+    }
+
+    & p:last-child {
+        color: #808080;
+        font-weight: 500;
+        font-size: 15px;
+    }
+}
+
+.caal_info.mini {
+  gap: 8px;
+}
+
+.caal_dir {
+    position: relative;
+}
+
+.ripple_effect {
+    position: absolute; 
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  
+  .ripple_effect::after {
+    content: "";
+    position: absolute;
+    background: #404040;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-animation 4s infinite ease-out;
+    pointer-events: none;
+  }
+  
+  @keyframes ripple-animation {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    
+    100% {
+      transform: scale(5);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes ripple-spawn {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  .ripple_effect::before {
+    content: "";
+    position: absolute;
+    background: #404040;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-spawn 4s infinite ease-out;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -50px;
+  }
+
+.caal_expandir {
+  position: absolute;
+  right: 0;
+  bottom: -9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: #FAFAFA;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.caal_expandir svg {
+  transition: transform 0.25s ease;
+}
+
+.caal_expandir.aberto svg {
+  transform: rotate(-180deg);
+}
+
+.caal_expandir.aberto {
+  right: 0;
+  bottom: 0;
+  border-radius: 4px 0px 4px 0px;
+
+}
+
+.caal_cima.sem_margem {
+  margin-bottom: 0px;
+}
+
+.caal_info_esq {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.caal_baixo {
+  display: flex;
+  gap: 48px;
+}
+
+// Modal
+
+.modal_mapa {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal_overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal_content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: white;
+  width: 80vw;
+  height: 80vh;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modal_content .caal_mapa_modal {
+  width: 100%;
+  height: 100%;
+}
+
+.modal_mapa_cima {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+}
+
+.modal_mapa_cima p {
+  color: $roxo;
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.modal_mapa_cima svg {
+  padding: 2px;
+  background-color: #FFFFFF;
+  border-radius: 4px;
+}
+
+.modal_mapa_cima svg:hover {
+  filter: brightness(95%);
+  cursor: pointer;
+}

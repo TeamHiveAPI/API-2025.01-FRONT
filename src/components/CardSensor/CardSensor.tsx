@@ -14,6 +14,7 @@ interface CardSensorProps {
   fator_conversao: number;
   offset: number;
   tipo_parametro_id: number;
+  json: string;
 }
 
 export default function CardSensor({
@@ -25,7 +26,9 @@ export default function CardSensor({
   quantidade_casas_decimais,
   fator_conversao,
   offset,
-  tipo_parametro_id
+  tipo_parametro_id,
+  json
+
 }: CardSensorProps) {
   const navigate = useNavigate();
 
@@ -40,6 +43,7 @@ export default function CardSensor({
         fator_conversao,
         offset,
         tipo_parametro_id,
+        json
       },
     });
   };
