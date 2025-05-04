@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Footer from "../../components/Footer/Footer";
@@ -24,34 +23,30 @@ export default function Home() {
     sensorId: string | null;
     dataInicio: Date | null;
     dataFim: Date | null;
-    medida: "tudo" | "valor_minimo" | "valor_medio" | "valor_maximo" | "bruto";
   }>({
     estacaoId: null,
     sensorId: null,
     dataInicio: null,
     dataFim: null,
-    medida: "tudo",
   });
+  
 
-  const [visualizacao, setVisualizacao] = useState<"pequeno" | "grande">("pequeno");
   const [dashboardData, setDashboardData] = useState<{
     numEstacoes: number;
     numSensores: number;
     numAlertas: number;
     numUsuarios: number;
   } | null>(null);
-  const [medidas, setMedidas] = useState<any[]>([]);
-  const [dadosAgregados, setDadosAgregados] = useState<any[]>([]);
+  const [, setMedidas] = useState<any[]>([]);
+  const [, setDadosAgregados] = useState<any[]>([]);
+  const [detalhado, setDetalhado] = useState<boolean>(false);
   const [dadosAlerta, setDadosAlerta] = useState<Array<{
     estacao: string;
     horasAlerta: number;
     qtdAlertas: number;
   }>>([]);
-  const [dadosTiposAlertas, setDadosTiposAlertas] = useState<{ tipo: string; quantidade: number }[]>([]);
 
-  const handleVisualizacao = (tipo: "pequeno" | "grande") => {
-    setVisualizacao(tipo);
-  };
+  // const [dadosTiposAlertas, setDadosTiposAlertas] = useState<{ tipo: string; quantidade: number }[]>([]);
 
   // Função para buscar dados do dashboard
   const fetchDashboardData = async () => {
@@ -166,14 +161,14 @@ export default function Home() {
   
       console.log('Contagem por Tipo:', contagemPorTipo);
   
-      const dadosTipos = Object.entries(contagemPorTipo)
-        .map(([tipo, quantidade]) => ({
-          tipo,
-          quantidade: Number(quantidade)
-        }))
-        .filter(item => item.tipo !== "Desconhecido" && item.tipo !== "undefined");
+      // const dadosTipos = Object.entries(contagemPorTipo)
+      //  .map(([tipo, quantidade]) => ({
+      //    tipo,
+      //    quantidade: Number(quantidade)
+      //  }))
+      //  .filter(item => item.tipo !== "Desconhecido" && item.tipo !== "undefined");
   
-      setDadosTiposAlertas(dadosTipos);
+      // setDadosTiposAlertas(dadosTipos);
   
     } catch (err) {
       console.error("Erro ao carregar alertas:", err);
@@ -242,6 +237,14 @@ export default function Home() {
     }
   };
 
+  const tiposAlertaFake = [
+    { tipo: "Temperatura", quantidade: 12 },
+    { tipo: "Vento", quantidade: 7 },
+    { tipo: "Umidade", quantidade: 5 },
+    { tipo: "Pressão", quantidade: 3 },
+    { tipo: "Outros", quantidade: 2 },
+  ];
+
   // Carregar dados iniciais
   useEffect(() => {
     fetchDashboardData();
@@ -258,30 +261,8 @@ export default function Home() {
     fetchAlertas();
   }, [filtros, estacoes, tipoParametros]);
 
-  // Dados para GraficoSensor
-  const dadosTeste = {
-    estacao: {
-      id: Number(filtros.estacaoId),
-      nome: filtros.estacaoId ? estacoes[filtros.estacaoId] : "Estação",
-    },
-    sensor: {
-      id: Number(filtros.sensorId),
-      nome: filtros.sensorId ? sensores[filtros.sensorId]?.nome : "Sensor",
-      unidade: filtros.sensorId ? sensores[filtros.sensorId]?.unidade : "°C",
-    },
-    periodo: {
-      inicio: filtros.dataInicio ? filtros.dataInicio.toISOString().split("T")[0] : "",
-      fim: filtros.dataFim ? filtros.dataFim.toISOString().split("T")[0] : "",
-    },
-    dados: dadosAgregados,
-    dadosBrutos: medidas.map((m) => ({
-      data: new Date(m.data_hora * 1000).toISOString(),
-      valor_bruto: m.valor,
-    })),
-  };
 
   const todosFiltrosPreenchidos = filtros.estacaoId && filtros.sensorId && filtros.dataInicio && filtros.dataFim;
-  const dataInvalida = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
 
   const MiniCardAlerta = ({
     titulo,
@@ -406,76 +387,42 @@ export default function Home() {
 
           <div className="dashboard_grafico">
             <div className="dashboard_grafico_cima filtros">
-              <div className="dashboard_filtros_cima">
-                <p className="dashboard_filtros_titulo">Filtros</p>
-                <div className="dashboard_filtros_dir">
-                  <p>VISUALIZAÇÃO</p>
-                  <div className="dashboard_filtros_icones">
-                    <img
-                      src="./visu_pequeno.svg"
-                      onClick={() => handleVisualizacao("pequeno")}
-                      className={visualizacao === "grande" ? "visu_desativado" : ""}
-                      style={{ cursor: "pointer" }}
-                    />
-                    <img
-                      src="./visu_grande.svg"
-                      onClick={() => handleVisualizacao("grande")}
-                      className={visualizacao === "pequeno" ? "visu_desativado" : ""}
-                      style={{ cursor: "pointer" }}
-                    />
-                  </div>
-                </div>
-              </div>
               <GraficoFiltros
                 estacoes={estacoes}
                 sensores={sensores}
-                onFiltroChange={setFiltros}
+                onFiltroChange={(filtrosAtualizados) => {
+                  setFiltros(filtrosAtualizados.filtros);
+                  setDetalhado(filtrosAtualizados.detalhado);
+                }}
               />
             </div>
-
-            <div className={`dashboard_grafico_baixo ${visualizacao === "grande" ? "visu_grande" : "visu_pequeno"}`}>
-              <div className={`dashboard_grafico_unidade ${visualizacao === "grande" ? "visu_grande" : ""}`}>
-                {todosFiltrosPreenchidos && (
-                  dataInvalida ? (
-                    <p className="erro_datas">A data de início não pode ser depois da data de fim. Corrija para gerar o gráfico!</p>
-                  ) : (
+            
+            <div className="dashboard_grafico_wrapper">
+              <div className="dashboard_grafico_unidade gap_32">
+                {todosFiltrosPreenchidos &&
+                  sensores[filtros.sensorId!] &&
+                  estacoes[filtros.estacaoId!] && (
                     <GraficoSensor
-                      estacao={dadosTeste.estacao}
-                      sensor={dadosTeste.sensor}
-                      periodo={dadosTeste.periodo}
-                      dados={dadosTeste.dados}
-                      dadosBrutos={dadosTeste.dadosBrutos}
-                      medidaSelecionada={filtros.medida}
+                      key={`${filtros.estacaoId}-${filtros.sensorId}-${detalhado}`}
+                      estacaoId={filtros.estacaoId!}
+                      sensorId={filtros.sensorId!}
+                      estacaoNome={estacoes[filtros.estacaoId!]}
+                      sensorNome={sensores[filtros.sensorId!].nome}
+                      unidade={sensores[filtros.sensorId!].unidade}
+                      dataInicio={filtros.dataInicio!}
+                      dataFim={filtros.dataFim!}
+                      detalhado={detalhado}
                     />
-                  )
                 )}
               </div>
-              <div className={`dashboard_grafico_unidade ${visualizacao === "grande" ? "visu_grande" : ""}`}>
-                {todosFiltrosPreenchidos && (
-                  dataInvalida ? (
-                    <p className="erro_datas">A data de início não pode ser depois da data de fim. Corrija para gerar o gráfico!</p>
-                  ) : (
-                    <GraficoSensor
-                      estacao={dadosTeste.estacao}
-                      sensor={dadosTeste.sensor}
-                      periodo={dadosTeste.periodo}
-                      dados={dadosTeste.dados}
-                      dadosBrutos={dadosTeste.dadosBrutos}
-                      medidaSelecionada={filtros.medida}
-                      bruto={true}
-                    />
-                  )
-                )}
-              </div>
-            </div>
+              <div className="dashboard_grafico_baixo">
+                <div className="dashboard_grafico_unidade">
+                  <GraficoHorasAlerta dados={dadosAlerta} />
+                </div>
 
-            <div className={`dashboard_grafico_baixo ${visualizacao === "grande" ? "visu_grande" : "visu_pequeno"}`}>
-            <div className={`dashboard_grafico_unidade grande_temp ${visualizacao === "grande" ? "visu_grande" : ""}`}>
-              <GraficoHorasAlerta dados={dadosAlerta} />
-            </div>
-
-              <div className={`dashboard_grafico_unidade escondido_temp ${visualizacao === "grande" ? "visu_grande" : ""}`}>
-                <GraficoTiposAlerta dados={dadosTiposAlertas} />
+                <div className="dashboard_grafico_unidade">
+                  <GraficoTiposAlerta dados={tiposAlertaFake} />
+                </div>
               </div>
             </div>
           </div>

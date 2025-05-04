@@ -1,14 +1,10 @@
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import 'highcharts/highcharts-more';
+import 'highcharts/modules/exporting';
+import 'highcharts/modules/offline-exporting';
+import 'highcharts/modules/export-data';
+import 'highcharts/modules/full-screen';
 
 interface HorasAlertaPorEstacaoProps {
   dados: {
@@ -19,68 +15,100 @@ interface HorasAlertaPorEstacaoProps {
 }
 
 export default function GraficoHorasAlerta({ dados }: HorasAlertaPorEstacaoProps) {
-  // Ordena os dados por horas em alerta (do maior para o menor)
   const dadosOrdenados = [...dados].sort((a, b) => b.horasAlerta - a.horasAlerta);
 
-  const chartData = {
-    // Mostra o nome da estação e quantidade de alertas entre parênteses
-    labels: dadosOrdenados.map((item) => `${item.estacao}`),
-    datasets: [
+  const chartOptions: Highcharts.Options = {
+    chart: {
+      type: 'bar',
+      height: 500,
+      backgroundColor: 'transparent',
+      spacingTop: 128,
+      events: {
+        ...( {
+          afterFullscreenOpen: function () {
+            this.update({
+              chart: {
+                backgroundColor: "#ffffff"
+              }
+            });
+          },
+          afterFullscreenClose: function () {
+            this.update({
+              chart: {
+                backgroundColor: "transparent"
+              }
+            });
+          }
+        } as any )
+      }
+    },
+    title: { text: '' },
+    xAxis: {
+      categories: dadosOrdenados.map((item) => item.estacao),
+      title: { text: null },
+    },
+    yAxis: {
+      min: 0,
+      title: { text: 'Horas em Alerta' },
+      labels: {
+        formatter: function () {
+          const horas = Math.floor(Number(this.value));
+          return `${horas}h`;
+        },
+      },
+      tickInterval: 6
+    },
+    tooltip: {
+      formatter: function () {
+        const valor = this.y as number;
+        const horas = Math.floor(valor);
+        const minutos = Math.round((valor - horas) * 60);
+        return `${this.key}: <b>${horas}h ${minutos}min</b>`;
+      },
+    },
+    series: [
       {
-        label: "Horas em Alerta",
-        // Arredonda as horas para 2 casas decimais
-        data: dadosOrdenados.map((item) => Number(item.horasAlerta.toFixed(2))),
-        // Muda a cor baseado no tempo em alerta (rosa se > 6 horas, azul se <= 6 horas)
-        backgroundColor: dadosOrdenados.map((item) =>
-          item.horasAlerta > 6 ? "rgba(232, 132, 180, 0.8)" : "rgba(54, 162, 235, 0.8)"
-        ),
-        borderColor: dadosOrdenados.map((item) =>
-          item.horasAlerta > 6 ? "rgba(232, 132, 180, 1)" : "rgba(54, 162, 235, 1)"
-        ),
-        borderWidth: 1
+        name: 'Horas em Alerta',
+        type: 'bar',
+        data: dadosOrdenados.map((item) => ({
+          y: Number(item.horasAlerta.toFixed(2)),
+          color: "#5751D5"
+        })),
       },
     ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    indexAxis: "y" as const,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          // Formata o tooltip para mostrar horas e minutos
-          label: (tooltipItem: any) => {
-            const horas = Math.floor(tooltipItem.raw);
-            const minutos = Math.round((tooltipItem.raw - horas) * 60);
-            return `${horas}h ${minutos}min em alerta`;
-          },
-        },
-      },
+    exporting: {
+      enabled: true,
+      fallbackToExportServer: false,
+      libURL: "https://code.highcharts.com/modules/",
+      sourceWidth: 800,
+      sourceHeight: 400,
+      buttons: {
+        contextButton: {
+          align: "right",
+          verticalAlign: "top",
+          x: 0,
+          y: -96
+        }
+      }
     },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Horas em Alerta",
-        },
-        beginAtZero: true,
-      },
-      y: {
-        title: {
-          display: false
-        },
-      },
+    legend: {
+      enabled: false,
     },
+    credits: {
+      enabled: false,
+    }
   };
 
   return (
     <div className="grafico_wrapper">
       <h3>Horas em Alerta por Estação</h3>
-      {dados && dados.length > 0 ? (
-        <Bar data={chartData} options={chartOptions} />
+      <p>Todo o Período</p>
+      {dados.length > 0 ? (
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={chartOptions}
+          containerProps={{ className: "custom-highchart-container" }}
+        />
       ) : (
         <p>Nenhum dado de alerta disponível</p>
       )}

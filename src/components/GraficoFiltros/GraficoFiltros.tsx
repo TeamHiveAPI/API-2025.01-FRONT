@@ -10,12 +10,14 @@ import { ptBR } from "date-fns/locale/pt-BR";
 interface GraficoFiltrosProps {
   estacoes: Record<string, string>;
   sensores: Record<string, { nome: string; unidade: string }>;
-  onFiltroChange: (filtros: {
-    estacaoId: string | null;
-    sensorId: string | null;
-    dataInicio: Date | null;
-    dataFim: Date | null;
-    medida: "tudo" | "valor_minimo" | "valor_medio" | "valor_maximo"; // <-- removido "bruto" aqui
+  onFiltroChange: (data: {
+    filtros: {
+      estacaoId: string | null;
+      sensorId: string | null;
+      dataInicio: Date | null;
+      dataFim: Date | null;
+    };
+    detalhado: boolean;
   }) => void;
 }
 
@@ -24,12 +26,10 @@ export default function GraficoFiltros({ estacoes, sensores, onFiltroChange }: G
   const [sensorSelecionado, setSensorSelecionado] = useState<string | null>(null);
   const [dataInicio, setDataInicio] = useState<Date | null>(null);
   const [dataFim, setDataFim] = useState<Date | null>(null);
-  const [medidaSelecionada, setMedidaSelecionada] = useState<"tudo" | "valor_minimo" | "valor_medio" | "valor_maximo">("tudo");
+  const [modoVisualizacao, setModoVisualizacao] = useState<"agregado" | "detalhado">("agregado");
 
   registerLocale("pt-BR", ptBR);
 
-  // Inputs com opções pré selecionadas
-  
   useEffect(() => {
     const estacaoIds = Object.keys(estacoes);
     const sensorIds = Object.keys(sensores);
@@ -46,17 +46,18 @@ export default function GraficoFiltros({ estacoes, sensores, onFiltroChange }: G
     }
   }, [estacoes, sensores]);
 
-  // Atualizar o filtro toda vez que algum campo mudar
   useEffect(() => {
     onFiltroChange({
-      estacaoId: estacaoSelecionada,
-      sensorId: sensorSelecionado,
-      dataInicio,
-      dataFim,
-      medida: medidaSelecionada,
+      filtros: {
+        estacaoId: estacaoSelecionada,
+        sensorId: sensorSelecionado,
+        dataInicio,
+        dataFim,
+      },
+      detalhado: modoVisualizacao === "detalhado",
     });
-  }, [estacaoSelecionada, sensorSelecionado, dataInicio, dataFim, medidaSelecionada, onFiltroChange]);
-
+  }, [estacaoSelecionada, sensorSelecionado, dataInicio, dataFim, modoVisualizacao]);
+  
 
   return (
     <div className="home_filtros">
@@ -124,27 +125,17 @@ export default function GraficoFiltros({ estacoes, sensores, onFiltroChange }: G
       </div>
 
       <div className="ceal_gap_12 home_filtro_33">
-        <label className="label_separado">Visualização:</label>
+        <label className="label_separado">Modo de Visualização:</label>
         <Select
           options={[
-            { value: "tudo", label: "Tudo" },
-            { value: "valor_minimo", label: "Valor Mínimo" },
-            { value: "valor_medio", label: "Valor Médio" },
-            { value: "valor_maximo", label: "Valor Máximo" },
+            { value: "agregado", label: "Agregado (média, max. e min. por dia)" },
+            { value: "detalhado", label: "Detalhado (por horário)" },
           ]}
           value={{
-            value: medidaSelecionada,
-            label:
-              medidaSelecionada === "tudo"
-                ? "Tudo"
-                : medidaSelecionada === "valor_minimo"
-                ? "Valor Mínimo"
-                : medidaSelecionada === "valor_medio"
-                ? "Valor Médio"
-                : "Valor Máximo",
+            value: modoVisualizacao,
+            label: modoVisualizacao === "agregado" ? "Agregado" : "Detalhado",
           }}
-          onChange={(selected) => setMedidaSelecionada(selected?.value as any)}
-          placeholder="Selecione a visualização"
+          onChange={(selected) => setModoVisualizacao(selected?.value as any)}
           styles={styles_select}
         />
       </div>

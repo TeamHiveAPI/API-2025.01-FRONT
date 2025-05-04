@@ -1,208 +1,246 @@
-import { Line } from "react-chartjs-2";
-import { format } from 'date-fns';
-import "./styles.scss"
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from "chart.js";
+import { useEffect, useState } from "react";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
+import "highcharts/highcharts-more";
+import "highcharts/modules/exporting";
+import "highcharts/modules/offline-exporting";
+import "highcharts/modules/export-data";
+import "highcharts/modules/full-screen";
 
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-);
+import { format } from "date-fns";
+import "./styles.scss";
 
 interface GraficoProps {
-  estacao: {
-    id: number;
-    nome: string;
-  };
-  sensor: {
-    id: number;
-    nome: string;
-    unidade: string;
-  };
-  periodo: {
-    inicio: string;
-    fim: string;
-  };
-  dados: {
-    data: string;
-    valor_minimo: number;
-    valor_medio: number;
-    valor_maximo: number;
-  }[];
-  dadosBrutos?: {
-    data: string;
-    valor_bruto: number;
-  }[];
-  medidaSelecionada: "tudo" | "valor_minimo" | "valor_medio" | "valor_maximo" | "bruto";
-  bruto?: boolean;
+  estacaoId: string;
+  sensorId: string;
+  estacaoNome: string;
+  sensorNome: string;
+  unidade: string;
+  dataInicio: Date;
+  dataFim: Date;
+  detalhado: boolean;
+}
+
+interface Medida {
+  estacao_id: number;
+  parametro_id: number;
+  valor: number;
+  data_hora: number;
+  id: number;
 }
 
 export default function GraficoSensor({
-  estacao,
-  sensor,
-  periodo,
-  dados,
-  dadosBrutos,
-  medidaSelecionada,
-  bruto = false,
+  estacaoId,
+  sensorId,
+  estacaoNome,
+  sensorNome,
+  unidade,
+  dataInicio,
+  dataFim,
+  detalhado,
 }: GraficoProps) {
-
-  const dataInicioFormatada = format(new Date(periodo.inicio + "T00:00:00"), 'dd/MM');
-  const dataFimFormatada = format(new Date(periodo.fim + "T23:59:59"), 'dd/MM/yy');
-
-  const geraDatasets = () => {
-    if (bruto && dadosBrutos) {
-      return [
-        {
-          label: "Temperatura Bruta",
-          data: dadosBrutos.map((item) => item.valor_bruto),
-          borderColor: "rgba(255, 165, 0, 1)",
-          backgroundColor: "rgba(255, 165, 0, 0.2)",
-          fill: false,
-          tension: 0.5,
-          showLine: true,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-        },
-      ];
-    }
   
-    if (medidaSelecionada === "bruto" && dadosBrutos) {
-      return [
-        {
-          label: "Temperatura Bruta",
-          data: dadosBrutos.map((item) => item.valor_bruto),
-          borderColor: "rgba(255, 165, 0, 1)",
-          backgroundColor: "rgba(255, 165, 0, 0.2)",
-          fill: false,
-          tension: 0.5,
-          pointRadius: 2,
-          pointHoverRadius: 5,
-        },
-      ];
-    }
-    
-    if (medidaSelecionada === "tudo") {
-      return [
-        {
-          label: "Valor Mínimo",
-          data: dados.map((item) => item.valor_minimo),
-          borderColor: "rgba(0, 191, 255, 1)",
-          backgroundColor: "rgba(0, 191, 255, 0.2)",
-          fill: false,
-          tension: 0.5,
-        },
-        {
-          label: "Valor Médio",
-          data: dados.map((item) => item.valor_medio),
-          borderColor: "rgba(0, 255, 0, 1)",
-          backgroundColor: "rgba(0, 255, 0, 0.2)",
-          fill: false,
-          tension: 0.5,
-        },
-        {
-          label: "Valor Máximo",
-          data: dados.map((item) => item.valor_maximo),
-          borderColor: "rgba(255, 0, 0, 1)",
-          backgroundColor: "rgba(255, 0, 0, 0.2)",
-          fill: false,
-          tension: 0.5,
-        },
-      ];
-    }
-  
-    const cores = {
-      valor_minimo: "rgba(0, 191, 255, 1)",
-      valor_medio: "rgba(0, 255, 0, 1)",
-      valor_maximo: "rgba(255, 0, 0, 1)",
+  const [seriesData, setSeriesData] = useState<[number, number][]>([]);
+  const [agregadoData, setAgregadoData] = useState<
+    { data: number; min: number; max: number; media: number }[]
+  >([]);
+
+  const [, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMedidas = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/medidas");
+        const data: Medida[] = await res.json();
+
+        const fimCorrigido = new Date(dataFim);
+        fimCorrigido.setHours(23, 59, 59, 999);
+
+        const filtradas = data.filter((m) => {
+          const dataMedida = new Date(m.data_hora * 1000);
+          return (
+            m.estacao_id.toString() === estacaoId &&
+            m.parametro_id.toString() === sensorId &&
+            dataMedida >= dataInicio &&
+            dataMedida <= fimCorrigido
+          );
+        });
+
+        if (detalhado) {
+          const pontos: [number, number][] = filtradas.map((m) => [
+            m.data_hora * 1000,
+            parseFloat(m.valor.toFixed(2))
+          ]);
+          setSeriesData(pontos);
+        } else {
+          const agrupados: Record<string, number[]> = {};
+          filtradas.forEach((m) => {
+            const dataStr = new Date(m.data_hora * 1000).toISOString().split("T")[0];
+            if (!agrupados[dataStr]) agrupados[dataStr] = [];
+            agrupados[dataStr].push(m.valor);
+          });
+
+          const agregados = Object.entries(agrupados).map(([dia, valores]) => {
+            const date = new Date(dia + "T00:00:00").getTime();
+            const min = parseFloat(Math.min(...valores).toFixed(2));
+            const max = parseFloat(Math.max(...valores).toFixed(2));
+            const media = parseFloat((valores.reduce((a, b) => a + b, 0) / valores.length).toFixed(2));
+            return { data: date, min, max, media };
+          });
+          
+
+          setAgregadoData(agregados);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar medidas:", err);
+      }
     };
-  
-    const nomes = {
-      valor_minimo: "Valor Mínimo",
-      valor_medio: "Valor Médio",
-      valor_maximo: "Valor Máximo",
-    };
-  
-    if (medidaSelecionada === "valor_minimo" || medidaSelecionada === "valor_medio" || medidaSelecionada === "valor_maximo") {
-      return [
-        {
-          label: nomes[medidaSelecionada],
-          data: dados.map((item) => item[medidaSelecionada]),
-          borderColor: cores[medidaSelecionada],
-          backgroundColor: cores[medidaSelecionada],
-          fill: false,
-          tension: 0.5,
-        },
-      ];
-    }
-  
-    return [];
-  };
-  
-  const chartData = {
-    labels: bruto
-    ? dadosBrutos?.map((item) => format(new Date(item.data), 'dd/MM')) || []
-    : medidaSelecionada === "bruto"
-    ? dadosBrutos?.map((item) => format(new Date(item.data), 'dd/MM')) || []
-    : dados.map((item) => format(new Date(item.data + "T00:00:00"), 'dd/MM')),  
-    datasets: geraDatasets(),
-  };  
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-        labels: {
-          usePointStyle: true,
-          pointStyle: 'circle',
-        },
-      },
-      tooltip: {
-        mode: "index" as const,
-        intersect: false,
+    setSeriesData([]);
+    setLoading(true);
+  
+    fetchMedidas().then(() => {
+      setLoading(false);
+    });
+
+    fetchMedidas();
+  }, [estacaoId, sensorId, dataInicio, dataFim, detalhado]);
+  
+
+  const options: Highcharts.Options = {
+    chart: {
+      backgroundColor: "transparent",
+      spacingTop: 128,
+      height: 500,
+      events: {
+        ...( {
+          afterFullscreenOpen: function () {
+            this.update({
+              chart: {
+                backgroundColor: "#ffffff"
+              }
+            });
+          },
+          afterFullscreenClose: function () {
+            this.update({
+              chart: {
+                backgroundColor: "transparent"
+              }
+            });
+          }
+        } as any )
+      }
+  },
+    title: {
+      text: ""
+    },
+    subtitle: {
+      text: ""
+    },
+    xAxis: {
+      type: "datetime",
+      title: { text: detalhado ? "Data e Hora" : "Data" },
+      dateTimeLabelFormats: {
+        day: "%d/%m",
+        hour: "%d/%m %Hh",
+        minute: "%H:%M",
       },
     },
-    scales: {
-      y: {
-        beginAtZero: false,
-        title: {
-          display: true,
-          text: sensor.unidade,
-        },
-        grid: {
-          color: 'rgba(0,0,0,0.05)', // linhas do grid mais leves (opcional)
-        },
-      },
-      x: {
-        title: {
-          display: true,
-          text: "Data",
-        },
-        ticks: bruto ? {
-          autoSkip: true,
-          maxTicksLimit: 10,
-        } : {},
-        grid: {
-          color: 'rgba(0,0,0,0.05)',
-        },
-      },
+    yAxis: {
+      title: { text: unidade },
+    },
+    tooltip: {
+      xDateFormat: detalhado ? "%d/%m %H:%M" : "%d/%m",
+      valueSuffix: ` ${unidade}`,
+    },
+    exporting: {
+      enabled: true,
+      fallbackToExportServer: false,
+      libURL: "https://code.highcharts.com/modules/",
+      sourceWidth: 800,
+      sourceHeight: 400,
+      buttons: {
+        contextButton: {
+          align: "right",
+          verticalAlign: "top",
+          x: 0,
+          y: -96,
+        }
+      }
+    },
+    series: detalhado
+      ? [
+          {
+            type: "line",
+            name: "Valor Bruto",
+            data: seriesData,
+            marker: { enabled: false },
+            color: "#5751D5"
+          },
+        ]
+      : [
+          {
+            type: "arearange",
+            name: "Mínimo-Máximo",
+            data: agregadoData.map((d) => ({
+              x: d.data,
+              low: d.min,
+              high: d.max,
+            })),
+            color: "#8D87FB",
+            fillOpacity: 0.3,
+            marker: { enabled: false },
+          },
+          {
+            type: "line",
+            name: "Valor Médio",
+            data: agregadoData.map((d) => [d.data, d.media]),
+            zIndex: 1,
+            marker: {
+              enabled: true,
+              symbol: "circle",
+            },
+            color: "#5751D5"
+          },
+        ],
+    credits: {
+      enabled: false,
     },
   };
+
+  if (dataInicio > dataFim) {
+    return (
+      <div className="grafico_wrapper">
+        <h3>Variação de {sensorNome} - {estacaoNome}</h3>
+        <p>Período: {format(dataInicio, "dd/MM/yyyy")} até {format(dataFim, "dd/MM/yyyy")}</p>
+        <p className="sem_medidas">A data de início não pode ser maior que a data de fim.</p>
+      </div>
+    );
+  }
+
+  if (
+    (detalhado && seriesData.length === 0) ||
+    (!detalhado && agregadoData.length === 0)
+  ) {
+    return (
+      <div className="grafico_wrapper">
+        <h3>Variação de {sensorNome} - {estacaoNome}</h3>
+        <p>Período: {format(dataInicio, "dd/MM/yyyy")} até {format(dataFim, "dd/MM/yyyy")}</p>
+        <p className="sem_medidas">Nenhuma medida encontrada para este período.</p>
+      </div>
+    );
+  }
   
 
   return (
     <div className="grafico_wrapper">
-      <h3>
-        Variação de {sensor.nome} - {estacao.nome}
-      </h3>
-      <p>
-        Período: {dataInicioFormatada} até {dataFimFormatada}
-      </p>
-      <Line data={chartData} options={chartOptions} />
+      <h3>Variação de {sensorNome} - {estacaoNome}</h3>
+      <p>Período: {format(dataInicio, "dd/MM/yyyy")} até {format(dataFim, "dd/MM/yyyy")}</p>
+
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={options}
+      />
     </div>
   );
 }

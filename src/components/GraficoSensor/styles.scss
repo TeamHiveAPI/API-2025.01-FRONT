@@ -3,16 +3,14 @@
 .grafico_wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
 }
 
-.visu_grande .grafico_wrapper {
-    min-height: 320px;
-    padding-bottom: 44px;
-}
 
 .grafico_wrapper h3 {
+    width: 100%;
+    text-align: center;
     color: $roxo;
     margin-bottom: 12px;
     font-weight: 600;
@@ -20,7 +18,20 @@
 }
 
 .grafico_wrapper p {
+    width: 100%;
+    text-align: center;
     color: #808080;
-    margin-bottom: 32px;
+    margin-bottom: -84px;
     font-weight: 500;
+}
+
+.sem_medidas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #F5F5F5;
+    border-radius: 6px;
+    height: 256px;
+    margin-bottom: 0px !important;
 }
