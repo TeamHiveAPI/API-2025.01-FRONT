@@ -32,16 +32,33 @@ $vermelho-hover: #BE304A;
   font-family: "Montserrat";
 }
 
-.pagina_wrapper {
+.pagina_wrapper_login {
   display: flex;
-  flex-direction: row;
-  max-width: 1220px;
+  flex-direction: column;
 }
 
-.pagina_container {
+.pagina_container_login {
   margin-left: 15vw;
   padding: 48px;
   min-height: 100vh;
+}
+
+.pagina_wrapper_sem_login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagina_container_cima_sem_login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 128px;
+}
+
+.pagina_container_sem_login {
+  width: 1220px;
 }
 
 

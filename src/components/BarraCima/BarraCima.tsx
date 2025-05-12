@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IconChevronLeft, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 import "./styles.scss";
+import { AuthContext } from "../../context/AuthContext";
 
 interface BarraCimaProps {
   nome: string;
@@ -17,6 +18,9 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
   const [mostrarPesquisaInterna, setMostrarPesquisaInterna] = useState(false);
   const [animarBotaoPesquisa, setAnimarBotaoPesquisa] = useState(false);
   const [animarPesquisaInterna, setAnimarPesquisaInterna] = useState(false);
+
+  const auth = useContext(AuthContext);
+  const isAuthenticated = auth?.isAuthenticated ?? false;
 
   const navigate = useNavigate();
 
@@ -93,7 +97,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       <h1>{nome}</h1>
 
       {tipo === "home" && (
-        <div className="baci_pesquisa">
+        <div className={isAuthenticated ? "baci_pesquisa" : "baci_pesquisa interno_ativo"}>
           <IconSearch width={32} stroke={1.5} color="#606060" />
           <input
             type="text"
@@ -105,7 +109,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
         </div>
       )}
 
-      {tipo !== "home" && tipo !== "voltar" && mostrarPesquisaInterna && (
+      {(tipo !== "home" && tipo !== "voltar") && (mostrarPesquisaInterna || !isAuthenticated) && (
         <div className={`baci_pesquisa interno_ativo ${animarPesquisaInterna ? 'descer' : ''}`}>
           <IconSearch width={32} stroke={1.5} color="#606060" />
           <input
@@ -117,7 +121,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
         </div>
       )}
 
-      {tipo !== "home" && tipo !== "voltar" && (
+      {tipo !== "home" && tipo !== "voltar" && isAuthenticated && (
         <div className="baci_dir">
           
           <div className="botaoCTA_width_fixo">

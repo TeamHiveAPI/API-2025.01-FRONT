@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import "./styles.scss";
 import api from "../../services/api";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardAlerta from "../../components/CardAlerta/CardAlerta";
 import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
 import { useDebounce } from "../../hooks/useDebounce";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 export default function Alertas() {
   const [alertas, setAlertas] = useState<any[]>([]);
@@ -72,39 +71,35 @@ export default function Alertas() {
   }, []);
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima nome="Alertas" tipo="alerta" />
-
-          <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
-
-          <InputPesquisa value={searchText} onChange={setSearchText} />
-
-          <div className="lista_espaços_3">
-            {alertasFiltrados.length > 0 ? (
-              alertasFiltrados.map((alerta) => (
-                <CardAlerta
-                  key={alerta.id}
-                  id={alerta.id}
-                  titulo={`${alerta.sensor} ${alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"} ${alerta.num_condicao}${alerta.unidade}`}
-                  mensagem={alerta.mensagem}
-                  sensor={alerta.sensor}
-                  sensor_id={alerta.sensor_id}
-                  estacao={alerta.estacao}
-                  estacao_id={alerta.estacao_id}
-                  condicao={alerta.condicao}
-                  num_condicao={alerta.num_condicao}
-                />
-              ))
-            ) : (
-              <p className="card_nenhum">Nenhum alerta encontrado.</p>
-            )}
-          </div>
-        </div>
-        <Footer />
+    <PaginaWrapper>
+      <BarraCima nome="Alertas" tipo="alerta" />
+  
+      <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
+  
+      <InputPesquisa value={searchText} onChange={setSearchText} />
+  
+      <div className="lista_espaços_3">
+        {alertasFiltrados.length > 0 ? (
+          alertasFiltrados.map((alerta) => (
+            <CardAlerta
+              key={alerta.id}
+              id={alerta.id}
+              titulo={`${alerta.sensor} ${
+                alerta.condicao === "maior_igual" ? "maior ou igual a" : "menor que"
+              } ${alerta.num_condicao}${alerta.unidade}`}
+              mensagem={alerta.mensagem}
+              sensor={alerta.sensor}
+              sensor_id={alerta.sensor_id}
+              estacao={alerta.estacao}
+              estacao_id={alerta.estacao_id}
+              condicao={alerta.condicao}
+              num_condicao={alerta.num_condicao}
+            />
+          ))
+        ) : (
+          <p className="card_nenhum">Nenhum alerta encontrado.</p>
+        )}
       </div>
-    </div>
+    </PaginaWrapper>
   );
 }
