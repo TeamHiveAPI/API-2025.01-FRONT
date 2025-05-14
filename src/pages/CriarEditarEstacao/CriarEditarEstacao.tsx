@@ -5,13 +5,12 @@ import api from "../../services/api";
 import Select from "react-select";
 import "./styles.scss";
 import styles_select from "./styles_select";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import Swal from "sweetalert2";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 interface Sensor {
   value: string;
@@ -260,82 +259,76 @@ export default function CriarEditarEstacao() {
   }    
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima
-            nome={modoEdicao ? "Editar Estação" : "Criar Estação"}
-            tipo={"voltar"}
-            entidade={modoEdicao ? "Estação" : undefined}
-            onDelete={() => handleDelete(dadosRecebidos.id)}
+    <PaginaWrapper>
+      <BarraCima
+        nome={modoEdicao ? "Editar Estação" : "Criar Estação"}
+        tipo={"voltar"}
+        entidade={modoEdicao ? "Estação" : undefined}
+        onDelete={() => handleDelete(dadosRecebidos.id)}
+      />
+      <form onSubmit={handleSubmit}>
+        <div className="cees_cima">
+          <InputMelhor
+            label="Nome"
+            tag="nome"
+            width={50}
+            value={dadosEstacao.nome}
+            onChange={(e) => handleInputChange("nome", e.target.value)}
+            mostrarErro={errors.nome}
           />
-          <form onSubmit={handleSubmit}>
-            <div className="cees_cima">
-              <InputMelhor
-                label="Nome"
-                tag="nome"
-                width={50}
-                value={dadosEstacao.nome}
-                onChange={(e) => handleInputChange("nome", e.target.value)}
-                mostrarErro={errors.nome}
-              />
-              <div className="cees_cima_dir">
-                <h4>Estado Inicial</h4>
-                <div className="cees_cima_inputs">
-                  <div className={`cees_input_radius ${dadosEstacao.status ? "escolhido" : ""}`} onClick={() => handleStatusChange(true)}>
-                    <p>Ativo</p>
-                  </div>
-                  <div className={`cees_input_radius ${!dadosEstacao.status ? "escolhido" : ""}`} onClick={() => handleStatusChange(false)}>
-                    <p>Inativo</p>
-                  </div>
-                </div>
+          <div className="cees_cima_dir">
+            <h4>Estado Inicial</h4>
+            <div className="cees_cima_inputs">
+              <div className={`cees_input_radius ${dadosEstacao.status ? "escolhido" : ""}`} onClick={() => handleStatusChange(true)}>
+                <p>Ativo</p>
+              </div>
+              <div className={`cees_input_radius ${!dadosEstacao.status ? "escolhido" : ""}`} onClick={() => handleStatusChange(false)}>
+                <p>Inativo</p>
               </div>
             </div>
-            <p className="subtitulo">Endereço</p>
-            <div className="secao_input cima">
-              <InputMelhor label="Rua" tag="rua" width={33} value={dadosEstacao.rua} onChange={(e) => handleInputChange("rua", e.target.value)} mostrarErro={errors.rua} />
-              <InputMelhor label="Bairro" tag="bairro" width={33} value={dadosEstacao.bairro} onChange={(e) => handleInputChange("bairro", e.target.value)} mostrarErro={errors.bairro} />
-              <InputMelhor label="Cidade" tag="cidade" width={33} value={dadosEstacao.cidade} onChange={(e) => handleInputChange("cidade", e.target.value)} mostrarErro={errors.cidade} />
-            </div>
-            <div className="secao_input cima">
-              <InputMelhor label="CEP" tag="cep" width={25} value={dadosEstacao.cep} onChange={(e) => handleInputChange("cep", e.target.value)} maxLength={9} mostrarErro={errors.cep} />
-              <InputMelhor label="Número" tag="numero" width={25} value={dadosEstacao.numero} onChange={(e) => handleInputChange("numero", e.target.value)} mostrarErro={errors.numero} />
-              <InputMelhor label="Latitude" tag="latitude" width={33} value={dadosEstacao.latitude} onChange={(e) => handleInputChange("latitude", e.target.value)} mostrarErro={errors.latitude} />
-              <InputMelhor label="Longitude" tag="longitude" width={33} value={dadosEstacao.longitude} onChange={(e) => handleInputChange("longitude", e.target.value)} mostrarErro={errors.longitude} />
-            </div>
-            <div className="cees_card_endereco">
-              <h4>Endereço Formatado:</h4>
-              <p>
-                {dadosEstacao.rua && dadosEstacao.numero && dadosEstacao.bairro && dadosEstacao.cidade && dadosEstacao.cep
-                  ? `${dadosEstacao.rua}, ${dadosEstacao.numero} - ${dadosEstacao.bairro}, ${dadosEstacao.cidade} - ${dadosEstacao.cep}`
-                  : "Preencha todos os campos de endereço para gerar a formatação."}
-              </p>
-            </div>
-            <div className="cees_escolher_sensores cima">
-              <p className="subtitulo baixo">Sensores</p>
-              <Select
-                options={sensoresDisponiveis}
-                isMulti
-                placeholder="Selecione os sensores"
-                value={dadosEstacao.sensores}
-                onChange={handleSensoresChange}
-                styles={styles_select}
-              />
-            </div>
-            <div className="cima80">
-              <BotaoCTA
-                aparencia="primario"
-                cor="cor_primario"
-                escrito={modoEdicao ? "Atualizar Estação" : "Cadastrar Estação"}
-                img={<IconPlus stroke="2" />}
-                type="submit"
-              />
-            </div>
-          </form>
+          </div>
         </div>
-        <Footer />
-      </div>
-    </div>
-  );
+        <p className="subtitulo">Endereço</p>
+        <div className="secao_input cima">
+          <InputMelhor label="Rua" tag="rua" width={33} value={dadosEstacao.rua} onChange={(e) => handleInputChange("rua", e.target.value)} mostrarErro={errors.rua} />
+          <InputMelhor label="Bairro" tag="bairro" width={33} value={dadosEstacao.bairro} onChange={(e) => handleInputChange("bairro", e.target.value)} mostrarErro={errors.bairro} />
+          <InputMelhor label="Cidade" tag="cidade" width={33} value={dadosEstacao.cidade} onChange={(e) => handleInputChange("cidade", e.target.value)} mostrarErro={errors.cidade} />
+        </div>
+        <div className="secao_input cima">
+          <InputMelhor label="CEP" tag="cep" width={25} value={dadosEstacao.cep} onChange={(e) => handleInputChange("cep", e.target.value)} maxLength={9} mostrarErro={errors.cep} />
+          <InputMelhor label="Número" tag="numero" width={25} value={dadosEstacao.numero} onChange={(e) => handleInputChange("numero", e.target.value)} mostrarErro={errors.numero} />
+          <InputMelhor label="Latitude" tag="latitude" width={33} value={dadosEstacao.latitude} onChange={(e) => handleInputChange("latitude", e.target.value)} mostrarErro={errors.latitude} />
+          <InputMelhor label="Longitude" tag="longitude" width={33} value={dadosEstacao.longitude} onChange={(e) => handleInputChange("longitude", e.target.value)} mostrarErro={errors.longitude} />
+        </div>
+        <div className="cees_card_endereco">
+          <h4>Endereço Formatado:</h4>
+          <p>
+            {dadosEstacao.rua && dadosEstacao.numero && dadosEstacao.bairro && dadosEstacao.cidade && dadosEstacao.cep
+              ? `${dadosEstacao.rua}, ${dadosEstacao.numero} - ${dadosEstacao.bairro}, ${dadosEstacao.cidade} - ${dadosEstacao.cep}`
+              : "Preencha todos os campos de endereço para gerar a formatação."}
+          </p>
+        </div>
+        <div className="cees_escolher_sensores cima">
+          <p className="subtitulo baixo">Sensores</p>
+          <Select
+            options={sensoresDisponiveis}
+            isMulti
+            placeholder="Selecione os sensores"
+            value={dadosEstacao.sensores}
+            onChange={handleSensoresChange}
+            styles={styles_select}
+          />
+        </div>
+        <div className="cima80">
+          <BotaoCTA
+            aparencia="primario"
+            cor="cor_primario"
+            escrito={modoEdicao ? "Atualizar Estação" : "Cadastrar Estação"}
+            img={<IconPlus stroke="2" />}
+            type="submit"
+          />
+        </div>
+      </form>
+  </PaginaWrapper>
+  )
 }

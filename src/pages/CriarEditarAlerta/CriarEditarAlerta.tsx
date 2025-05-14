@@ -3,8 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import "./styles.scss";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
@@ -12,6 +10,7 @@ import BarraCima from "../../components/BarraCima/BarraCima";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import styles_select from "../CriarEditarEstacao/styles_select";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 export default function CriarEditarAlerta() {
   const location = useLocation();
@@ -206,126 +205,120 @@ export default function CriarEditarAlerta() {
   };
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima
-            nome={modoEdicao ? "Editar Alerta" : "Criar Alerta"}
-            tipo="voltar"
-            entidade={modoEdicao ? "Alerta" : undefined}
-            onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
-          />
+    <PaginaWrapper>
+      <BarraCima
+        nome={modoEdicao ? "Editar Alerta" : "Criar Alerta"}
+        tipo="voltar"
+        entidade={modoEdicao ? "Alerta" : undefined}
+        onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
+      />
 
-          <form onSubmit={handleSubmit}>
-            <div className="secao_input bottom">
-              <div className="ceal_gap_12">
-                <label className="label_separado" htmlFor="estacao_id">Estação</label>
-                <Select
-                  id="estacao_id"
-                  options={Object.entries(estacoes).map(([id, nome]) => ({
-                    value: id,
-                    label: `${nome} (ID ${id})`,
-                  }))}
-                  value={
-                    dadosAlerta.estacao_id
-                      ? {
-                          value: dadosAlerta.estacao_id,
-                          label: `${estacoes[dadosAlerta.estacao_id]} (ID ${dadosAlerta.estacao_id})`,
-                        }
-                      : null
-                  }
-                  onChange={(selected) =>
-                    handleInputChange("estacao_id", selected?.value || "")
-                  }
-                  placeholder="Selecione a estação"
-                  classNamePrefix="ceal id"
-                  styles={styles_select}
-                />
-                {errors.estacao_id && <p className="input_erro">Preencha este campo.</p>}
-              </div>
+      <form onSubmit={handleSubmit}>
+        <div className="secao_input bottom">
+          <div className="ceal_gap_12">
+            <label className="label_separado" htmlFor="estacao_id">Estação</label>
+            <Select
+              id="estacao_id"
+              options={Object.entries(estacoes).map(([id, nome]) => ({
+                value: id,
+                label: `${nome} (ID ${id})`,
+              }))}
+              value={
+                dadosAlerta.estacao_id
+                  ? {
+                      value: dadosAlerta.estacao_id,
+                      label: `${estacoes[dadosAlerta.estacao_id]} (ID ${dadosAlerta.estacao_id})`,
+                    }
+                  : null
+              }
+              onChange={(selected) =>
+                handleInputChange("estacao_id", selected?.value || "")
+              }
+              placeholder="Selecione a estação"
+              classNamePrefix="ceal id"
+              styles={styles_select}
+            />
+            {errors.estacao_id && <p className="input_erro">Preencha este campo.</p>}
+          </div>
 
-              <div className="ceal_gap_12">
-                <label className="label_separado" htmlFor="sensor_id">Sensor</label>
-                <Select
-                  id="sensor_id"
-                  options={Object.entries(sensores).map(([id, { nome, unidade }]) => ({
-                    value: id,
-                    label: `${nome} (${unidade}) - ID ${id}`,
-                  }))}
-                  value={
-                    dadosAlerta.sensor_id
-                      ? {
-                          value: dadosAlerta.sensor_id,
-                          label: `${sensores[dadosAlerta.sensor_id]?.nome} (${sensores[dadosAlerta.sensor_id]?.unidade}) - ID ${dadosAlerta.sensor_id}`,
-                        }
-                      : null
-                  }
-                  onChange={(selected) =>
-                    handleInputChange("sensor_id", selected?.value || "")
-                  }
-                  placeholder="Selecione o sensor"
-                  classNamePrefix="ceal id"
-                  styles={styles_select}
-                />
-                {errors.sensor_id && <p className="input_erro">Preencha este campo.</p>}
-              </div>
-            </div>
-
-            <p className="subtitulo">Configurações de Condição</p>
-
-            <div className="secao_input cima ceal">
-              <p className="ceal_escrito">Sensor mediu:</p>
-              <p className="ceal_escrito">{textoSensor}</p>
-              <div>
-                <Select
-                  options={options}
-                  value={selectedCondicao}
-                  onChange={handleCondicaoChange}
-                  placeholder="Selecione a condição"
-                  classNamePrefix="ceal"
-                  styles={styles_select}
-                />
-                {errors.condicao && (
-                  <p className="input_erro">Preencha este campo.</p>
-                )}
-              </div>
-              <div className="ceal_input_num_condicao">
-                <InputMelhor
-                  tag="num_condicao"
-                  width={50}
-                  value={dadosAlerta.num_condicao}
-                  onChange={(e) => handleInputChange("num_condicao", e.target.value)}
-                  mostrarErro={errors.num_condicao}
-                  placeholder="Número"
-                />
-              </div>
-            </div>
-
-            <div className="secao_input cima">
-              <InputMelhor
-                label="Mensagem"
-                tag="mensagem"
-                width={100}
-                value={dadosAlerta.mensagem}
-                onChange={(e) => handleInputChange("mensagem", e.target.value)}
-                mostrarErro={errors.mensagem}
-              />
-            </div>
-
-            <div className="cima80">
-              <BotaoCTA
-                aparencia="primario"
-                cor="cor_primario"
-                escrito={modoEdicao ? "Atualizar Alerta" : "Cadastrar Alerta"}
-                img={<IconPlus stroke="2" />}
-                type="submit"
-              />
-            </div>
-          </form>
+          <div className="ceal_gap_12">
+            <label className="label_separado" htmlFor="sensor_id">Sensor</label>
+            <Select
+              id="sensor_id"
+              options={Object.entries(sensores).map(([id, { nome, unidade }]) => ({
+                value: id,
+                label: `${nome} (${unidade}) - ID ${id}`,
+              }))}
+              value={
+                dadosAlerta.sensor_id
+                  ? {
+                      value: dadosAlerta.sensor_id,
+                      label: `${sensores[dadosAlerta.sensor_id]?.nome} (${sensores[dadosAlerta.sensor_id]?.unidade}) - ID ${dadosAlerta.sensor_id}`,
+                    }
+                  : null
+              }
+              onChange={(selected) =>
+                handleInputChange("sensor_id", selected?.value || "")
+              }
+              placeholder="Selecione o sensor"
+              classNamePrefix="ceal id"
+              styles={styles_select}
+            />
+            {errors.sensor_id && <p className="input_erro">Preencha este campo.</p>}
+          </div>
         </div>
-        <Footer />
-      </div>
-    </div>
+
+        <p className="subtitulo">Configurações de Condição</p>
+
+        <div className="secao_input cima ceal">
+          <p className="ceal_escrito">Sensor mediu:</p>
+          <p className="ceal_escrito">{textoSensor}</p>
+          <div>
+            <Select
+              options={options}
+              value={selectedCondicao}
+              onChange={handleCondicaoChange}
+              placeholder="Selecione a condição"
+              classNamePrefix="ceal"
+              styles={styles_select}
+            />
+            {errors.condicao && (
+              <p className="input_erro">Preencha este campo.</p>
+            )}
+          </div>
+          <div className="ceal_input_num_condicao">
+            <InputMelhor
+              tag="num_condicao"
+              width={50}
+              value={dadosAlerta.num_condicao}
+              onChange={(e) => handleInputChange("num_condicao", e.target.value)}
+              mostrarErro={errors.num_condicao}
+              placeholder="Número"
+            />
+          </div>
+        </div>
+
+        <div className="secao_input cima">
+          <InputMelhor
+            label="Mensagem"
+            tag="mensagem"
+            width={100}
+            value={dadosAlerta.mensagem}
+            onChange={(e) => handleInputChange("mensagem", e.target.value)}
+            mostrarErro={errors.mensagem}
+          />
+        </div>
+
+        <div className="cima80">
+          <BotaoCTA
+            aparencia="primario"
+            cor="cor_primario"
+            escrito={modoEdicao ? "Atualizar Alerta" : "Cadastrar Alerta"}
+            img={<IconPlus stroke="2" />}
+            type="submit"
+          />
+        </div>
+      </form>
+    </PaginaWrapper>
   );
 }
