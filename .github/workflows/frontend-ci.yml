@@ -1,41 +1,48 @@
-# Pipeline GitHub Actions: testes unitários e de integração
+# CI Frontend (Windows Runner)
+name: CI Frontend
 on:
   push:
-    branches: 
-      - main       # Executar em pushes para o branch 'main'
-      - develop    # e também para 'develop'
+    branches:
+      - main
+      - develop
   pull_request:
     branches:
-      - main       # Executar em PRs que targetam 'main'
-      - develop    # e PRs que targetam 'develop'
+      - main
+      - develop
 
 jobs:
   unit-tests:
-    name: "Testes Unitários"
-    runs-on: ubuntu-latest    # Runner Ubuntu para executar o job
+    name: Testes Unitários
+    runs-on: windows-latest           # Usa runner Windows para Node.js
     steps:
       - name: Checkout do código       # Faz o checkout do repositório
         uses: actions/checkout@v4
+
       - name: Setup Node.js            # Configura a versão do Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Instalar dependências    # Instala as dependências do projeto
+
+      - name: Instalar dependências    # Instala pacotes via npm
         run: npm ci
-      - name: Executar testes unitários  # Executa os testes unitários configurados
+
+      - name: Executar testes unitários  # Executa os testes unitários
         run: npm test
 
   integration-tests:
-    name: "Testes de Integração"
-    runs-on: ubuntu-latest    # Runner Ubuntu para executar o job
+    name: Testes de Integração
+    runs-on: windows-latest           # Usa runner Windows para Node.js
     steps:
       - name: Checkout do código         # Faz o checkout do repositório
         uses: actions/checkout@v4
+
       - name: Setup Node.js              # Configura a versão do Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Instalar dependências      # Instala as dependências do projeto
+
+      - name: Instalar dependências      # Instala pacotes via npm
         run: npm ci
-      - name: Executar testes de integração  # Executa os testes de integração (e.g. Cypress)
-        run: npm run test:integration      # Ajuste conforme o comando real de integração
+
+      - name: Executar testes de integração  # Roda testes de integração (ajuste comando conforme setup)
+        run: npm run test:integration
