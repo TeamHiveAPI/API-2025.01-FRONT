@@ -1,9 +1,16 @@
 import "./styles.scss";
 import { IconBrandGithubFilled } from "@tabler/icons-react";
 
-export default function Footer({ autenticado = true }: { autenticado?: boolean }) {
+export default function Footer({ autenticado = true, margem = false }: { autenticado?: boolean, margem?: boolean }) {
     
-    const footerClass = autenticado ? "footer_container" : "footer_container sem_login";
+    let footerClass = "footer_container";
+
+    if (!autenticado) {
+        footerClass += " sem_login";
+        if (margem) {
+            footerClass += " sem_margem";
+        }
+    }
 
     return (
         <footer className={footerClass}>
@@ -15,8 +22,8 @@ export default function Footer({ autenticado = true }: { autenticado?: boolean }
                 <div className="footer_dir">
                     <img src="../../logo_hive.svg" />
                     <a className="footer_botao" href="https://github.com/TeamHiveAPI/API-2025.01" 
-                    target="_blank" 
-                    rel="noopener noreferrer">
+                    target="_blank" rel="noopener noreferrer"
+                    >
                         <IconBrandGithubFilled color="white" />
                         GitHub
                     </a>

@@ -8,7 +8,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const links = [
-    { path: "/", label: "Aprendizado" },
+    { path: "/", label: "Home" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/historico-alerta", label: "Histórico" },
     { path: "/estacoes", label: "Estações" },

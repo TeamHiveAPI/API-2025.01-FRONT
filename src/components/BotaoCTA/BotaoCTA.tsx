@@ -25,12 +25,19 @@ const BotaoCTA: React.FC<BotaoProps> = ({ link, escrito, aparencia, cor, type = 
   // Gera a lista de classes dinamicamente
   const className = `${aparenciaEscolhida} ${corEscolhida} ${semEscrito} ${isPequeno} ${isDesativado}`.trim();
 
-  return link ? (
+return link ? (
+  link.startsWith("http") ? (
+    <a href={link} className={className} target="_blank" rel="noopener noreferrer">
+      {typeof img === "string" ? <img src={img} alt="Ícone" /> : img}
+      {escrito && <span>{escrito}</span>}
+    </a>
+  ) : (
     <Link to={link} className={className}>
       {typeof img === "string" ? <img src={img} alt="Ícone" /> : img}
       {escrito && <span>{escrito}</span>}
     </Link>
-  ) : (
+  )
+) : (
     <button type={type} className={className} onClick={onClick} disabled={desativado}>
       {typeof img === "string" ? <img src={img} alt="Ícone" /> : img}
       {escrito && <span>{escrito}</span>}

@@ -23,7 +23,7 @@ import GerarMedidasDev from "./pages/GerarMedidaDev/GerarMedidaDev";
 
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 
-import Aprendizagem from "./pages/Aprendizagem/Aprendizagem";
+import Aprendizagem from "./pages/Home/Home";
 
 export default function App() {
   return (

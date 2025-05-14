@@ -1,0 +1,74 @@
+[
+  {
+    "sensor": "Temperatura",
+    "condicao": "> 40°C",
+    "alerta": "Onda de Calor",
+    "risco": "Risco de desidratação, insolação, agravamento de doenças"
+  },
+  {
+    "sensor": "Temperatura",
+    "condicao": "< 5°C",
+    "alerta": "Frio Intenso",
+    "risco": "Risco para populações vulneráveis; necessidade de abrigo e agasalho"
+  },
+  {
+    "sensor": "Umidade Relativa",
+    "condicao": "< 20%",
+    "alerta": "Ar Seco",
+    "risco": "Agrava doenças respiratórias, risco de incêndios"
+  },
+  {
+    "sensor": "Pressão Atmosférica",
+    "condicao": "Queda > 5 hPa em 3h",
+    "alerta": "Mudança Rápida de Tempo",
+    "risco": "Indica aproximação de tempestades ou frentes frias"
+  },
+  {
+    "sensor": "Pluviosidade",
+    "condicao": "> 50 mm/h",
+    "alerta": "Chuva Intensa",
+    "risco": "Risco de alagamentos, enxurradas e deslizamentos"
+  },
+  {
+    "sensor": "Pluviosidade Acumulada",
+    "condicao": "> 100 mm/24h",
+    "alerta": "Acúmulo Crítico de Chuva",
+    "risco": "Alto risco de desastres naturais (alagamentos, desmoronamentos)"
+  },
+  {
+    "sensor": "Velocidade do Vento",
+    "condicao": "> 60 km/h",
+    "alerta": "Ventos Fortes",
+    "risco": "Risco de quedas de árvores, destelhamentos"
+  },
+  {
+    "sensor": "Velocidade do Vento",
+    "condicao": "> 100 km/h",
+    "alerta": "Rajadas Extremas",
+    "risco": "Danos estruturais, interrupções de energia"
+  },
+  {
+    "sensor": "Índice UV",
+    "condicao": "> 11",
+    "alerta": "Exposição Extrema ao Sol",
+    "risco": "Queimaduras graves, recomendação de evitar exposição direta"
+  },
+  {
+    "sensor": "Sismômetro",
+    "condicao": "> 3.5 (Escala Richter)",
+    "alerta": "Tremor Leve",
+    "risco": "Tremores perceptíveis, sem danos estruturais"
+  },
+  {
+    "sensor": "Sismômetro",
+    "condicao": "> 5.5",
+    "alerta": "Atividade Sísmica Moderada",
+    "risco": "Pode causar rachaduras, riscos em edificações frágeis"
+  },
+  {
+    "sensor": "Sismômetro",
+    "condicao": "> 6.5",
+    "alerta": "Terremoto Significativo",
+    "risco": "Potencial destrutivo, evacuações podem ser necessárias"
+  }
+]
