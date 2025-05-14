@@ -1,34 +1,41 @@
-name: React CI
-
+# Pipeline GitHub Actions: testes unitários e de integração
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: 
+      - main       # Executar em pushes para o branch 'main'
+      - develop    # e também para 'develop'
   pull_request:
     branches:
-      - main
-      - develop
+      - main       # Executar em PRs que targetam 'main'
+      - develop    # e PRs que targetam 'develop'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  unit-tests:
+    name: "Testes Unitários"
+    runs-on: ubuntu-latest    # Runner Ubuntu para executar o job
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v3
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout do código       # Faz o checkout do repositório
+        uses: actions/checkout@v4
+      - name: Setup Node.js            # Configura a versão do Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '22' 
-
-      - name: Instalar dependências
-        run: npm install
-
-      - name: Executar testes
+          node-version: '18'
+      - name: Instalar dependências    # Instala as dependências do projeto
+        run: npm ci
+      - name: Executar testes unitários  # Executa os testes unitários configurados
         run: npm test
-        continue-on-error: true 
 
-      - name: Build da aplicação
-        run: npm run build
+  integration-tests:
+    name: "Testes de Integração"
+    runs-on: ubuntu-latest    # Runner Ubuntu para executar o job
+    steps:
+      - name: Checkout do código         # Faz o checkout do repositório
+        uses: actions/checkout@v4
+      - name: Setup Node.js              # Configura a versão do Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Instalar dependências      # Instala as dependências do projeto
+        run: npm ci
+      - name: Executar testes de integração  # Executa os testes de integração (e.g. Cypress)
+        run: npm run test:integration      # Ajuste conforme o comando real de integração
