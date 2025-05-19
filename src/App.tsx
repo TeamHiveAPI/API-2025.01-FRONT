@@ -24,6 +24,7 @@ import GerarMedidasDev from "./pages/GerarMedidaDev/GerarMedidaDev";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 
 import Aprendizagem from "./pages/Home/Home";
+import PaginaPesquisa from "./pages/PaginaPesquisa/PaginaPesquisa";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/estacoes" element={<Estacoes />} />
           <Route path="/sensores" element={<Sensores />} />
           <Route path="/alertas" element={<Alertas />} />
+          <Route path="/pesquisa/:query" element={<PaginaPesquisa />} />
 
           {/* Estações protegidas */}
           <Route path="/estacoes/criar" element={<PrivateRoute><CriarEditarEstacao /></PrivateRoute>} />

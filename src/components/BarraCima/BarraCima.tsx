@@ -117,6 +117,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
             placeholder="Pesquise por informações"
             value={pesquisa}
             onChange={(e) => setPesquisa(e.target.value)}
+            onKeyDown={handleSearch}
           />
         </div>
       )}

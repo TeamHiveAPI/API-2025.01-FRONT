@@ -212,7 +212,7 @@ export default function GraficoSensor({
     return (
       <div className="grafico_wrapper">
         <h3>Variação de {sensorNome} - {estacaoNome}</h3>
-        <p>Período: {format(dataInicio, "dd/MM/yyyy")} até {format(dataFim, "dd/MM/yyyy")}</p>
+        <p className="grafico_wrapper_data">Período: {format(dataInicio, "dd/MM/yyyy")} até {format(dataFim, "dd/MM/yyyy")}</p>
         <p className="sem_medidas">A data de início não pode ser maior que a data de fim.</p>
       </div>
     );

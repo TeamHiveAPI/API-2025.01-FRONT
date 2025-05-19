@@ -6,6 +6,7 @@ interface InputPesquisaProps {
   placeholder?: string;
 }
 
+
 export default function InputPesquisa({ value, onChange, placeholder = "Pesquisar" }: InputPesquisaProps) {
   return (
     <div className="baci_pesquisa interno normal">

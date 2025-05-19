@@ -9,7 +9,7 @@ import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
 import { useDebounce } from "../../hooks/useDebounce";
 import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
-interface Usuario {
+export interface Usuario {
   id: number;
   nome: string;
   email: string;

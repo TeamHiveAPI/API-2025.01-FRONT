@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
 
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import "./styles.scss"
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 interface Medida {
   id: number;
@@ -109,9 +108,7 @@ export default function PaginaMedidasCRUD() {
   };
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
+    <PaginaWrapper>
         <div className="pagina_container">
             <h1 style={{ marginBottom: "64px", color: "#404040" }}>Medidas</h1>
 
@@ -206,9 +203,6 @@ export default function PaginaMedidasCRUD() {
             </table>
           </div>
         </div>
-        <Footer />
-      </div>
-    </div>
+      </PaginaWrapper>
   );
-  
 }

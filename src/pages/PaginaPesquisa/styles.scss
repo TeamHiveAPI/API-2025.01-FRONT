@@ -1,0 +1,10 @@
+@use "../../global.scss" as *;
+
+.pape_secao_entidade h5 {
+    color: $roxo;
+    font-family: "Poppins";
+    font-weight: 600;
+    font-size: 20px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}

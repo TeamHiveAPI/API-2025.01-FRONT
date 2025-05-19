@@ -76,7 +76,7 @@ export default function Alertas() {
   
       <h4 className="num_cadastros">{alertas.length} alertas cadastrados</h4>
   
-      <InputPesquisa value={searchText} onChange={setSearchText} />
+      <InputPesquisa value={searchText} onChange={setSearchText}/>
   
       <div className="lista_espaços_3">
         {alertasFiltrados.length > 0 ? (
