@@ -61,14 +61,12 @@ jobs:
       - name: Parar e remover container antigo
         shell: powershell
         run: |
-          # Stop the container if it exists
-          docker stop my-react-app 2>$null
+          docker stop my-react-app -ErrorAction SilentlyContinue
           if ($LASTEXITCODE -ne 0) {
             Write-Host "Container 'my-react-app' was not running."
           }
 
-          # Remove the container if it exists
-          docker rm my-react-app 2>$null
+          docker rm my-react-app -ErrorAction SilentlyContinue
           if ($LASTEXITCODE -ne 0) {
             Write-Host "Container 'my-react-app' was not found."
           }
