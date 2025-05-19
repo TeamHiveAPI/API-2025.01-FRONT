@@ -53,22 +53,27 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Parar e remover container antigo
+      - name: Parar e remover container antigo (otimizado)
         shell: powershell
         run: |
-          docker stop my-react-app || $true
-          docker rm my-react-app || $true
+          docker rm -f my-react-app || $true
 
-      - name: Baixar imagem mais recente
+      - name: Limpar imagens antigas (para liberar espaço)
+        shell: powershell
+        run: |
+          docker image prune -af --filter "until=24h"
+
+      - name: Baixar imagem mais recente (otimizado)
         shell: powershell
         run: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
 
-      - name: Iniciar novo container
+      - name: Iniciar novo container (otimizado)
         shell: powershell
-        run: |
+        run:
           docker run -d `
             --name my-react-app `
             -p 80:80 `
             --restart always `
+            --memory="512m" `
             ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
