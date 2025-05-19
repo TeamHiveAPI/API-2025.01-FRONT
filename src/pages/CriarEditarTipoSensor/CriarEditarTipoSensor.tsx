@@ -17,6 +17,7 @@ export default function CriarEditarTipoSensor() {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [dadosTipo, setDadosTipo] = useState({
     nome: "",
+    json: "",
     descricao: ""
   });
 
@@ -25,6 +26,7 @@ export default function CriarEditarTipoSensor() {
       setModoEdicao(true);
       setDadosTipo({
         nome: dadosRecebidos.nome || "",
+        json: dadosRecebidos.json || "",
         descricao: dadosRecebidos.descricao || ""
       });
     }
@@ -32,6 +34,7 @@ export default function CriarEditarTipoSensor() {
 
   const [errors, setErrors] = useState({
     nome: false,
+    json: false,
     descricao: false
   });
 
@@ -81,6 +84,7 @@ export default function CriarEditarTipoSensor() {
   
     const newErrors = {
       nome: !dadosTipo.nome,
+      json: !dadosTipo.json,
       descricao: !dadosTipo.descricao
     };
   
@@ -135,6 +139,17 @@ export default function CriarEditarTipoSensor() {
             onChange={(e) => handleInputChange("nome", e.target.value)}
             mostrarErro={errors.nome}
             placeholder="Ex: Temperatura, Umidade"
+          />
+
+          <InputMelhor
+            label="JSON"
+            tag="json"
+            width={50}
+            type="string"
+            value={dadosTipo.json}
+            onChange={(e) => handleInputChange("json", e.target.value)}
+            mostrarErro={errors.json}
+            placeholder="JSON"
           />
         </div>
 

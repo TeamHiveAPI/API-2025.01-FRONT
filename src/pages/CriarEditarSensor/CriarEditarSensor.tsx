@@ -32,8 +32,7 @@ export default function CriarEditarSensor() {
     quantidade_casas_decimais: "",
     fator_conversao: "",
     offset: "",
-    tipo_sensor_id: "",
-    json: "" // Adicione esta linha para incluir o campo json nos dado
+    tipo_sensor_id: ""
   });
  
   const [sensorTypes, setSensorTypes] = useState<TipoSensor[]>([]);
@@ -46,8 +45,6 @@ export default function CriarEditarSensor() {
     fator_conversao: false,
     offset: false,
     tipo_sensor_id: false,
-    json: false
- 
   });
  
   useEffect(() => {
@@ -77,8 +74,6 @@ export default function CriarEditarSensor() {
         fator_conversao: dadosRecebidos.fator_conversao?.toString() || "",
         offset: dadosRecebidos.offset?.toString() || "",
         tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || "",
-        json: dadosRecebidos.json || ""
-       
       });
     }
   }, [dadosRecebidos, sensorTypes]);  
@@ -112,8 +107,6 @@ export default function CriarEditarSensor() {
       fator_conversao: !dadosSensor.fator_conversao,
       offset: !dadosSensor.offset,
       tipo_sensor_id: !dadosSensor.tipo_sensor_id,
-      json:!dadosSensor.json
-     
     };
  
     setErrors(newErrors);
@@ -127,7 +120,6 @@ export default function CriarEditarSensor() {
       fator_conversao: Number(dadosSensor.fator_conversao),
       offset: Number(dadosSensor.offset),
       tipo_parametro_id: Number(dadosSensor.tipo_sensor_id),
-      json: dadosSensor.json
     };
  
     try {
@@ -142,7 +134,7 @@ export default function CriarEditarSensor() {
         title: modoEdicao ? "Sensor atualizado com sucesso!" : "Sensor cadastrado com sucesso!",
         confirmButtonColor: "#5751D5"
       }).then(() => navigate("/sensores"));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (error: any) {
       Swal.fire({
         icon: "error",
@@ -229,16 +221,6 @@ export default function CriarEditarSensor() {
             placeholder="Offset"
           />
 
-          <InputMelhor
-            label="JSON"
-            tag="json"
-            width={33}
-            type="string"
-            value={dadosSensor.json}
-            onChange={(e) => handleInputChange("json", e.target.value)}
-            mostrarErro={errors.json}
-            placeholder="JSON"
-          />
         </div>
 
         <div className="secao_input cima">
