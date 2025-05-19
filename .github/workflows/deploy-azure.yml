@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    environment: cicd
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -49,6 +50,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build-and-push
     runs-on: [self-hosted, windows, x64]
+    environment: cicd
     steps:
       - name: Docker Login
         uses: docker/login-action@v3
