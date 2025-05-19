@@ -15,12 +15,18 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
+
+      - name: Limpar cache desnecessário
+        run: |
+          npm cache clean --force
 
       - name: Instalar dependências
-        run: npm install
+        run: npm install --production
 
       - name: Build da aplicação
+        env:
+          NODE_OPTIONS: "--max-old-space-size=512"
         run: npm run build
 
       - name: Login no Docker Hub
