@@ -15,18 +15,12 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-
-      - name: Limpar cache desnecessário
-        run: |
-          npm cache clean --force
+          node-version: '18'
 
       - name: Instalar dependências
-        run: npm install --production
+        run: npm install
 
       - name: Build da aplicação
-        env:
-          NODE_OPTIONS: "--max-old-space-size=512"
         run: npm run build
 
       - name: Login no Docker Hub
@@ -53,27 +47,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Parar e remover container antigo (otimizado)
+      - name: Parar e remover container antigo
         shell: powershell
         run: |
-          docker rm -f my-react-app || $true
+          docker stop my-react-app || $true
+          docker rm my-react-app || $true
 
-      - name: Limpar imagens antigas (para liberar espaço)
-        shell: powershell
-        run: |
-          docker image prune -af --filter "until=24h"
-
-      - name: Baixar imagem mais recente (otimizado)
+      - name: Baixar imagem mais recente
         shell: powershell
         run: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
 
-      - name: Iniciar novo container (otimizado)
+      - name: Iniciar novo container
         shell: powershell
-        run:
+        run: |
           docker run -d `
             --name my-react-app `
             -p 80:80 `
             --restart always `
-            --memory="512m" `
             ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
