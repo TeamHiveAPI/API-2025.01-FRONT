@@ -61,8 +61,17 @@ jobs:
       - name: Parar e remover container antigo
         shell: powershell
         run: |
-          docker stop my-react-app || $true
-          docker rm my-react-app || $true
+          # Stop the container if it exists
+          docker stop my-react-app 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Container 'my-react-app' was not running."
+          }
+
+          # Remove the container if it exists
+          docker rm my-react-app 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Container 'my-react-app' was not found."
+          }
 
       - name: Limpar imagens antigas
         shell: powershell
