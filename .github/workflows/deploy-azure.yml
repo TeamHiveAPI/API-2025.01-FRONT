@@ -37,32 +37,37 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
 
-  deploy-app:
-    needs: build-and-push
-    runs-on: [self-hosted, windows, x64]
-    steps:
-      - name: Login no Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+deploy-app:
+  needs: build-and-push
+  runs-on: [self-hosted, windows, x64]
+  steps:
+    - name: Login no Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Parar e remover container antigo
-        shell: powershell
-        run: |
-          docker stop my-react-app || $true
-          docker rm my-react-app || $true
+    - name: Limpar espaço em disco
+      shell: powershell
+      run: |
+        docker system prune -a -f
+        docker volume prune -f
 
-      - name: Baixar imagem mais recente
-        shell: powershell
-        run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
+    - name: Parar e remover container antigo
+      shell: powershell
+      run: |
+        docker rm -f my-react-app || $true
 
-      - name: Iniciar novo container
-        shell: powershell
-        run: |
-          docker run -d `
-            --name my-react-app `
-            -p 80:80 `
-            --restart always `
-            ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
+    - name: Baixar imagem mais recente
+      shell: powershell
+      run: |
+        docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
+
+    - name: Iniciar novo container
+      shell: powershell
+      run: |
+        docker run -d `
+          --name my-react-app `
+          -p 80:80 `
+          --restart always `
+          ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
