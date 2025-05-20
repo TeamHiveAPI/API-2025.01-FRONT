@@ -53,7 +53,7 @@ jobs:
     environment: cicd
     steps:
       - name: Docker Login
-        shell: pwsh
+        shell: powershell
         run: |
           '${{ secrets.DOCKERHUB_TOKEN }}' | docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin'
 
