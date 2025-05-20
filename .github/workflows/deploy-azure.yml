@@ -58,17 +58,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Parar e remover container antigo
+      - name: Parar e remover container antigo (se existir)
         shell: powershell
         run: |
-          docker stop my-react-app -ErrorAction SilentlyContinue
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Container 'my-react-app' was not running."
-          }
+          $containerExists = docker ps -a --filter "name=my-react-app" --format "{{.Status}}" | Select-Object -First 1
 
-          docker rm my-react-app -ErrorAction SilentlyContinue
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Container 'my-react-app' was not found."
+          if ($containerExists) {
+              docker stop my-react-app
+              docker rm my-react-app
+
+              Write-Host "Container 'my-react-app' foi parado e removido."
           }
 
       - name: Limpar imagens antigas
