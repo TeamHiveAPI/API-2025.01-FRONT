@@ -52,11 +52,6 @@ jobs:
     runs-on: [self-hosted, windows, x64]
     environment: cicd
     steps:
-      - name: Docker Login
-        shell: powershell
-        run: |
-          '${{ secrets.DOCKERHUB_TOKEN }}' | docker login -u '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin'
-
       - name: Parar e remover container antigo (se existir)
         shell: powershell
         run: |
