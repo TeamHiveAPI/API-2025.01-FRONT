@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, json } from "react-router-dom";
 
 import styles_select from "../CriarEditarEstacao/styles_select";
 import api from "../../services/api";
@@ -11,6 +11,7 @@ import { IconPlus } from "@tabler/icons-react";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
+import { jsx } from "react/jsx-runtime";
  
 interface TipoSensor {
   id: number;
@@ -44,7 +45,8 @@ export default function CriarEditarSensor() {
     quantidade_casas_decimais: false,
     fator_conversao: false,
     offset: false,
-    tipo_sensor_id: false,
+    tipo_sensor_id: false
+    
   });
  
   useEffect(() => {
@@ -73,7 +75,8 @@ export default function CriarEditarSensor() {
         quantidade_casas_decimais: dadosRecebidos.quantidade_casas_decimais?.toString() || "",
         fator_conversao: dadosRecebidos.fator_conversao?.toString() || "",
         offset: dadosRecebidos.offset?.toString() || "",
-        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || "",
+        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || ""
+        
       });
     }
   }, [dadosRecebidos, sensorTypes]);  
@@ -106,7 +109,7 @@ export default function CriarEditarSensor() {
       quantidade_casas_decimais: !dadosSensor.quantidade_casas_decimais,
       fator_conversao: !dadosSensor.fator_conversao,
       offset: !dadosSensor.offset,
-      tipo_sensor_id: !dadosSensor.tipo_sensor_id,
+      tipo_sensor_id: !dadosSensor.tipo_sensor_id
     };
  
     setErrors(newErrors);
@@ -119,7 +122,8 @@ export default function CriarEditarSensor() {
       quantidade_casas_decimais: Number(dadosSensor.quantidade_casas_decimais),
       fator_conversao: Number(dadosSensor.fator_conversao),
       offset: Number(dadosSensor.offset),
-      tipo_parametro_id: Number(dadosSensor.tipo_sensor_id),
+      tipo_parametro_id: Number(dadosSensor.tipo_sensor_id)
+      
     };
  
     try {
@@ -220,6 +224,8 @@ export default function CriarEditarSensor() {
             mostrarErro={errors.offset}
             placeholder="Offset"
           />
+
+          
 
         </div>
 

@@ -26,6 +26,7 @@ export default function CriarEditarEstacao() {
 
   const [dadosEstacao, setDadosEstacao] = useState({
     nome: "",
+    uid: "",
     latitude: "",
     longitude: "",
     rua: "",
@@ -80,6 +81,7 @@ export default function CriarEditarEstacao() {
     const bairro = numeroBairro[1]?.trim() || "";
     const cidade = bairroCidadeCep[0]?.trim() || "";
     const cep = bairroCidadeCep[1]?.trim() || "";
+    const uid = dadosRecebidos.uid || "";
   
     // Espera os sensores serem carregados
     const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensor: { nome: string }) => {
@@ -91,6 +93,7 @@ export default function CriarEditarEstacao() {
   
     setDadosEstacao({
       nome: dadosRecebidos.titulo,
+      uid: dadosRecebidos.uid,
       latitude: dadosRecebidos.latitude,
       longitude: dadosRecebidos.longitude,
       rua,
@@ -108,6 +111,7 @@ export default function CriarEditarEstacao() {
 
   const [errors, setErrors] = useState({
     nome: false,
+    uid: false,
     latitude: false,
     longitude: false,
     rua: false,
@@ -163,6 +167,7 @@ export default function CriarEditarEstacao() {
 
     let newErrors = {
       nome: !dadosEstacao.nome,
+      uid: !dadosEstacao.uid,
       latitude: !dadosEstacao.latitude || isNaN(parseFloat(dadosEstacao.latitude)),
       longitude: !dadosEstacao.longitude || isNaN(parseFloat(dadosEstacao.longitude)),
       rua: !dadosEstacao.rua,
@@ -186,6 +191,7 @@ export default function CriarEditarEstacao() {
 
     const dadosParaEnviar = {
       nome: dadosEstacao.nome,
+      uid: dadosEstacao.uid,
       cep: dadosEstacao.cep,
       rua: dadosEstacao.rua,
       bairro: dadosEstacao.bairro,
@@ -221,6 +227,7 @@ export default function CriarEditarEstacao() {
         if (!modoEdicao) {
           setDadosEstacao({
             nome: "",
+            uid: "",
             latitude: "",
             longitude: "",
             rua: "",
@@ -318,6 +325,16 @@ export default function CriarEditarEstacao() {
             onChange={handleSensoresChange}
             styles={styles_select}
           />
+        <div style={{ marginTop: "16px" }}>
+          <InputMelhor label="UID" 
+          tag="uid" width={33} 
+          value={dadosEstacao.uid} 
+          onChange={(e) => handleInputChange("uid", e.target.value)}
+          mostrarErro={errors.uid} 
+          />
+          </div>
+
+
         </div>
         <div className="cima80">
           <BotaoCTA

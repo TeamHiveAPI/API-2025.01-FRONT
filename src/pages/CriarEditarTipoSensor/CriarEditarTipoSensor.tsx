@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { json, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
@@ -95,12 +95,14 @@ export default function CriarEditarTipoSensor() {
       if (modoEdicao && dadosRecebidos?.id) {
         await api.put(`/tipo_parametros/${dadosRecebidos.id}`, {
           nome: dadosTipo.nome,
-          descricao: dadosTipo.descricao
+          descricao: dadosTipo.descricao,
+          json: dadosTipo.json
         });
       } else {
         await api.post("/tipo_parametros/", {
           nome: dadosTipo.nome,
-          descricao: dadosTipo.descricao
+          descricao: dadosTipo.descricao,
+          json: dadosTipo.json
         });
       }
     
