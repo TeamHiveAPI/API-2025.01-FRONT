@@ -25,7 +25,6 @@ export default function PaginaPesquisa() {
         const res = await api.get(`/pesquisa?query=${query}`);
         setTipo(res.data.tipo);
 
-        // Se veio resultado simples (ex: só estacao), adapta para formato multiplo
         if (res.data.tipo !== "multiplo") {
           setResultados({ [res.data.tipo]: res.data.resultados });
         } else {
@@ -50,7 +49,7 @@ export default function PaginaPesquisa() {
         navigate(`/usuarios/editar/${usuario.id}`, { state: usuario });
   };
 
-  return (
+return (
     <PaginaWrapper>
       <BarraCima nome="Pesquisa" tipo="home" />
       <h4 className="num_cadastros">
@@ -63,7 +62,14 @@ export default function PaginaPesquisa() {
 
       {/* Estações */}
       <div className="pape_secao_entidade">
-        <h5>Estações</h5>
+        <h5>
+          Estações{" "}
+          {(resultados.estacao?.length || 0) > 0 && (
+            <span className="pape_badge">
+              {(resultados.estacao?.length || 0).toString().padStart(2, "0")}
+            </span>
+          )}
+        </h5>
         <div className="esta_lista">
           {resultados.estacao?.length > 0 ? (
             resultados.estacao.map((estacao) => (
@@ -87,7 +93,14 @@ export default function PaginaPesquisa() {
 
       {/* Sensores */}
       <div className="pape_secao_entidade">
-        <h5>Sensores</h5>
+        <h5>
+          Sensores{" "}
+          {(resultados.sensor?.length || 0) > 0 && (
+            <span className="pape_badge">
+              {(resultados.sensor?.length || 0).toString().padStart(2, "0")}
+            </span>
+          )}
+        </h5>
         <div className="lista_espaços_3">
           {resultados.sensor?.length > 0 ? (
             resultados.sensor.map((sensor) => (
@@ -114,7 +127,14 @@ export default function PaginaPesquisa() {
 
       {/* Tipos de Sensores */}
       <div className="pape_secao_entidade">
-        <h5>Tipos de Sensores</h5>
+        <h5>
+          Tipos de Sensores{" "}
+          {(resultados.tipo_sensor?.length || 0) > 0 && (
+            <span className="pape_badge">
+              {(resultados.tipo_sensor?.length || 0).toString().padStart(2, "0")}
+            </span>
+          )}
+        </h5>
         <div className="lista_espaços_3">
           {resultados.tipo_sensor?.length > 0 ? (
             resultados.tipo_sensor.map((tipo) => (
@@ -133,7 +153,14 @@ export default function PaginaPesquisa() {
 
       {/* Alertas */}
       <div className="pape_secao_entidade">
-        <h5>Alertas</h5>
+        <h5>
+          Alertas{" "}
+          {(resultados.alerta_definido?.length || 0) > 0 && (
+            <span className="pape_badge">
+              {(resultados.alerta_definido?.length || 0).toString().padStart(2, "0")}
+            </span>
+          )}
+        </h5>
         <div className="lista_espaços_3">
           {resultados.alerta_definido?.length > 0 ? (
             resultados.alerta_definido.map((alerta) => (
@@ -160,7 +187,14 @@ export default function PaginaPesquisa() {
 
       {/* Usuários */}
       <div className="pape_secao_entidade">
-        <h5>Usuários</h5>
+        <h5>
+          Usuários{" "}
+          {(resultados.usuario?.length || 0) > 0 && (
+            <span className="pape_badge">
+              {(resultados.usuario?.length || 0).toString().padStart(2, "0")}
+            </span>
+          )}
+        </h5>
         <div className="usu_lista">
           {resultados.usuario?.length > 0 ? (
             resultados.usuario.map((usuario) => (
