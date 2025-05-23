@@ -41,11 +41,13 @@ export default function Home() {
 
     <div className="apr_wrapper">
 
-      <div className="secao_duo_container">
+      <div className="secao_duo_container center">
         <div className="secao_duo_esq">
           <h3>Introdução</h3>
           <p>
             Compreender os dados climáticos é essencial para antecipar riscos e agir com segurança.
+            <br />
+            <br />
             Nesta página, você aprenderá como funcionam os principais sensores das nossas estações e 
             o que cada medida pode indicar sobre o clima.
           </p>

@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IconChevronLeft, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconHelpCircle, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 import "./styles.scss";
 import { AuthContext } from "../../context/AuthContext";
+import ModalHelp from "../ModalHelp/ModalHelp";
 
 interface BarraCimaProps {
   nome: string;
@@ -18,6 +19,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
   const [mostrarPesquisaInterna, setMostrarPesquisaInterna] = useState(false);
   const [animarBotaoPesquisa, setAnimarBotaoPesquisa] = useState(false);
   const [animarPesquisaInterna, setAnimarPesquisaInterna] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const auth = useContext(AuthContext);
   const isAuthenticated = auth?.isAuthenticated ?? false;
@@ -97,15 +99,20 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       <h1>{nome}</h1>
 
       {tipo === "home" && (
-        <div className={isAuthenticated ? "baci_pesquisa" : "baci_pesquisa interno_ativo"}>
-          <IconSearch width={32} stroke={1.5} color="#606060" />
-          <input
-            type="text"
-            placeholder="Pesquise por informações"
-            value={pesquisa}
-            onChange={(e) => setPesquisa(e.target.value)}
-            onKeyDown={handleSearch}
-          />
+        <div className="baci_wrapper_help">
+          <div className={isAuthenticated ? "baci_pesquisa" : "baci_pesquisa interno_ativo"}>
+            <IconSearch width={32} stroke={1.5} color="#606060" />
+            <input
+              type="text"
+              placeholder="Pesquise por informações"
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+              onKeyDown={handleSearch}
+            />
+          </div>
+          <button className="baci_help" onClick={() => setMostrarModal(true)}>
+            <IconHelpCircle stroke={1.5} color={"#808080"} />
+          </button>
         </div>
       )}
 
@@ -166,6 +173,12 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
           )}
         </div>
       )}
+
+      <ModalHelp
+        isOpen={mostrarModal}
+        onClose={() => setMostrarModal(false)}
+      >
+      </ModalHelp>
     </div>
   );
 }

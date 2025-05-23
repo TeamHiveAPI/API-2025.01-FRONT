@@ -66,6 +66,10 @@
   width: 1220px;
 }
 
+.secao_duo_container.center {
+    align-items: center;
+}
+
 .secao_duo_esq {
   width: 50%;
 }
@@ -98,6 +102,7 @@
 
 .secao_duo_dir.introducao {
   background-image: url("./ilustracao_introducao.jpg");
+  min-height: 320px;
 }
 
 .secao_meio {
