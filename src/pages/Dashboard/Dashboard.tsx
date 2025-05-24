@@ -45,6 +45,11 @@ export default function Dashboard() {
     qtdAlertas: number;
   }>>([]);
 
+  const [dadosTiposAlertas, setDadosTiposAlertas] = useState<Array<{
+  tipo_alerta: string;
+  total_alertas: number;
+}>>([]);
+
   // const [dadosTiposAlertas, setDadosTiposAlertas] = useState<{ tipo: string; quantidade: number }[]>([]);
 
   // Função para buscar dados do dashboard
@@ -168,6 +173,13 @@ export default function Dashboard() {
       //  .filter(item => item.tipo !== "Desconhecido" && item.tipo !== "undefined");
   
       // setDadosTiposAlertas(dadosTipos);
+
+    const resTotalPorTipo = await fetch("http://localhost:8000/tempo-em-alerta-por-estacao/total-por-tipo");
+    const dadosTotalPorTipo = await resTotalPorTipo.json();
+    setDadosTiposAlertas(dadosTotalPorTipo);
+
+    // Adicionar console.log para debug
+    console.log('Dados dos tipos de alerta:', dadosTotalPorTipo);
   
     } catch (err) {
       console.error("Erro ao carregar alertas:", err);
@@ -236,13 +248,13 @@ export default function Dashboard() {
     }
   };
 
-  const tiposAlertaFake = [
-    { tipo: "Temperatura", quantidade: 12 },
-    { tipo: "Vento", quantidade: 7 },
-    { tipo: "Umidade", quantidade: 5 },
-    { tipo: "Pressão", quantidade: 3 },
-    { tipo: "Outros", quantidade: 2 },
-  ];
+  // const tiposAlertaFake = [
+  //   { tipo: "Temperatura", quantidade: 12 },
+  //   { tipo: "Vento", quantidade: 7 },
+  //   { tipo: "Umidade", quantidade: 5 },
+  //   { tipo: "Pressão", quantidade: 3 },
+  //   { tipo: "Outros", quantidade: 2 },
+  // ];
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -417,7 +429,7 @@ export default function Dashboard() {
               </div>
     
               <div className="dashboard_grafico_unidade">
-                <GraficoTiposAlerta dados={tiposAlertaFake} />
+                <GraficoTiposAlerta dados={dadosTiposAlertas} />
               </div>
             </div>
           </div>

@@ -8,13 +8,13 @@ import "highcharts/modules/full-screen";
 
 interface TiposAlertaProps {
   dados: {
-    tipo: string;
-    quantidade: number;
+    tipo_alerta: string;
+    total_alertas: number;
   }[];
 }
 
 export default function GraficoTiposAlerta({ dados }: TiposAlertaProps) {
-  const total = dados.reduce((acc, item) => acc + item.quantidade, 0);
+  const total = dados.reduce((acc, item) => acc + item.total_alertas, 0);
 
   const chartOptions: Highcharts.Options = {
     chart: {
@@ -81,8 +81,8 @@ export default function GraficoTiposAlerta({ dados }: TiposAlertaProps) {
         type: "pie",
         name: "Tipos de Alertas",
         data: dados.map((item, index) => ({
-          name: item.tipo,
-          y: item.quantidade,
+          name: item.tipo_alerta,
+          y: item.total_alertas,
           color: [
             "rgba(255, 99, 132, 0.7)",
             "rgba(54, 162, 235, 0.7)",
