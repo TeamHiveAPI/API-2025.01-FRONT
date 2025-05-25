@@ -103,15 +103,11 @@ export default function GraficoHorasAlerta({ dados }: HorasAlertaPorEstacaoProps
     <div className="grafico_wrapper">
       <h3>Horas em Alerta por Estação</h3>
       <p className="grafico_wrapper_data">Todo o Período</p>
-      {dados.length > 0 ? (
         <HighchartsReact
           highcharts={Highcharts}
           options={chartOptions}
           containerProps={{ className: "custom-highchart-container" }}
         />
-      ) : (
-        <p className="grafico_wrapper_nenhum">Nenhum dado de alerta disponível</p>
-      )}
     </div>
   );
 }

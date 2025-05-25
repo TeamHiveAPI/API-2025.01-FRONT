@@ -81,7 +81,6 @@ export default function CriarEditarEstacao() {
     const bairro = numeroBairro[1]?.trim() || "";
     const cidade = bairroCidadeCep[0]?.trim() || "";
     const cep = bairroCidadeCep[1]?.trim() || "";
-    const uid = dadosRecebidos.uid || "";
   
     // Espera os sensores serem carregados
     const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensor: { nome: string }) => {
@@ -325,26 +324,27 @@ export default function CriarEditarEstacao() {
             onChange={handleSensoresChange}
             styles={styles_select}
           />
-        <div style={{ marginTop: "16px" }}>
-          <InputMelhor label="UID" 
-          tag="uid" width={33} 
-          value={dadosEstacao.uid} 
-          onChange={(e) => handleInputChange("uid", e.target.value)}
-          mostrarErro={errors.uid} 
+          
+        <div className="secao_input cima">
+          <InputMelhor 
+            label="UID" 
+            tag="uid" width={33} 
+            value={dadosEstacao.uid} 
+            onChange={(e) => handleInputChange("uid", e.target.value)}
+            mostrarErro={errors.uid} 
           />
+        </div>
+
+        </div>
+          <div className="cima80">
+            <BotaoCTA
+              aparencia="primario"
+              cor="cor_primario"
+              escrito={modoEdicao ? "Atualizar Estação" : "Cadastrar Estação"}
+              img={<IconPlus stroke="2" />}
+              type="submit"
+            />
           </div>
-
-
-        </div>
-        <div className="cima80">
-          <BotaoCTA
-            aparencia="primario"
-            cor="cor_primario"
-            escrito={modoEdicao ? "Atualizar Estação" : "Cadastrar Estação"}
-            img={<IconPlus stroke="2" />}
-            type="submit"
-          />
-        </div>
       </form>
   </PaginaWrapper>
   )

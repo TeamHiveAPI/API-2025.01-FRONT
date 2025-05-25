@@ -7,6 +7,19 @@
     width: 100%;
 }
 
+.grafico_wrapper.nenhum {
+    align-items: center;
+    justify-content: center;
+}
+
+.grafico_wrapper.nenhum h3 {
+    margin-top: 0px;
+}
+
+.grafico_wrapper.nenhum p {
+    margin-bottom: 0px;
+}
+
 
 .grafico_wrapper h3 {
     width: 100%;
@@ -34,6 +47,7 @@
     border-radius: 6px;
     height: 256px;
     margin-bottom: 0px !important;
+    margin-top: 24px;
 }
 
 .grafico_wrapper_nenhum {

@@ -100,7 +100,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
 
       {tipo === "home" && (
         <div className="baci_wrapper_help">
-          <div className={isAuthenticated ? "baci_pesquisa" : "baci_pesquisa interno_ativo"}>
+          <div className="baci_pesquisa">
             <IconSearch width={32} stroke={1.5} color="#606060" />
             <input
               type="text"
@@ -117,7 +117,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       )}
 
       {(tipo !== "home" && tipo !== "voltar") && (mostrarPesquisaInterna || !isAuthenticated) && (
-        <div className={`baci_pesquisa interno_ativo ${animarPesquisaInterna ? 'descer' : ''}`}>
+        <div className={`baci_pesquisa ${animarPesquisaInterna ? 'descer' : ''}`}>
           <IconSearch width={32} stroke={1.5} color="#606060" />
           <input
             type="text"

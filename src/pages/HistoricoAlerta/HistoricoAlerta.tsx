@@ -85,7 +85,7 @@ export default function Home() {
 
   return (
     <PaginaWrapper>
-      <BarraCima nome="Histórico" tipo="home" />
+      <BarraCima nome="Histórico" tipo="usuario" />
   
       <h4 className="hial_subtitulo">Alertas Ativos</h4>
       {alertasAtivos.length > 0 ? (

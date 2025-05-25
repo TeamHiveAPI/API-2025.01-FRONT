@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { json, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
 import InputMelhor from "../../components/InputMelhor/InputMelhor";

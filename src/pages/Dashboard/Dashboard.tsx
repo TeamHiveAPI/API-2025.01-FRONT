@@ -50,9 +50,7 @@ export default function Dashboard() {
   total_alertas: number;
 }>>([]);
 
-  // const [dadosTiposAlertas, setDadosTiposAlertas] = useState<{ tipo: string; quantidade: number }[]>([]);
 
-  // Função para buscar dados do dashboard
   const fetchDashboardData = async () => {
     try {
       const res = await fetch("http://localhost:8000/dashboard/contagem-entidades");
@@ -63,7 +61,6 @@ export default function Dashboard() {
     }
   };
 
-  // Função para buscar estações
   const fetchEstacoes = async () => {
     try {
       const res = await fetch("http://localhost:8000/estacoes");
@@ -75,7 +72,6 @@ export default function Dashboard() {
     }
   };
 
-  // Função para buscar sensores
   const fetchSensores = async () => {
     try {
       const res = await fetch("http://localhost:8000/parametros");
@@ -89,7 +85,6 @@ export default function Dashboard() {
     }
   };
 
-  // Função para buscar tipos de parâmetros
   const fetchTipoParametros = async () => {
     try {
       const res = await fetch("http://localhost:8000/tipo_parametros");
@@ -101,7 +96,6 @@ export default function Dashboard() {
     }
   };
 
-  // Função para buscar medidas com base nos filtros
   const fetchMedidas = async () => {
     if (!filtros.estacaoId || !filtros.sensorId || !filtros.dataInicio || !filtros.dataFim) return;
   
@@ -132,7 +126,6 @@ export default function Dashboard() {
   };
   
 
-  // Função para buscar alertas e processar para gráficos e último alerta
   const fetchAlertas = async () => {
     try {
       // Buscar dados de horas em alerta por estação
@@ -164,32 +157,22 @@ export default function Dashboard() {
       }, {});
   
       console.log('Contagem por Tipo:', contagemPorTipo);
-  
-      // const dadosTipos = Object.entries(contagemPorTipo)
-      //  .map(([tipo, quantidade]) => ({
-      //    tipo,
-      //    quantidade: Number(quantidade)
-      //  }))
-      //  .filter(item => item.tipo !== "Desconhecido" && item.tipo !== "undefined");
-  
-      // setDadosTiposAlertas(dadosTipos);
 
-    const resTotalPorTipo = await fetch("http://localhost:8000/tempo-em-alerta-por-estacao/total-por-tipo");
-    const dadosTotalPorTipo = await resTotalPorTipo.json();
-    setDadosTiposAlertas(dadosTotalPorTipo);
+      const resTotalPorTipo = await fetch("http://localhost:8000/tempo-em-alerta-por-estacao/total-por-tipo");
+      const dadosTotalPorTipo = await resTotalPorTipo.json();
+      setDadosTiposAlertas(dadosTotalPorTipo);
 
-    // Adicionar console.log para debug
-    console.log('Dados dos tipos de alerta:', dadosTotalPorTipo);
-  
-    } catch (err) {
-      console.error("Erro ao carregar alertas:", err);
-    }
+      // Adicionar console.log para debug
+      console.log('Dados dos tipos de alerta:', dadosTotalPorTipo);
+    
+      } catch (err) {
+        console.error("Erro ao carregar alertas:", err);
+      }
   };
 
-  // Função para calcular valores agregados
   const calcularValores = (dados: { data_hora: number; valor: number }[]) => {
     const agrupados = dados.reduce((acc, curr) => {
-      const dataHora = new Date(curr.data_hora * 1000); // Converter timestamp para Date
+      const dataHora = new Date(curr.data_hora * 1000);
       const dia = dataHora.toISOString().split("T")[0];
       if (!acc[dia]) acc[dia] = [];
       acc[dia].push(curr.valor);
@@ -220,7 +203,6 @@ export default function Dashboard() {
     alertaAtivo: boolean;
   } | null>(null);
 
-  // Fetch apenas para o mini card (alerta de maior ID)
   const fetchMiniAlerta = async () => {
     try {
       const res = await fetch("http://localhost:8000/alertas");
@@ -248,15 +230,6 @@ export default function Dashboard() {
     }
   };
 
-  // const tiposAlertaFake = [
-  //   { tipo: "Temperatura", quantidade: 12 },
-  //   { tipo: "Vento", quantidade: 7 },
-  //   { tipo: "Umidade", quantidade: 5 },
-  //   { tipo: "Pressão", quantidade: 3 },
-  //   { tipo: "Outros", quantidade: 2 },
-  // ];
-
-  // Carregar dados iniciais
   useEffect(() => {
     fetchDashboardData();
     fetchEstacoes();
@@ -266,7 +239,6 @@ export default function Dashboard() {
     fetchMiniAlerta();
   }, []);
 
-  // Atualizar medidas e alertas quando filtros ou estações/tipos mudarem
   useEffect(() => {
     fetchMedidas();
     fetchAlertas();
@@ -326,7 +298,6 @@ export default function Dashboard() {
     </div>
   );
 
-  // Cards dinâmicos
   const dashboardCards = dashboardData
     ? [
         {
@@ -354,12 +325,11 @@ export default function Dashboard() {
 
     return (
       <PaginaWrapper>
+
         <BarraCima nome="Dashboard" tipo="home" />
-    
         <div className="home_cima_titulo">
           <h2>Alerta mais recente</h2>
         </div>
-    
         <div className="home_cima">
           {miniAlerta ? (
             <MiniCardAlerta
@@ -408,28 +378,49 @@ export default function Dashboard() {
           <div className="dashboard_grafico_wrapper">
             <div className="dashboard_grafico_unidade gap_32">
               {todosFiltrosPreenchidos &&
-                sensores[filtros.sensorId!] &&
-                estacoes[filtros.estacaoId!] && (
-                  <GraficoSensor
-                    key={`${filtros.estacaoId}-${filtros.sensorId}-${detalhado}`}
-                    estacaoId={filtros.estacaoId!}
-                    sensorId={filtros.sensorId!}
-                    estacaoNome={estacoes[filtros.estacaoId!]}
-                    sensorNome={sensores[filtros.sensorId!].nome}
-                    unidade={sensores[filtros.sensorId!].unidade}
-                    dataInicio={filtros.dataInicio!}
-                    dataFim={filtros.dataFim!}
-                    detalhado={detalhado}
-                  />
+              sensores[filtros.sensorId!] &&
+              estacoes[filtros.estacaoId!] ? (
+                <GraficoSensor
+                  key={`${filtros.estacaoId}-${filtros.sensorId}-${detalhado}`}
+                  estacaoId={filtros.estacaoId!}
+                  sensorId={filtros.sensorId!}
+                  estacaoNome={estacoes[filtros.estacaoId!]}
+                  sensorNome={sensores[filtros.sensorId!].nome}
+                  unidade={sensores[filtros.sensorId!].unidade}
+                  dataInicio={filtros.dataInicio!}
+                  dataFim={filtros.dataFim!}
+                  detalhado={detalhado}
+                />
+              ) : (
+                <div className="grafico_wrapper nenhum">
+                  <h3>Gráfico de variação de medidas</h3>
+                  <p>Nenhuma estação cadastrada.</p>
+                </div>
               )}
+
             </div>
+
             <div className="dashboard_grafico_baixo">
               <div className="dashboard_grafico_unidade">
-                <GraficoHorasAlerta dados={dadosAlerta} />
+                {dadosAlerta.length > 0 ? (
+                      <GraficoHorasAlerta dados={dadosAlerta} />
+                ) : (
+                  <div className="grafico_wrapper nenhum">
+                    <h3>Horas em alerta por estação</h3>
+                    <p>Nenhum alerta no sistema.</p>
+                  </div>
+                )}
               </div>
-    
+
               <div className="dashboard_grafico_unidade">
-                <GraficoTiposAlerta dados={dadosTiposAlertas} />
+                {dadosAlerta.length > 0 ? (
+                      <GraficoTiposAlerta dados={dadosTiposAlertas} />
+                ) : (
+                  <div className="grafico_wrapper nenhum">
+                    <h3>Tipos de alertas mais frequentes</h3>
+                    <p>Nenhum alerta no sistema.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

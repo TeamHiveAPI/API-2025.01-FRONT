@@ -122,14 +122,10 @@ export default function GraficoTiposAlerta({ dados }: TiposAlertaProps) {
     <div className="grafico_wrapper">
       <h3>Tipos de Alertas Mais Frequentes</h3>
       <p>Todo o Período</p>
-      {dados.length > 0 ? (
         <HighchartsReact
           highcharts={Highcharts}
           options={chartOptions}
         />
-      ) : (
-        <p>Nenhum dado disponível</p>
-      )}
     </div>
   );
 }
