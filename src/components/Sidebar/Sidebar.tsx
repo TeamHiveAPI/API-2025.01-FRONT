@@ -24,7 +24,7 @@ export default function Sidebar() {
       <div className="side_cima">
         <img src="../../tecsus_logo.svg" />
 
-        <Link to="/" className={`side_botao ${location.pathname === "/" ? "ativo" : ""}`}>
+        <Link to="/dashboard" className={`side_botao ${location.pathname === "/dashboard" ? "ativo" : ""}`}>
           <IconCube size={32} color="#404040" stroke={1.5} /> <span>Dashboard</span>
         </Link>
 

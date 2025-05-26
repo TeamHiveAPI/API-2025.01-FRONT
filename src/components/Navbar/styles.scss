@@ -1,0 +1,47 @@
+@use "../../global.scss" as *;
+
+.nav_wrapper {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    z-index: 500;
+    display: flex;
+    width: 100%;
+    padding: 12px 0px;
+    background-color: #FFF;
+    box-shadow: 0px 1px 4px 2px #1A1A1A10;
+}
+
+.nav_container {
+    display: flex;
+    width: 1220px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav_meio {
+    display: flex;
+    gap: 24px;
+}
+
+.nav_meio a {
+    display: flex;
+    align-items: center;
+    color: #606060;
+    font-family: "Poppins";
+    padding: 6px 12px;
+}
+
+.nav_meio a:hover {
+    color: $roxo;
+    font-weight: 500;
+    background-color: #F5F5F5;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.nav_ativo {
+    color: $roxo !important;
+    font-weight: 500;
+}

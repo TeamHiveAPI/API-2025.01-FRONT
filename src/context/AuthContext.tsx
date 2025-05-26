@@ -49,13 +49,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user_nome", userData.user_nome);
 
     setUser(userData);
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const logout = () => {
     localStorage.clear();
     setUser(null);
-    navigate("/login");
+    navigate("/");
   };
 
   return (

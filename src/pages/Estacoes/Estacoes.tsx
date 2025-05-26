@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import "./styles.scss";
 import api from "../../services/api";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardEstacao from "../../components/CardEstacao/CardEstacao";
 import MapaEstacoes from "../../components/MapaEstacoes/MapaEstacoes";
 import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
 import { useDebounce } from "../../hooks/useDebounce";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 interface Sensor {
   id: number;
@@ -68,38 +67,32 @@ export default function Estacoes() {
   
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima nome="Estações" tipo="estacao" />
-          <MapaEstacoes estacoes={estacoes} />
-          <h4 className="num_cadastros">{estacoes.length} estações cadastradas</h4>
-
-          <InputPesquisa value={searchText} onChange={setSearchText} />
-
-          <div className="esta_lista">
-            {estacoesFiltradas.length > 0 ? (
-              estacoesFiltradas.map((estacao) => (
-                <CardEstacao
-                  key={estacao.id}
-                  id={estacao.id.toString()}
-                  uid={estacao.uid}
-                  titulo={estacao.nome}
-                  ativo={estacao.status === "ativa"}
-                  endereco={`${estacao.rua}, ${estacao.numero} - ${estacao.bairro}, ${estacao.cidade} - ${estacao.cep}`}
-                  latitude={estacao.latitude.toString()}
-                  longitude={estacao.longitude.toString()}
-                  sensores={estacao.sensores}
-                />
-              ))
-            ) : (
-              <p className="card_nenhum">Nenhuma estação encontrada.</p>
-            )}
-          </div>
-        </div>
-        <Footer />
+    <PaginaWrapper>
+      <BarraCima nome="Estações" tipo="estacao" />
+      <MapaEstacoes estacoes={estacoes} />
+      <h4 className="num_cadastros">{estacoes.length} estações cadastradas</h4>
+  
+      <InputPesquisa value={searchText} onChange={setSearchText} />
+  
+      <div className="esta_lista">
+        {estacoesFiltradas.length > 0 ? (
+          estacoesFiltradas.map((estacao) => (
+            <CardEstacao
+              key={estacao.id}
+              id={estacao.id.toString()}
+              uid={estacao.uid}
+              titulo={estacao.nome}
+              ativo={estacao.status === "ativa"}
+              endereco={`${estacao.rua}, ${estacao.numero} - ${estacao.bairro}, ${estacao.cidade} - ${estacao.cep}`}
+              latitude={estacao.latitude.toString()}
+              longitude={estacao.longitude.toString()}
+              sensores={estacao.sensores}
+            />
+          ))
+        ) : (
+          <p className="card_nenhum">Nenhuma estação encontrada.</p>
+        )}
       </div>
-    </div>
+    </PaginaWrapper>
   );
 }

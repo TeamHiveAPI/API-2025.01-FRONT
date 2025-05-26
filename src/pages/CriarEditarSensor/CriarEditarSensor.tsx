@@ -4,14 +4,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styles_select from "../CriarEditarEstacao/styles_select";
 import api from "../../services/api";
  
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import { IconPlus } from "@tabler/icons-react";
 import Select from "react-select";
 import Swal from "sweetalert2";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
  
 interface TipoSensor {
   id: number;
@@ -33,8 +32,7 @@ export default function CriarEditarSensor() {
     quantidade_casas_decimais: "",
     fator_conversao: "",
     offset: "",
-    tipo_sensor_id: "",
-    json: "" // Adicione esta linha para incluir o campo json nos dado
+    tipo_sensor_id: ""
   });
  
   const [sensorTypes, setSensorTypes] = useState<TipoSensor[]>([]);
@@ -46,9 +44,8 @@ export default function CriarEditarSensor() {
     quantidade_casas_decimais: false,
     fator_conversao: false,
     offset: false,
-    tipo_sensor_id: false,
-    json: false
- 
+    tipo_sensor_id: false
+    
   });
  
   useEffect(() => {
@@ -77,9 +74,8 @@ export default function CriarEditarSensor() {
         quantidade_casas_decimais: dadosRecebidos.quantidade_casas_decimais?.toString() || "",
         fator_conversao: dadosRecebidos.fator_conversao?.toString() || "",
         offset: dadosRecebidos.offset?.toString() || "",
-        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || "",
-        json: dadosRecebidos.json || ""
-       
+        tipo_sensor_id: dadosRecebidos.tipo_parametro_id?.toString() || ""
+        
       });
     }
   }, [dadosRecebidos, sensorTypes]);  
@@ -112,9 +108,7 @@ export default function CriarEditarSensor() {
       quantidade_casas_decimais: !dadosSensor.quantidade_casas_decimais,
       fator_conversao: !dadosSensor.fator_conversao,
       offset: !dadosSensor.offset,
-      tipo_sensor_id: !dadosSensor.tipo_sensor_id,
-      json:!dadosSensor.json
-     
+      tipo_sensor_id: !dadosSensor.tipo_sensor_id
     };
  
     setErrors(newErrors);
@@ -127,8 +121,8 @@ export default function CriarEditarSensor() {
       quantidade_casas_decimais: Number(dadosSensor.quantidade_casas_decimais),
       fator_conversao: Number(dadosSensor.fator_conversao),
       offset: Number(dadosSensor.offset),
-      tipo_parametro_id: Number(dadosSensor.tipo_sensor_id),
-      json: dadosSensor.json
+      tipo_parametro_id: Number(dadosSensor.tipo_sensor_id)
+      
     };
  
     try {
@@ -143,7 +137,7 @@ export default function CriarEditarSensor() {
         title: modoEdicao ? "Sensor atualizado com sucesso!" : "Sensor cadastrado com sucesso!",
         confirmButtonColor: "#5751D5"
       }).then(() => navigate("/sensores"));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (error: any) {
       Swal.fire({
         icon: "error",
@@ -154,133 +148,119 @@ export default function CriarEditarSensor() {
     }
   };
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima
-            nome={modoEdicao ? "Editar Sensor" : "Criar Sensor"}
-            tipo="voltar"
-            entidade={modoEdicao ? "Sensor" : undefined}
-            onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
+    <PaginaWrapper>
+      <BarraCima
+        nome={modoEdicao ? "Editar Sensor" : "Criar Sensor"}
+        tipo="voltar"
+        entidade={modoEdicao ? "Sensor" : undefined}
+        onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
+      />
+      <form onSubmit={handleSubmit}>
+        <div className="secao_input cima">
+          <InputMelhor
+            label="Nome"
+            tag="nome"
+            width={50}
+            value={dadosSensor.nome}
+            onChange={(e) => handleInputChange("nome", e.target.value)}
+            mostrarErro={errors.nome}
+            placeholder="Nome do sensor"
           />
-          <form onSubmit={handleSubmit}>
-            <div className="secao_input cima">
-              <InputMelhor
-                label="Nome"
-                tag="nome"
-                width={50}
-                value={dadosSensor.nome}
-                onChange={(e) => handleInputChange("nome", e.target.value)}
-                mostrarErro={errors.nome}
-                placeholder="Nome do sensor"
-              />
- 
-              <InputMelhor
-                label="Unidade"
-                tag="unidade"
-                width={50}
-                value={dadosSensor.unidade}
-                onChange={(e) => handleInputChange("unidade", e.target.value)}
-                mostrarErro={errors.unidade}
-                placeholder="Unidade do sensor (Ex: °C, %)"
-              />
-            </div>
- 
-            <div className="secao_input cima">
-              <InputMelhor
-                label="Descrição"
-                tag="descricao"
-                width={100}
-                value={dadosSensor.descricao}
-                onChange={(e) => handleInputChange("descricao", e.target.value)}
-                mostrarErro={errors.descricao}
-                placeholder="Descrição do sensor"
-              />
-            </div>
- 
-            <div className="secao_input cima">
-              <InputMelhor
-                label="Quantidade de Casas Decimais"
-                tag="quantidade_casas_decimais"
-                width={33}
-                type="number"
-                value={dadosSensor.quantidade_casas_decimais}
-                onChange={(e) => handleInputChange("quantidade_casas_decimais", e.target.value)}
-                mostrarErro={errors.quantidade_casas_decimais}
-                placeholder="Número de casas decimais"
-              />
- 
-              <InputMelhor
-                label="Fator de Conversão"
-                tag="fator_conversao"
-                width={33}
-                type="number"
-                value={dadosSensor.fator_conversao}
-                onChange={(e) => handleInputChange("fator_conversao", e.target.value)}
-                mostrarErro={errors.fator_conversao}
-                placeholder="Fator de conversão"
-              />
- 
-              <InputMelhor
-                label="Offset"
-                tag="offset"
-                width={33}
-                type="number"
-                value={dadosSensor.offset}
-                onChange={(e) => handleInputChange("offset", e.target.value)}
-                mostrarErro={errors.offset}
-                placeholder="Offset"
-              />
- 
-              <InputMelhor
-                label="JSON"
-                tag="json"
-                width={33}
-                type="string"
-                value={dadosSensor.json}
-                onChange={(e) => handleInputChange("json", e.target.value)}
-                mostrarErro={errors.json}
-                placeholder="JSON"
-              />
-            </div>
- 
-            <div className="secao_input cima">
-              <p className="ceal_escrito">Tipo de Sensor</p>
-              <Select
-                options={sensorTypeOptions}
-                value={sensorTypeOptions.find(option => option.value === dadosSensor.tipo_sensor_id)}
-                onChange={handleSensorTypeSelect}
-                placeholder="Selecione um tipo de sensor"
-                classNamePrefix="id"
-                styles={styles_select}
-              />
- 
-              <BotaoCTA
-                aparencia="secundario"
-                cor="cor_primario"
-                escrito="Cadastrar Novo Tipo de Sensor"
-                img={<IconPlus stroke="2" />}
-                type="button"
-                onClick={() => navigate("/tipo-sensores/criar")}
-              />
-            </div>
-            {errors.tipo_sensor_id && <p className="input_erro">Preencha este campo.</p>}
- 
-            <div className="cima80">
-              <BotaoCTA
-                aparencia="primario"
-                cor="cor_primario"
-                escrito={modoEdicao ? "Atualizar Sensor" : "Cadastrar Sensor"}
-                img={<IconPlus stroke="2" />}
-                type="submit"
-              />
-            </div>
-          </form>
+
+          <InputMelhor
+            label="Unidade"
+            tag="unidade"
+            width={50}
+            value={dadosSensor.unidade}
+            onChange={(e) => handleInputChange("unidade", e.target.value)}
+            mostrarErro={errors.unidade}
+            placeholder="Unidade do sensor (Ex: °C, %)"
+          />
         </div>
-        <Footer />
-      </div>
-    </div>
+
+        <div className="secao_input cima">
+          <InputMelhor
+            label="Descrição"
+            tag="descricao"
+            width={100}
+            value={dadosSensor.descricao}
+            onChange={(e) => handleInputChange("descricao", e.target.value)}
+            mostrarErro={errors.descricao}
+            placeholder="Descrição do sensor"
+          />
+        </div>
+
+        <div className="secao_input cima">
+          <InputMelhor
+            label="Quantidade de Casas Decimais"
+            tag="quantidade_casas_decimais"
+            width={33}
+            type="number"
+            value={dadosSensor.quantidade_casas_decimais}
+            onChange={(e) => handleInputChange("quantidade_casas_decimais", e.target.value)}
+            mostrarErro={errors.quantidade_casas_decimais}
+            placeholder="Número de casas decimais"
+          />
+
+          <InputMelhor
+            label="Fator de Conversão"
+            tag="fator_conversao"
+            width={33}
+            type="number"
+            value={dadosSensor.fator_conversao}
+            onChange={(e) => handleInputChange("fator_conversao", e.target.value)}
+            mostrarErro={errors.fator_conversao}
+            placeholder="Fator de conversão"
+          />
+
+          <InputMelhor
+            label="Offset"
+            tag="offset"
+            width={33}
+            type="number"
+            value={dadosSensor.offset}
+            onChange={(e) => handleInputChange("offset", e.target.value)}
+            mostrarErro={errors.offset}
+            placeholder="Offset"
+          />
+
+          
+
+        </div>
+
+        <div className="secao_input cima">
+          <p className="ceal_escrito">Tipo de Sensor</p>
+          <Select
+            options={sensorTypeOptions}
+            value={sensorTypeOptions.find(option => option.value === dadosSensor.tipo_sensor_id)}
+            onChange={handleSensorTypeSelect}
+            placeholder="Selecione um tipo de sensor"
+            classNamePrefix="id"
+            styles={styles_select}
+          />
+
+          <BotaoCTA
+            aparencia="secundario"
+            cor="cor_primario"
+            escrito="Cadastrar Novo Tipo de Sensor"
+            img={<IconPlus stroke="2" />}
+            type="button"
+            onClick={() => navigate("/tipo-sensores/criar")}
+          />
+        </div>
+        {errors.tipo_sensor_id && <p className="input_erro">Preencha este campo.</p>}
+
+        <div className="cima80">
+          <BotaoCTA
+            aparencia="primario"
+            cor="cor_primario"
+            escrito={modoEdicao ? "Atualizar Sensor" : "Cadastrar Sensor"}
+            img={<IconPlus stroke="2" />}
+            type="submit"
+          />
+        </div>
+      </form>
+  </PaginaWrapper>
   );
 }
  

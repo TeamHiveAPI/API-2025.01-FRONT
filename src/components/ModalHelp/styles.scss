@@ -1,0 +1,65 @@
+@use "../../global.scss" as *;
+
+.modal_fechar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+}
+
+.modal_divisoria {
+  border-bottom: 1px solid #E8E8E8;
+}
+
+.modal_conteudo {
+    padding: 32px;
+    padding-bottom: 48px;
+}
+
+.modal_conteudo_container {
+  display: flex;
+  gap: 128px;
+}
+
+.modal_conteudo h4 {
+  color: $roxo;
+  font-weight: 600;
+  font-family: "Poppins";
+  font-size: 18px;
+  margin-top: 24px;
+}
+
+.modal_tags {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.modal_tags p {
+  background-color: #F5F5F5;
+  padding: 4px 12px;
+  border-radius: 4px;
+  color: #808080;
+  font-weight: 500;
+}
+
+.modal_mtop {
+  margin-top: 48px !important;
+}
+
+.modal_descricao {
+  color: #808080;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.modal_mapa_cima.modal_divisoria div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.modal_content.menor {
+  height: auto;
+}

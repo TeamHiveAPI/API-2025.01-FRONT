@@ -3,14 +3,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardUsuario from "../../components/CardUsuario/CardUsuario";
 import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
 import { useDebounce } from "../../hooks/useDebounce";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
-interface Usuario {
+export interface Usuario {
   id: number;
   nome: string;
   email: string;
@@ -49,37 +48,31 @@ export default function Usuarios() {
   };
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima nome="Usuários" tipo="usuario" />
-
-          <h4 className="num_cadastros">{`${usuarios.length} usuários cadastrados`}</h4>
-
-          <InputPesquisa value={searchText} onChange={setSearchText} />
-
-          <div className="usu_lista">
-            {usuariosFiltrados.length > 0 ? (
-              usuariosFiltrados.map((usuario) => (
-                <CardUsuario
-                  key={usuario.id}
-                  id={usuario.id}
-                  admin={usuario.nivel_acesso === "ADMINISTRADOR"}
-                  nome={usuario.nome}
-                  email={usuario.email}
-                  senha={usuario.senha}
-                  data_criacao={new Date(usuario.data_criacao).toLocaleDateString()}
-                  onEdit={() => handleEdit(usuario)}
-                />
-              ))
-            ) : (
-              <p className="card_nenhum">Nenhum usuário encontrado.</p>
-            )}
-          </div>
-        </div>
-        <Footer />
+    <PaginaWrapper>
+      <BarraCima nome="Usuários" tipo="usuario" />
+  
+      <h4 className="num_cadastros">{`${usuarios.length} usuários cadastrados`}</h4>
+  
+      <InputPesquisa value={searchText} onChange={setSearchText} />
+  
+      <div className="usu_lista">
+        {usuariosFiltrados.length > 0 ? (
+          usuariosFiltrados.map((usuario) => (
+            <CardUsuario
+              key={usuario.id}
+              id={usuario.id}
+              admin={usuario.nivel_acesso === "ADMINISTRADOR"}
+              nome={usuario.nome}
+              email={usuario.email}
+              senha={usuario.senha}
+              data_criacao={new Date(usuario.data_criacao).toLocaleDateString()}
+              onEdit={() => handleEdit(usuario)}
+            />
+          ))
+        ) : (
+          <p className="card_nenhum">Nenhum usuário encontrado.</p>
+        )}
       </div>
-    </div>
+    </PaginaWrapper>
   );
 }

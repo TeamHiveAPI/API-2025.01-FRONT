@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IconChevronLeft, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconHelpCircle, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 import BotaoCTA from "../BotaoCTA/BotaoCTA";
 import "./styles.scss";
+import { AuthContext } from "../../context/AuthContext";
+import ModalHelp from "../ModalHelp/ModalHelp";
 
 interface BarraCimaProps {
   nome: string;
@@ -17,6 +19,10 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
   const [mostrarPesquisaInterna, setMostrarPesquisaInterna] = useState(false);
   const [animarBotaoPesquisa, setAnimarBotaoPesquisa] = useState(false);
   const [animarPesquisaInterna, setAnimarPesquisaInterna] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
+
+  const auth = useContext(AuthContext);
+  const isAuthenticated = auth?.isAuthenticated ?? false;
 
   const navigate = useNavigate();
 
@@ -93,7 +99,25 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
       <h1>{nome}</h1>
 
       {tipo === "home" && (
-        <div className="baci_pesquisa">
+        <div className="baci_wrapper_help">
+          <div className="baci_pesquisa">
+            <IconSearch width={32} stroke={1.5} color="#606060" />
+            <input
+              type="text"
+              placeholder="Pesquise por informações"
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+              onKeyDown={handleSearch}
+            />
+          </div>
+          <button className="baci_help" onClick={() => setMostrarModal(true)}>
+            <IconHelpCircle stroke={1.5} color={"#808080"} />
+          </button>
+        </div>
+      )}
+
+      {(tipo !== "home" && tipo !== "voltar") && (mostrarPesquisaInterna || !isAuthenticated) && (
+        <div className={`baci_pesquisa ${animarPesquisaInterna ? 'descer' : ''}`}>
           <IconSearch width={32} stroke={1.5} color="#606060" />
           <input
             type="text"
@@ -105,19 +129,7 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
         </div>
       )}
 
-      {tipo !== "home" && tipo !== "voltar" && mostrarPesquisaInterna && (
-        <div className={`baci_pesquisa interno_ativo ${animarPesquisaInterna ? 'descer' : ''}`}>
-          <IconSearch width={32} stroke={1.5} color="#606060" />
-          <input
-            type="text"
-            placeholder="Pesquise por informações"
-            value={pesquisa}
-            onChange={(e) => setPesquisa(e.target.value)}
-          />
-        </div>
-      )}
-
-      {tipo !== "home" && tipo !== "voltar" && (
+      {tipo !== "home" && tipo !== "voltar" && isAuthenticated && (
         <div className="baci_dir">
           
           <div className="botaoCTA_width_fixo">
@@ -161,6 +173,12 @@ export default function BarraCima({ nome, tipo, entidade, onDelete }: BarraCimaP
           )}
         </div>
       )}
+
+      <ModalHelp
+        isOpen={mostrarModal}
+        onClose={() => setMostrarModal(false)}
+      >
+      </ModalHelp>
     </div>
   );
 }

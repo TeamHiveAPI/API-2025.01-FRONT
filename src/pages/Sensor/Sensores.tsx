@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardSensor from "../../components/CardSensor/CardSensor";
 import CardTipoSensor from "../../components/CardTipoSensor/CardTipoSensor";
 import InputPesquisa from "../../components/InputPesquisa/InputPesquisa";
 import { useDebounce } from "../../hooks/useDebounce";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 interface Sensor {
   id: string;
@@ -74,56 +73,50 @@ export default function Sensores() {
   }, []);  
   
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima nome="Sensores" tipo="sensor" />
-          <h4 className="num_cadastros">{sensores.length} sensores cadastrados</h4>
-
-          <InputPesquisa value={searchText} onChange={setSearchText} />
-
-          <div className="lista_espaços_3">
-            {sensoresFiltrados.length > 0 ? (
-              sensoresFiltrados.map((sensor) => (
-                <CardSensor
-                  key={sensor.id}
-                  id={sensor.id.toString()}
-                  titulo={sensor.nome}
-                  unidOuSensor={sensor.unidade}
-                  estacao={sensor.estacao_nome ? sensor.estacao_nome : "Sem Estação"}
-                  estacao_id={""}
-                  descricao={sensor.descricao}
-                  quantidade_casas_decimais={sensor.quantidade_casas_decimais}
-                  fator_conversao={sensor.fator_conversao}
-                  offset={sensor.offset}
-                  tipo_parametro_id={sensor.tipo_parametro_id}
-                  json={sensor.json}
-                />
-              ))
-            ) : (
-              <p className="card_nenhum">Nenhum sensor encontrado.</p>
-            )}
-          </div>
-
-          <h4 className="num_cadastros menor">{tipos.length} Tipos de Sensores cadastrados</h4>
-          <div className="lista_espaços_3">
-            {tipos.length > 0 ? (
-              tipos.map((tipo) => (
-                <CardTipoSensor
-                  key={tipo.id}
-                  id={tipo.id.toString()}
-                  nome={tipo.nome}
-                  descricao={tipo.descricao}
-                />
-              ))
-            ) : (
-              <p className="card_nenhum">Nenhum tipo de sensor cadastrado.</p>
-            )}
-          </div>
-        </div>
-        <Footer />
+    <PaginaWrapper>
+      <BarraCima nome="Sensores" tipo="sensor" />
+      <h4 className="num_cadastros">{sensores.length} sensores cadastrados</h4>
+  
+      <InputPesquisa value={searchText} onChange={setSearchText} />
+  
+      <div className="lista_espaços_3">
+        {sensoresFiltrados.length > 0 ? (
+          sensoresFiltrados.map((sensor) => (
+            <CardSensor
+              key={sensor.id}
+              id={sensor.id.toString()}
+              titulo={sensor.nome}
+              unidOuSensor={sensor.unidade}
+              estacao={sensor.estacao_nome ? sensor.estacao_nome : "Sem Estação"}
+              estacao_id={""}
+              descricao={sensor.descricao}
+              quantidade_casas_decimais={sensor.quantidade_casas_decimais}
+              fator_conversao={sensor.fator_conversao}
+              offset={sensor.offset}
+              tipo_parametro_id={sensor.tipo_parametro_id}
+              json={sensor.json}
+            />
+          ))
+        ) : (
+          <p className="card_nenhum">Nenhum sensor encontrado.</p>
+        )}
       </div>
-    </div>
+  
+      <h4 className="num_cadastros menor">{tipos.length} Tipos de Sensores cadastrados</h4>
+      <div className="lista_espaços_3">
+        {tipos.length > 0 ? (
+          tipos.map((tipo) => (
+            <CardTipoSensor
+              key={tipo.id}
+              id={tipo.id.toString()}
+              nome={tipo.nome}
+              descricao={tipo.descricao}
+            />
+          ))
+        ) : (
+          <p className="card_nenhum">Nenhum tipo de sensor cadastrado.</p>
+        )}
+      </div>
+    </PaginaWrapper>
   );
 }

@@ -101,3 +101,26 @@
 .baci_pesquisa.interno.normal {
   margin-bottom: 40px;
 }
+
+.baci_wrapper_help {
+  display: flex;
+  gap: 16px;
+}
+
+.baci_help {
+  background-color: white;
+  cursor: pointer;
+  width: 48px;
+  border: 1px solid #C4C4C4;
+  border-radius: 8px;
+  transition: 0.15s all;
+}
+
+.baci_help:hover {
+  background-color: $roxo;
+  border: none;
+}
+
+.baci_help:hover svg {
+  stroke: white !important;
+}

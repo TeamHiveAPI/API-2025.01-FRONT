@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./styles.scss";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import Swal from "sweetalert2";
 import api from "../../services/api";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 export default function CriarEditarUsuario() {
   const location = useLocation();
@@ -178,74 +177,68 @@ const handleSubmit = async (e: React.FormEvent) => {
 };
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima
-            nome={modoEdicao ? "Editar Usuário" : "Criar Usuário"}
-            tipo="voltar"
-            entidade={modoEdicao ? "Usuário" : undefined}
-            onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
+    <PaginaWrapper>
+      <BarraCima
+        nome={modoEdicao ? "Editar Usuário" : "Criar Usuário"}
+        tipo="voltar"
+        entidade={modoEdicao ? "Usuário" : undefined}
+        onDelete={modoEdicao ? () => handleDelete(dadosRecebidos.id) : undefined}
+      />
+
+      <form onSubmit={handleSubmit}>
+        <div className="secao_input bottom">
+          <InputMelhor
+            label="Nome Completo"
+            tag="nome"
+            width={50}
+            value={dadosUsuario.nome}
+            onChange={(e) => handleInputChange("nome", e.target.value)}
+            mostrarErro={errors.nome}
+          />
+          <InputMelhor
+            label="Email"
+            tag="email"
+            width={50}
+            value={dadosUsuario.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+            mostrarErro={errors.email}
+            type="email"
+          />
+        </div>
+
+        <p className="subtitulo ceus_titulo_senha">
+          {modoEdicao ? "Digite nova senha:" : "Digite a senha:"}
+        </p>
+        <div className="secao_input bottom">
+          <InputMelhor
+            label="Senha"
+            tag="senha"
+            width={50}
+            value={dadosUsuario.senha}
+            onChange={(e) => handleInputChange("senha", e.target.value)}
+            mostrarErro={errors.senha}
           />
 
-          <form onSubmit={handleSubmit}>
-            <div className="secao_input bottom">
-              <InputMelhor
-                label="Nome Completo"
-                tag="nome"
-                width={50}
-                value={dadosUsuario.nome}
-                onChange={(e) => handleInputChange("nome", e.target.value)}
-                mostrarErro={errors.nome}
-              />
-              <InputMelhor
-                label="Email"
-                tag="email"
-                width={50}
-                value={dadosUsuario.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                mostrarErro={errors.email}
-                type="email"
-              />
-            </div>
-
-            <p className="subtitulo ceus_titulo_senha">
-              {modoEdicao ? "Digite nova senha:" : "Digite a senha:"}
-            </p>
-            <div className="secao_input bottom">
-              <InputMelhor
-                label="Senha"
-                tag="senha"
-                width={50}
-                value={dadosUsuario.senha}
-                onChange={(e) => handleInputChange("senha", e.target.value)}
-                mostrarErro={errors.senha}
-              />
-
-              <InputMelhor
-                label="Confirmar Senha"
-                tag="confirmarSenha"
-                width={50}
-                value={dadosUsuario.confirmarSenha}
-                onChange={(e) => handleInputChange("confirmarSenha", e.target.value)}
-                mostrarErro={errors.senha}
-              />
-            </div>
-
-            <div className="cima80">
-              <BotaoCTA
-                aparencia="primario"
-                cor="cor_primario"
-                escrito={modoEdicao ? "Atualizar Usuário" : "Cadastrar Usuário"}
-                img={<IconPlus stroke="2" />}
-                type="submit"
-              />
-            </div>
-          </form>
+          <InputMelhor
+            label="Confirmar Senha"
+            tag="confirmarSenha"
+            width={50}
+            value={dadosUsuario.confirmarSenha}
+            onChange={(e) => handleInputChange("confirmarSenha", e.target.value)}
+            mostrarErro={errors.senha}
+          />
         </div>
-        <Footer />
-      </div>
-    </div>
+
+        <div className="cima80">
+          <BotaoCTA
+            aparencia="primario"
+            cor="cor_primario"
+            escrito={modoEdicao ? "Atualizar Usuário" : "Cadastrar Usuário"}
+            img={<IconPlus stroke="2" />}
+            type="submit"
+          />
+        </div>
+      </form>
+    </PaginaWrapper>
   );
 }

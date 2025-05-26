@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Footer from "../../components/Footer/Footer";
 import InputMelhor from "../../components/InputMelhor/InputMelhor";
 import BotaoCTA from "../../components/BotaoCTA/BotaoCTA";
 import { IconPlus } from "@tabler/icons-react";
 import BarraCima from "../../components/BarraCima/BarraCima";
 import Swal from "sweetalert2";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 export default function CriarEditarTipoSensor() {
   const location = useLocation();
@@ -18,6 +17,7 @@ export default function CriarEditarTipoSensor() {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [dadosTipo, setDadosTipo] = useState({
     nome: "",
+    json: "",
     descricao: ""
   });
 
@@ -26,6 +26,7 @@ export default function CriarEditarTipoSensor() {
       setModoEdicao(true);
       setDadosTipo({
         nome: dadosRecebidos.nome || "",
+        json: dadosRecebidos.json || "",
         descricao: dadosRecebidos.descricao || ""
       });
     }
@@ -33,6 +34,7 @@ export default function CriarEditarTipoSensor() {
 
   const [errors, setErrors] = useState({
     nome: false,
+    json: false,
     descricao: false
   });
 
@@ -82,6 +84,7 @@ export default function CriarEditarTipoSensor() {
   
     const newErrors = {
       nome: !dadosTipo.nome,
+      json: !dadosTipo.json,
       descricao: !dadosTipo.descricao
     };
   
@@ -92,12 +95,14 @@ export default function CriarEditarTipoSensor() {
       if (modoEdicao && dadosRecebidos?.id) {
         await api.put(`/tipo_parametros/${dadosRecebidos.id}`, {
           nome: dadosTipo.nome,
-          descricao: dadosTipo.descricao
+          descricao: dadosTipo.descricao,
+          json: dadosTipo.json
         });
       } else {
         await api.post("/tipo_parametros/", {
           nome: dadosTipo.nome,
-          descricao: dadosTipo.descricao
+          descricao: dadosTipo.descricao,
+          json: dadosTipo.json
         });
       }
     
@@ -119,54 +124,59 @@ export default function CriarEditarTipoSensor() {
   };  
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima
-            nome={modoEdicao ? "Editar Tipo Sensor" : "Criar Tipo Sensor"}
-            tipo="voltar"
-            entidade={modoEdicao ? "Tipo Sensor" : undefined}
-            onDelete={() => handleDelete(dadosRecebidos.id)}
+    <PaginaWrapper>
+      <BarraCima
+        nome={modoEdicao ? "Editar Tipo Sensor" : "Criar Tipo Sensor"}
+        tipo="voltar"
+        entidade={modoEdicao ? "Tipo Sensor" : undefined}
+        onDelete={() => handleDelete(dadosRecebidos.id)}
+      />
+      <form onSubmit={handleSubmit}>
+        <div className="secao_input cima">
+          <InputMelhor
+            label="Nome"
+            tag="nome"
+            width={50}
+            value={dadosTipo.nome}
+            onChange={(e) => handleInputChange("nome", e.target.value)}
+            mostrarErro={errors.nome}
+            placeholder="Ex: Temperatura, Umidade"
           />
-          <form onSubmit={handleSubmit}>
-            <div className="secao_input cima">
-              <InputMelhor
-                label="Nome"
-                tag="nome"
-                width={50}
-                value={dadosTipo.nome}
-                onChange={(e) => handleInputChange("nome", e.target.value)}
-                mostrarErro={errors.nome}
-                placeholder="Ex: Temperatura, Umidade"
-              />
-            </div>
 
-            <div className="secao_input cima">
-              <InputMelhor
-                label="Descrição"
-                tag="descricao"
-                width={100}
-                value={dadosTipo.descricao}
-                onChange={(e) => handleInputChange("descricao", e.target.value)}
-                mostrarErro={errors.descricao}
-                placeholder="Descrição do tipo sensor"
-              />
-            </div>
-
-            <div className="cima80">
-              <BotaoCTA
-                aparencia="primario"
-                cor="cor_primario"
-                escrito={modoEdicao ? "Atualizar Tipo Sensor" : "Cadastrar Tipo Sensor"}
-                img={<IconPlus stroke="2" />}
-                type="submit"
-              />
-            </div>
-          </form>
+          <InputMelhor
+            label="JSON"
+            tag="json"
+            width={50}
+            type="string"
+            value={dadosTipo.json}
+            onChange={(e) => handleInputChange("json", e.target.value)}
+            mostrarErro={errors.json}
+            placeholder="JSON"
+          />
         </div>
-        <Footer />
-      </div>
-    </div>
+
+        <div className="secao_input cima">
+          <InputMelhor
+            label="Descrição"
+            tag="descricao"
+            width={100}
+            value={dadosTipo.descricao}
+            onChange={(e) => handleInputChange("descricao", e.target.value)}
+            mostrarErro={errors.descricao}
+            placeholder="Descrição do tipo sensor"
+          />
+        </div>
+
+        <div className="cima80">
+          <BotaoCTA
+            aparencia="primario"
+            cor="cor_primario"
+            escrito={modoEdicao ? "Atualizar Tipo Sensor" : "Cadastrar Tipo Sensor"}
+            img={<IconPlus stroke="2" />}
+            type="submit"
+          />
+        </div>
+      </form>
+    </PaginaWrapper>
   );
 }

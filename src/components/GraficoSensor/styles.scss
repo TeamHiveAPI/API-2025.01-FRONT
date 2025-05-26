@@ -7,6 +7,19 @@
     width: 100%;
 }
 
+.grafico_wrapper.nenhum {
+    align-items: center;
+    justify-content: center;
+}
+
+.grafico_wrapper.nenhum h3 {
+    margin-top: 0px;
+}
+
+.grafico_wrapper.nenhum p {
+    margin-bottom: 0px;
+}
+
 
 .grafico_wrapper h3 {
     width: 100%;
@@ -17,7 +30,7 @@
     font-family: Poppins;
 }
 
-.grafico_wrapper p {
+.grafico_wrapper_data, .grafico_wrapper p {
     width: 100%;
     text-align: center;
     color: #808080;
@@ -34,4 +47,13 @@
     border-radius: 6px;
     height: 256px;
     margin-bottom: 0px !important;
+    margin-top: 24px;
+}
+
+.grafico_wrapper_nenhum {
+    text-align: center;
+    margin-top: 128px;
+    margin-bottom: 32px;
+    color: #808080;
+    font-weight: 500;
 }

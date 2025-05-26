@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
-import Home from "./pages/Home/Home";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import Estacoes from "./pages/Estacoes/Estacoes";
 import CriarEditarEstacao from "./pages/CriarEditarEstacao/CriarEditarEstacao";
 
@@ -23,24 +23,30 @@ import GerarMedidasDev from "./pages/GerarMedidaDev/GerarMedidaDev";
 
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 
+import Aprendizagem from "./pages/Home/Home";
+import PaginaPesquisa from "./pages/PaginaPesquisa/PaginaPesquisa";
+
 export default function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
           {/* Públicas */}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Aprendizagem />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/historico-alerta" element={<HistoricoAlerta />} />
           <Route path="/estacoes" element={<Estacoes />} />
+          <Route path="/sensores" element={<Sensores />} />
+          <Route path="/alertas" element={<Alertas />} />
+          <Route path="/pesquisa/:query" element={<PaginaPesquisa />} />
 
           {/* Estações protegidas */}
           <Route path="/estacoes/criar" element={<PrivateRoute><CriarEditarEstacao /></PrivateRoute>} />
           <Route path="/estacoes/editar/:id" element={<PrivateRoute><CriarEditarEstacao /></PrivateRoute>} />
 
           {/* Sensores protegidos */}
-          <Route path="/sensores" element={<PrivateRoute><Sensores /></PrivateRoute>} />
           <Route path="/sensores/criar" element={<PrivateRoute><CriarEditarSensor /></PrivateRoute>} />
           <Route path="/sensores/editar/:id" element={<PrivateRoute><CriarEditarSensor /></PrivateRoute>} />
 
@@ -54,9 +60,8 @@ export default function App() {
           <Route path="/usuarios/editar/:id" element={<PrivateRoute><CriarEditarUsuario /></PrivateRoute>} />
 
           {/* Rotas para Alertas */}
-          <Route path="/alertas" element={<Alertas />} />
-          <Route path="/alertas/criar" element={<CriarEditarAlerta />} />
-          <Route path="/alertas/editar/:id" element={<CriarEditarAlerta />} />
+          <Route path="/alertas/criar" element={<PrivateRoute><CriarEditarAlerta /></PrivateRoute>} />
+          <Route path="/alertas/editar/:id" element={<PrivateRoute><CriarEditarAlerta /></PrivateRoute>} />
 
           {/* Página dev */}
           <Route path="/medidas" element={<GerarMedidasDev />} />

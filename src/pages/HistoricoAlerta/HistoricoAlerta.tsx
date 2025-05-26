@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../components/Sidebar/Sidebar";
 import "./styles.scss";
-import Footer from "../../components/Footer/Footer";
+
 import BarraCima from "../../components/BarraCima/BarraCima";
 import CardAlertaAtivo from "../../components/CardAlertaAtivo/CardAlertaAtivo";
 import { FormatarDataHora } from "../../utils/FormatarDataHora";
+import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
 
 interface CardAlertaAtivoProps {
   id: string;
@@ -84,32 +84,26 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="pagina_wrapper">
-      <Sidebar />
-      <div>
-        <div className="pagina_container">
-          <BarraCima nome="Histórico" tipo="home" />
-
-          <h4 className="hial_subtitulo">Alertas Ativos</h4>
-          {alertasAtivos.length > 0 ? (
-            alertasAtivos.map(alerta => (
-              <CardAlertaAtivo key={alerta.id} {...alerta} />
-            ))
-          ) : (
-            <p className="hial_sem_alerta">Não há alertas ativos.</p>
-          )}
-
-          <h4 className="hial_subtitulo baixo">Alertas Passados</h4>
-          {alertasPassados.length > 0 ? (
-            alertasPassados.map(alerta => (
-              <CardAlertaAtivo key={alerta.id} {...alerta} />
-            ))
-          ) : (
-            <p className="hial_sem_alerta">Não há alertas passados.</p>
-          )}
-        </div>
-        <Footer />
-      </div>
-    </div>
+    <PaginaWrapper>
+      <BarraCima nome="Histórico" tipo="usuario" />
+  
+      <h4 className="hial_subtitulo">Alertas Ativos</h4>
+      {alertasAtivos.length > 0 ? (
+        alertasAtivos.map(alerta => (
+          <CardAlertaAtivo key={alerta.id} {...alerta} />
+        ))
+      ) : (
+        <p className="hial_sem_alerta">Não há alertas ativos.</p>
+      )}
+  
+      <h4 className="hial_subtitulo baixo">Alertas Passados</h4>
+      {alertasPassados.length > 0 ? (
+        alertasPassados.map(alerta => (
+          <CardAlertaAtivo key={alerta.id} {...alerta} />
+        ))
+      ) : (
+        <p className="hial_sem_alerta">Não há alertas passados.</p>
+      )}
+    </PaginaWrapper>
   );
 }
