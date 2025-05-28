@@ -1,0 +1,41 @@
+name: Frontend - Testes de Integração
+
+on:
+  push:
+    branches: [ develop, main ]
+    paths:
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/*.ts'
+      - '**/*.tsx'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - '.github/workflows/frontend-integration-tests.yml'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run integration tests
+      run: npm test -- --testMatch="**/*.integration.test.[jt]s?(x)" --coverage
+      
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: integration-test-coverage-report
+        path: coverage/
