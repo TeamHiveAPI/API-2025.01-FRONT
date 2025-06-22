@@ -1,3 +1,6 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -81,6 +84,10 @@ export default function CriarEditarEstacao() {
     const bairro = numeroBairro[1]?.trim() || "";
     const cidade = bairroCidadeCep[0]?.trim() || "";
     const cep = bairroCidadeCep[1]?.trim() || "";
+<<<<<<< HEAD
+=======
+    // const uid = dadosRecebidos.uid || "";
+>>>>>>> 621a298cbfd7edd62a03281372087444e2047c50
   
     // Espera os sensores serem carregados
     const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensor: { nome: string }) => {

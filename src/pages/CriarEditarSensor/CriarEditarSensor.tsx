@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { useNavigate, useLocation } from "react-router-dom";
+=======
+import { useNavigate, useLocation} from "react-router-dom";
+>>>>>>> 621a298cbfd7edd62a03281372087444e2047c50
 
 import styles_select from "../CriarEditarEstacao/styles_select";
 import api from "../../services/api";
@@ -11,6 +16,10 @@ import { IconPlus } from "@tabler/icons-react";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import PaginaWrapper from "../../components/PaginaWrapper/PaginaWrapper";
+<<<<<<< HEAD
+=======
+// import { jsx } from "react/jsx-runtime";
+>>>>>>> 621a298cbfd7edd62a03281372087444e2047c50
  
 interface TipoSensor {
   id: number;
