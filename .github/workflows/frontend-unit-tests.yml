@@ -2,43 +2,43 @@ name: Frontend - Testes Unitários
 
 on:
   push:
-    branches: [ feature/*, develop, main ]
+    branches: [feature/*, develop, main]
     paths:
-      - '**/*.js'
-      - '**/*.jsx'
-      - '**/*.ts'
-      - '**/*.tsx'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'yarn.lock'
-      - '.github/workflows/frontend-unit-tests.yml'
+      - "**/*.js"
+      - "**/*.jsx"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "package.json"
+      - "package-lock.json"
+      - "yarn.lock"
+      - ".github/workflows/frontend-unit-tests.yml"
   pull_request:
-    branches: [ develop, main ]
+    branches: [develop, main]
 
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-        
-    - name: Lint code
-      run: npm run lint || echo "Linting failed but continuing"
-      
-    - name: Run unit tests
-      run: npm test -- --testPathIgnorePatterns=integration --coverage
-      
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v3
-      with:
-        name: unit-test-coverage-report
-        path: coverage/
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint || echo "Linting failed but continuing"
+
+      - name: Run unit tests
+        run: npm test -- --testPathIgnorePatterns=integration --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-coverage-report
+          path: coverage/
