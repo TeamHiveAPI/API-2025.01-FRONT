@@ -10,17 +10,50 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      backend:
-        image: tiangolo/uvicorn-gunicorn-fastapi:python3.9
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hive_test
         ports:
-          - 8000:80
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout do código frontend
+        uses: actions/checkout@v4
+
+      - name: Checkout do código backend
+        uses: actions/checkout@v4
+        with:
+          repository: https://github.com/TeamHiveAPI/API-2025.01-BACK
+          path: API-2025.01-BACK
+          ref: SCRUM32
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instalar dependências do backend
+        working-directory: API-2025.01-BACK
+        run: pip install -r requirements.txt
+
+      - name: Iniciar backend
+        working-directory: API-2025.01-BACK
         env:
           SECRET_KEY: b3f5a8c9e2d147de8f91a6c3457d9234b6e8c1f6d2b7a4e5c3d1e8f7b9a2d6c8
           ACCESS_TOKEN_EXPIRE_MINUTES: 30
-
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hive_test
+        run: |
+          python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
+          echo "Aguardando o backend iniciar..."
+          sleep 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
