@@ -1,0 +1,76 @@
+# /.github/workflows/ci.yml (Para o repositório Backend FastAPI)
+
+name: Backend CI & Tests
+
+on:
+  push:
+    branches: [ main ] # Ajuste para sua branch principal (ex: master)
+  pull_request:
+    branches: [ main ] # Ajuste para sua branch principal
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Teste com múltiplas versões do Python (opcional)
+        python-version: ["3.10", "3.11"] 
+
+    # Opcional: Definir serviços como banco de dados (ex: PostgreSQL)
+    # services:
+    #   postgres:
+    #     image: postgres:15
+    #     env:
+    #       POSTGRES_USER: testuser
+    #       POSTGRES_PASSWORD: testpassword
+    #       POSTGRES_DB: testdb
+    #     ports:
+    #       - 5432:5432
+    #     options: >- 
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip' # Habilita cache para dependências pip
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt # Ou requirements-dev.txt
+        # Se usar Poetry: 
+        # pip install poetry
+        # poetry install --no-root
+
+    # Opcional: Configurar variáveis de ambiente para o teste
+    # - name: Set up environment variables for testing
+    #   run: |
+    #     echo "DATABASE_URL=postgresql+asyncpg://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
+    #     echo "APP_ENV=test" >> $GITHUB_ENV
+    #     # Adicione outras variáveis necessárias
+
+    # Opcional: Rodar migrações (se usar Alembic ou similar)
+    # - name: Run database migrations
+    #   run: alembic upgrade head # Ajuste o comando conforme sua ferramenta
+
+    - name: Run tests with pytest
+      run: |
+        # Se usar Poetry: poetry run pytest
+        pytest tests/ # Especifique o diretório de testes
+        # O comando `pytest` usará as opções do pytest.ini (incluindo coverage)
+
+    # Opcional: Upload coverage report
+    # - name: Upload coverage reports to Codecov
+    #   uses: codecov/codecov-action@v4
+    #   with:
+    #     token: ${{ secrets.CODECOV_TOKEN }} # Adicione o token como secret no GitHub
+    #     fail_ci_if_error: true
+

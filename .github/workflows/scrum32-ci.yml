@@ -1,0 +1,45 @@
+name: SCRUM32 Branch CI
+
+on:
+  pull_request:
+    branches:
+      - SCRUM32
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      backend:
+        image: tiangolo/uvicorn-gunicorn-fastapi:python3.9
+        ports:
+          - 8000:80
+        env:
+          SECRET_KEY: b3f5a8c9e2d147de8f91a6c3457d9234b6e8c1f6d2b7a4e5c3d1e8f7b9a2d6c8
+          ACCESS_TOKEN_EXPIRE_MINUTES: 30
+        options: >
+          --health-cmd="curl --fail http://localhost/health || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Executar testes
+        run: npm test
+        # Se os testes falharem, o workflow irá falhar e o PR não poderá ser mergeado
+
+      - name: Build da aplicação
+        if: success()
+        run: npm run build
+        # Só executa o build se os testes passarem
