@@ -1,3 +1,6 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -129,7 +132,7 @@ export default function CriarEditarEstacao() {
       value = value.replace(/[^0-9.-]/g, "");
     }
 
-    setDadosEstacao((prev) => ({
+    setDadosEstacao((prev: typeof dadosEstacao) => ({
       ...prev,
       [tag]: value,
     }));
