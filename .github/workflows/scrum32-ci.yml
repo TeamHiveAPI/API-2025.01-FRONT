@@ -18,11 +18,6 @@ jobs:
           POSTGRES_DB: hive_test
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout do código frontend
@@ -53,7 +48,7 @@ jobs:
         run: |
           python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
           echo "Aguardando o backend iniciar..."
-          sleep 10
+          sleep 30
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
