@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IconLockPassword, IconLogin2, IconUser } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import "./styles.scss";

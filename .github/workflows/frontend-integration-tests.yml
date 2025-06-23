@@ -16,6 +16,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
           POSTGRES_DB: api
+
         ports:
           - 5432:5432
 
@@ -26,7 +27,7 @@ jobs:
       - name: Checkout do código backend
         uses: actions/checkout@v4
         with:
-          repository: https://github.com/TeamHiveAPI/API-2025.01-BACK
+          repository: TeamHiveAPI/API-2025.01-BACK
           path: API-2025.01-BACK
           ref: SCRUM32
 
