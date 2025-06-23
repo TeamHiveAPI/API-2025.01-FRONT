@@ -13,8 +13,8 @@ jobs:
         image: postgres:13
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: hive_test
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: api
         ports:
           - 5432:5432
         options: >-
@@ -52,13 +52,13 @@ jobs:
       - name: Run migrations
         working-directory: backend
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hive_test
+          DATABASE_URL: postgresql://postgres:root@localhost:5432/api
         run: alembic upgrade head
 
       - name: Start backend
         working-directory: backend
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hive_test
+          DATABASE_URL: postgresql://postgres:root@localhost:5432/api
           SECRET_KEY: "your-secret-key-here"
           ALGORITHM: "HS256"
           ACCESS_TOKEN_EXPIRE_MINUTES: "30"
