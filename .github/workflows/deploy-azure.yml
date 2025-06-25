@@ -1,0 +1,78 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: cicd
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache de dependências
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build da aplicação (com aumento de memória e sem sourcemaps)
+        run: NODE_OPTIONS="--max-old-space-size=4096" npm run build -- --no-sourcemap
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Criar imagem Docker
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest .
+
+      - name: Enviar imagem para o Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
+
+  deploy-app:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build-and-push
+    runs-on: [self-hosted, linux, x64]
+    environment: cicd
+    steps:
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Parar e remover container antigo
+        run: |
+          docker stop my-react-app || true
+          docker rm my-react-app || true
+
+      - name: Limpar imagens antigas
+        run: docker image prune -af
+
+      - name: Baixar imagem mais recente
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
+
+      - name: Iniciar novo container
+        run: |
+          docker run -d \
+            --name my-react-app \
+            -p 80:80 \
+            --restart always \
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-react-app:latest
