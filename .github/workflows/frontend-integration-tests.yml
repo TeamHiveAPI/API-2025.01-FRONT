@@ -23,13 +23,13 @@ jobs:
 
     steps:
       - name: Checkout frontend code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Checkout backend code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: TeamHiveAPI/API-2025.01-BACK
-          ref: SCRUM32
+          ref: develop
           path: backend
 
       - name: Set up Python
@@ -71,7 +71,7 @@ jobs:
           sleep 20
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
