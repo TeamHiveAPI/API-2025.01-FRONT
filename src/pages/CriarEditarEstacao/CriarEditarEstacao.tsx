@@ -84,9 +84,6 @@ export default function CriarEditarEstacao() {
     const bairro = numeroBairro[1]?.trim() || "";
     const cidade = bairroCidadeCep[0]?.trim() || "";
     const cep = bairroCidadeCep[1]?.trim() || "";
-
-    // const uid = dadosRecebidos.uid || "";
-
   
     // Espera os sensores serem carregados
     const sensoresMapeados = (dadosRecebidos.sensores || []).map((sensor: { nome: string }) => {
@@ -135,7 +132,7 @@ export default function CriarEditarEstacao() {
       value = value.replace(/[^0-9.-]/g, "");
     }
 
-    setDadosEstacao((prev) => ({
+    setDadosEstacao((prev: typeof dadosEstacao) => ({
       ...prev,
       [tag]: value,
     }));
