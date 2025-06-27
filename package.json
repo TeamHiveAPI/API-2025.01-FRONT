@@ -38,6 +38,7 @@
     "@types/leaflet": "^1.9.17",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@types/selenium-webdriver": "^4.1.28",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",

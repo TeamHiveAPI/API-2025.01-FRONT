@@ -1,5 +1,5 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome'; // 👈 Importação correta com tipagem
+import chrome from 'selenium-webdriver/chrome'; 
 
 describe('Login E2E Test', () => {
   jest.setTimeout(60000); // Aumenta o timeout para 60 segundos para acomodar o teste de login válido
@@ -64,15 +64,30 @@ describe('Login E2E Test', () => {
   }, 10000, 'Token não encontrado no localStorage após login');
 
   // Coleta os dados do localStorage após login
-  const storageData = await driver.executeScript(`
-    return {
-      token: localStorage.getItem('token'),
-      user_email: localStorage.getItem('user_email'),
-      user_nivel: localStorage.getItem('user_nivel'),
-      user_id: localStorage.getItem('user_id'),
-      user_nome: localStorage.getItem('user_nome')
-    };
-  `);
+  // const storageData = await driver.executeScript(`
+  //   return {
+  //     token: localStorage.getItem('token'),
+  //     user_email: localStorage.getItem('user_email'),
+  //     user_nivel: localStorage.getItem('user_nivel'),
+  //     user_id: localStorage.getItem('user_id'),
+  //     user_nome: localStorage.getItem('user_nome')
+  //   };
+  // `);
+  const storageData = await driver.executeScript(() => {
+  return {
+    token: localStorage.getItem('token'),
+    user_email: localStorage.getItem('user_email'),
+    user_nivel: localStorage.getItem('user_nivel'),
+    user_id: localStorage.getItem('user_id'),
+    user_nome: localStorage.getItem('user_nome'),
+  };
+}) as {
+  token: string | null;
+  user_email: string | null;
+  user_nivel: string | null;
+  user_id: string | null;
+  user_nome: string | null;
+};
 
   console.log('\nDados do localStorage após login:', storageData);
 
