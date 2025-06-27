@@ -78,7 +78,7 @@ jobs:
         run: npm run dev &
 
       - name: Wait for frontend to be ready
-        uses: jakejarvis/wait-action@v1
+        uses: jakejarvis/wait-action@master
         with:
           url: http://localhost:5173/login
           timeout: 30
