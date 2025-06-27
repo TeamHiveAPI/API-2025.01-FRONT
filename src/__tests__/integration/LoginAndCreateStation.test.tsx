@@ -7,7 +7,7 @@ import { AuthProvider } from "../../context/AuthContext";
 import api from "../../services/api";
 
 // Mock da API
-jest.mock("../services/api");
+jest.mock("../../services/api");
 
 const mockApi = api as jest.Mocked<typeof api>;
 
