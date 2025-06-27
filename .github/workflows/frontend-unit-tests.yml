@@ -35,7 +35,7 @@ jobs:
         run: npm run lint || echo "Linting failed but continuing"
 
       - name: Run unit tests
-        run: npm test -- --testPathIgnorePatterns=integration --coverage
+        run: npm test -- --testPathIgnorePatterns=integration --testPathIgnorePatterns=e2e --coverage
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
