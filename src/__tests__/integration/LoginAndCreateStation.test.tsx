@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
-import CriarEditarEstacao from "../pages/CriarEditarEstacao/CriarEditarEstacao";
-import Login from "../pages/Login/Login";
-import { AuthProvider } from "../context/AuthContext";
-import api from "../services/api";
+import CriarEditarEstacao from "../../pages/CriarEditarEstacao/CriarEditarEstacao";
+import Login from "../../pages/Login/Login";
+import { AuthProvider } from "../../context/AuthContext";
+import api from "../../services/api";
 
 // Mock da API
 jest.mock("../services/api");
